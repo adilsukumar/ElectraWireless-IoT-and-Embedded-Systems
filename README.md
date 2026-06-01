@@ -1,7 +1,7 @@
 <div align="center">
   <img src="https://img.shields.io/badge/Status-Active-success.svg?style=for-the-badge" alt="Status">
   <img src="https://img.shields.io/badge/License-MIT-blue.svg?style=for-the-badge" alt="License">
-  <img src="https://img.shields.io/badge/Version-1.0.9-orange.svg?style=for-the-badge" alt="Version">
+  <img src="https://img.shields.io/badge/Version-1.1.0-orange.svg?style=for-the-badge" alt="Version">
   <br><br>
   <h1>🏡 ELLY: Intelligent Home Automation by ElectraWireless ⚡</h1>
   <p><strong>A lightning-fast, local-first IoT dashboard and conversational AI assistant for the ultimate smart home experience.</strong></p>
@@ -20,10 +20,12 @@ Say goodbye to slow, cloud-dependent dashboards. ELLY uses a 100% localized stat
 ## ✨ Key Features
 
 ### 🤖 Local-First Conversational AI
-Why click when you can just talk? ELLY features a beautifully integrated conversational portal that operates **without** relying on slow, rate-limited cloud LLMs. 
-- 💬 **Natural Language Processing**: Understands intent instantly using advanced regex-based semantic pattern matching.
-- 🎙️ **Voice Integration**: Ready for voice command input and text-to-speech output.
+Why click when you can just talk? ELLY features a beautifully integrated conversational portal that operates **without** relying on slow, rate-limited cloud LLMs. In version 1.1.0, ELLY's cognitive engine received a massive upgrade:
+- 💬 **Advanced Semantic Parsing**: Understands dozens of natural language variations, complex aliases (like "climate" vs "ac", "bulb" vs "light"), and conversational small talk.
+- 🧠 **Dynamic Fallback Logic**: Instead of generic errors, ELLY actively attempts to guide you with randomized, context-aware suggestions if a command isn't recognized.
 - ⚡ **Zero-Latency Execution**: Saying "Turn off all lights" instantly triggers the event bus to shut off devices with zero network latency.
+- 🎙️ **Voice Integration**: Ready for voice command input and text-to-speech output.
+- 🎭 **Personality & Humor**: Try asking her for a joke! ELLY is designed to feel alive, responsive, and deeply integrated into your smart home.
 
 ### 📊 Comprehensive IoT Dashboard
 - **Live Energy Analytics**: Monitor your total home power consumption in real-time (in kilowatts).
