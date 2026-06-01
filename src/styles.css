@@ -1,0 +1,217 @@
+@import "tailwindcss" source(none);
+@source "../src";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --font-display: "Outfit", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 8px);
+  --radius-3xl: calc(var(--radius) + 12px);
+  --radius-4xl: calc(var(--radius) + 16px);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+  --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-ring-offset-background: var(--background);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-glow: var(--glow);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+}
+
+:root {
+  /* Light Theme — Clean & Modern */
+  --radius: 0.875rem;
+  --background: #f8f9fa;
+  --foreground: #1a1a1a;
+  --card: #ffffff;
+  --card-foreground: #1a1a1a;
+  --popover: #ffffff;
+  --popover-foreground: #1a1a1a;
+  --primary: #8b5cf6;
+  --primary-foreground: #ffffff;
+  --secondary: #ede9fe;
+  --secondary-foreground: #5b3fb0;
+  --muted: #f1f0f7;
+  --muted-foreground: #6b6b78;
+  --accent: #ede9fe;
+  --accent-foreground: #5b3fb0;
+  --destructive: #ef4444;
+  --destructive-foreground: #ffffff;
+  --success: #22c55e;
+  --success-foreground: #ffffff;
+  --warning: #f59e0b;
+  --warning-foreground: #1a1a1a;
+  --border: #e7e5f0;
+  --input: #e7e5f0;
+  --ring: #8b5cf6;
+  --chart-1: #8b5cf6;
+  --chart-2: #a78bfa;
+  --chart-3: #c4b5fd;
+  --chart-4: #ddd6fe;
+  --chart-5: #f59e0b;
+  --glow: #ede9fe;
+  --sidebar: #ffffff;
+  --sidebar-foreground: #1a1a1a;
+  --sidebar-primary: #8b5cf6;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #ede9fe;
+  --sidebar-accent-foreground: #5b3fb0;
+  --sidebar-border: #e7e5f0;
+  --sidebar-ring: #8b5cf6;
+}
+
+.dark {
+  /* Dark Theme — Techno / Infinite space */
+  --background: #000000;
+  --foreground: #ffffff;
+  --card: #12121a;
+  --card-foreground: #ffffff;
+  --popover: #12121a;
+  --popover-foreground: #ffffff;
+  --primary: #8b5cf6;
+  --primary-foreground: #ffffff;
+  --secondary: #1b1b26;
+  --secondary-foreground: #c4b5fd;
+  --muted: #16161f;
+  --muted-foreground: #9b96b3;
+  --accent: #2a2a35;
+  --accent-foreground: #c4b5fd;
+  --destructive: #f0506e;
+  --destructive-foreground: #ffffff;
+  --success: #34d399;
+  --success-foreground: #06140f;
+  --warning: #fbbf24;
+  --warning-foreground: #1a1a1a;
+  --border: #2a2a35;
+  --input: #2a2a35;
+  --ring: #8b5cf6;
+  --chart-1: #8b5cf6;
+  --chart-2: #a78bfa;
+  --chart-3: #c4b5fd;
+  --chart-4: #6d4ed6;
+  --chart-5: #fbbf24;
+  --glow: #8b5cf6;
+  --sidebar: #0a0a10;
+  --sidebar-foreground: #ffffff;
+  --sidebar-primary: #8b5cf6;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #1b1b26;
+  --sidebar-accent-foreground: #c4b5fd;
+  --sidebar-border: #2a2a35;
+  --sidebar-ring: #8b5cf6;
+}
+
+@layer base {
+  * {
+    border-color: var(--color-border);
+  }
+
+  body {
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    font-family: var(--font-sans);
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: var(--font-display);
+    letter-spacing: -0.02em;
+  }
+}
+
+@layer utilities {
+  .signal-ring {
+    animation: signal-pulse 2s ease-out infinite;
+  }
+  @keyframes signal-pulse {
+    0% {
+      transform: scale(0.6);
+      opacity: 0.8;
+    }
+    100% {
+      transform: scale(1.6);
+      opacity: 0;
+    }
+  }
+
+  /* "Glass" surfaces — near-opaque tint (no backdrop-filter, so no per-frame repaint cost) */
+  .glass {
+    background-color: color-mix(in srgb, var(--color-background) 92%, transparent);
+  }
+  .glass-card {
+    background-color: color-mix(in srgb, var(--color-card) 94%, transparent);
+  }
+
+  /* Soft radial glow behind primary icons (subtle, low-intensity) */
+  .techno-glow {
+    position: relative;
+  }
+  .techno-glow::before {
+    content: "";
+    position: absolute;
+    inset: -35%;
+    z-index: 0;
+    border-radius: 9999px;
+    background: radial-gradient(
+      circle,
+      color-mix(in srgb, var(--color-glow) 25%, transparent) 0%,
+      transparent 80%
+    );
+    pointer-events: none;
+  }
+  .techno-glow > * {
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Subtle neon ring for active inputs / focus */
+  .neon-ring {
+    box-shadow:
+      0 0 0 1px color-mix(in srgb, var(--color-primary) 40%, transparent),
+      0 0 8px color-mix(in srgb, var(--color-primary) 15%, transparent);
+  }
+  .neon-glow {
+    box-shadow: 0 0 12px color-mix(in srgb, var(--color-primary) 20%, transparent);
+  }
+}
