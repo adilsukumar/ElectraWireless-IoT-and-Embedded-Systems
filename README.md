@@ -1,7 +1,7 @@
 <div align="center">
   <img src="https://img.shields.io/badge/Status-Active-success.svg?style=for-the-badge" alt="Status">
   <img src="https://img.shields.io/badge/License-MIT-blue.svg?style=for-the-badge" alt="License">
-  <img src="https://img.shields.io/badge/Version-1.0.0-orange.svg?style=for-the-badge" alt="Version">
+  <img src="https://img.shields.io/badge/Version-1.0.9-orange.svg?style=for-the-badge" alt="Version">
   <br><br>
   <h1>🏡 ELLY: Intelligent Home Automation by ElectraWireless ⚡</h1>
   <p><strong>A lightning-fast, local-first IoT dashboard and conversational AI assistant for the ultimate smart home experience.</strong></p>
@@ -48,8 +48,8 @@ One-tap access to powerful environment macros:
 
 ELLY is built on the bleeding edge of modern web technologies:
 
-*   **Framework**: [TanStack Start](https://tanstack.com/start) / React 19
-*   **Routing**: TanStack Router (File-system based, fully type-safe)
+*   **Framework**: React 19 / Vite SPA
+*   **Routing**: TanStack Router (Client-side, fully type-safe)
 *   **Styling**: TailwindCSS v4 with [shadcn/ui](https://ui.shadcn.com/) components
 *   **Icons**: Lucide React
 *   **Build Tooling**: Vite & [Bun](https://bun.sh/)
@@ -80,9 +80,8 @@ bun run dev
 To deploy this project to platforms like Vercel, Netlify, or your own server:
 ```bash
 bun run build
-bun run start
 ```
-*(A `vercel.json` is already included for instantaneous 1-click deployments to Vercel!)*
+*(Simply deploy the output `dist` folder to any static hosting provider!)*
 
 ---
 
