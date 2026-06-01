@@ -4,12 +4,9 @@ import {
   Link,
   createRootRouteWithContext,
   useRouter,
-  HeadContent,
-  Scripts,
 } from "@tanstack/react-router";
-import { useEffect, type ReactNode } from "react";
+import { type ReactNode } from "react";
 
-import appCss from "../styles.css?url";
 import { ThemeProvider } from "../components/theme-provider";
 import { HomeProvider } from "../lib/home/store";
 import { Layout } from "../components/home/Layout";
@@ -72,51 +69,10 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
 }
 
 export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
-  head: () => ({
-    meta: [
-      { charSet: "utf-8" },
-      { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "ELLY Home Intelligence" },
-      {
-        name: "description",
-        content: "ElectraWireless ELLY Home Intelligence - Smart Home Control System",
-      },
-      { name: "author", content: "ElectraWireless" },
-      { property: "og:title", content: "ELLY Home Intelligence" },
-      {
-        property: "og:description",
-        content: "ElectraWireless ELLY Home Intelligence - Smart Home Control System",
-      },
-      { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary" },
-      { name: "twitter:site", content: "@ElectraWireless" },
-    ],
-    links: [
-      {
-        rel: "stylesheet",
-        href: appCss,
-      },
-    ],
-  }),
-  shellComponent: RootShell,
   component: RootComponent,
   notFoundComponent: NotFoundComponent,
   errorComponent: ErrorComponent,
 });
-
-function RootShell({ children }: { children: ReactNode }) {
-  return (
-    <html lang="en">
-      <head>
-        <HeadContent />
-      </head>
-      <body>
-        {children}
-        <Scripts />
-      </body>
-    </html>
-  );
-}
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
