@@ -38,7 +38,7 @@ const GREETING: ChatMsg = {
 };
 
 export function EllyPortal({ open, onClose }: { open: boolean; onClose: () => void }) {
-  const { runVoiceCommand, state, totalWatts, activeCount } = useHome();
+  const { runVoiceCommand, state, totalWatts, activeCount, dispatch } = useHome();
   const [listening, setListening] = useState(false);
   const [text, setText] = useState("");
   const [heard, setHeard] = useState("");
