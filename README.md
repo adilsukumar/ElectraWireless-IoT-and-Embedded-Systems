@@ -102,10 +102,10 @@ Want to try the AI? Open the ELLY Portal by tapping the **"Talk to ELLY"** butto
 
 ## 📝 Architecture Notes
 
-This project was carefully migrated to be **100% local**, explicitly stripping away external cloud dependencies (like Lovable or Supabase) to guarantee privacy, security, and maximum performance. 
+This project was built from the ground up to be **100% local**, specifically architected without any external cloud dependencies to guarantee absolute privacy, security, and maximum performance.
 
-*   **State Management**: React Context merged with persisted `localStorage`.
-*   **Event Bus**: AI command parsing integrates directly into the global dispatch system for immediate localized execution.
+*   **State Management**: React Context merged with persisted `localStorage` for offline-first reliability.
+*   **Event Bus**: The AI command parsing engine integrates directly into the global dispatch system for immediate, localized execution without API latency.
 
 <br/>
 

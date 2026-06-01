@@ -5,5 +5,14 @@ import viteTsconfigPaths from "vite-tsconfig-paths";
 import { tanstackStart } from "@tanstack/react-start/plugin/vite";
 
 export default defineConfig({
-  plugins: [tanstackStart(), react(), tailwindcss(), viteTsconfigPaths()],
+  plugins: [
+    tanstackStart({
+      server: {
+        preset: 'vercel',
+      },
+    }),
+    react(),
+    tailwindcss(),
+    viteTsconfigPaths()
+  ],
 });
