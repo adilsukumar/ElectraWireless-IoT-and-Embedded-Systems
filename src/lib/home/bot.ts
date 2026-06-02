@@ -10,7 +10,7 @@ export function handleLocalChat(
 
   // 1. Expanded Greetings & Small Talk
   if (t.match(/^(hi|hello|hey|yo|greetings|hiya|howdy|sup)($|\s)/)) return { reply: "Hello! I'm ELLY, your ElectraWireless home assistant. What can I help you with today?" };
-  if (t.match(/\b(who are you|what are you)\b/)) return { reply: "I am ELLY, your intelligent environmental control layer, created by ElectraWireless to manage your smart home." };
+  if (t.match(/\b(who are you|who are u|what are you)\b/)) return { reply: "I am ELLY, your intelligent environmental control layer, created by ElectraWireless to manage your smart home." };
   if (t.match(/\b(how are you|how you doing|how is it going)\b/)) return { reply: "I'm functioning perfectly. All local home systems are nominal." };
   if (t.match(/\b(what can you do|help me|help|what do you do)\b/)) return { reply: "I can control your lights, climate, power outlets, activate security modes, and give you real-time status updates on your home's energy consumption." };
   if (t.match(/\b(thanks|thank you|thx|appreciate it|cheers)\b/)) return { reply: "You're very welcome! Let me know if you need anything else." };
@@ -46,7 +46,7 @@ export function handleLocalChat(
   const onDevices = state.devices.filter(d => d.on);
   const totalWatts = onDevices.reduce((acc, d) => acc + d.watts, 0);
 
-  if (t.match(/\b(status|how is the house|house report|home status|system status)\b/)) {
+  if (t.match(/\b(status|how is the house|hows the house|house report|home status|system status)\b/)) {
     return { reply: `All systems nominal. ${onDevices.length} devices are active, currently drawing ${(totalWatts/1000).toFixed(2)} kilowatts.` };
   }
   if (t.match(/\b(temperature|hot|cold|freezing|warm|climate|how is it inside)\b/)) {
@@ -81,8 +81,8 @@ export function handleLocalChat(
     if (t.match(/\b(eco|saver|save energy|green|low power)\b/)) return { reply: "Energy saver activated. Optimizing consumption across the house." };
     if (t.match(/\b(emergency|red alert|shutdown|lockdown)\b/)) return { reply: "Emergency protocol initiated! All non-critical systems offline." };
     
-    if (t.match(/\ball( the)? off\b/) || t.match(/\bturn( everything)? off\b/) || t.match(/\bpower( everything)? down\b/)) return { reply: "All non-critical devices have been successfully turned off." };
-    if (t.match(/\ball( the)? on\b/) || t.match(/\bturn( everything)? on\b/) || t.match(/\bpower( everything)? up\b/)) return { reply: "All standard devices have been turned on." };
+    if (t.match(/\ball( the)? off\b/) || t.match(/\bturn (everything|all) off\b/) || t.match(/\bpower (everything|all) down\b/)) return { reply: "All non-critical devices have been successfully turned off." };
+    if (t.match(/\ball( the)? on\b/) || t.match(/\bturn (everything|all) on\b/) || t.match(/\bpower (everything|all) up\b/)) return { reply: "All standard devices have been turned on." };
     
     // Check specific devices
     if (t.match(/\b(ac|air con|air conditioning|cooler|heater)\b/)) return { reply: "I've adjusted the climate control for you." };

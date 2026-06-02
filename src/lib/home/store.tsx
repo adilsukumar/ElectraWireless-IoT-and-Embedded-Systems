@@ -590,12 +590,18 @@ export function HomeProvider({ children }: { children: ReactNode }) {
                 ? "plug"
                 : null;
       const room = state.rooms.find((r) => t.includes(r.name.toLowerCase().split(" ")[0]));
+      const inRoomMatch = t.match(/\bin\s+(\w+)/);
 
       // "turn on/off everything"
       if (hasAll && !typeWord && !room) {
         dispatch({ type: wantsOn ? "ALL_ON" : "ALL_OFF" });
         toast.success(`ELLY: All devices turned ${wantsOn ? "on" : "off"}.`);
         return true;
+      }
+
+      if (inRoomMatch && !room && !hasAll) {
+        if (!opts?.silent) toast.error(`ELLY: I couldn't find a room named "${inRoomMatch[1]}".`);
+        return false;
       }
 
       let targets = state.devices.filter((d) => d.type !== "sensor");
