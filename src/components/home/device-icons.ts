@@ -7,6 +7,7 @@ import {
   CookingPot,
   Radar,
   Zap,
+  Tv,
   type LucideIcon,
 } from "lucide-react";
 import type { DeviceType } from "@/lib/home/types";
@@ -19,6 +20,7 @@ export const deviceIcon: Record<DeviceType, LucideIcon> = {
   fridge: Refrigerator,
   appliance: CookingPot,
   sensor: Radar,
+  tv: Tv,
   wpt: Zap,
 };
 
@@ -30,5 +32,6 @@ export const deviceTypeLabel: Record<DeviceType, string> = {
   fridge: "Refrigerator",
   appliance: "Appliance",
   sensor: "Sensor",
+  tv: "Television",
   wpt: "Wireless Power",
 };

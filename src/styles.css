@@ -214,4 +214,13 @@
   .neon-glow {
     box-shadow: 0 0 12px color-mix(in srgb, var(--color-primary) 20%, transparent);
   }
+
+  /* Hide scrollbars */
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
+  }
 }

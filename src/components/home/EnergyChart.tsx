@@ -33,8 +33,8 @@ export function EnergyAreaChart({ data, height = 220 }: { data: Point[]; height?
       >
         <defs>
           <linearGradient id="ellyFill" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="var(--color-accent)" stopOpacity="0.42" />
-            <stop offset="100%" stopColor="var(--color-accent)" stopOpacity="0" />
+            <stop offset="0%" stopColor="#a855f7" stopOpacity="0.42" />
+            <stop offset="100%" stopColor="#a855f7" stopOpacity="0" />
           </linearGradient>
         </defs>
         {[0, 1, 2].map((row) => (
@@ -52,7 +52,7 @@ export function EnergyAreaChart({ data, height = 220 }: { data: Point[]; height?
         <path
           d={line}
           fill="none"
-          stroke="var(--color-accent)"
+          stroke="#a855f7"
           strokeWidth="3"
           strokeLinecap="round"
           strokeLinejoin="round"
@@ -63,7 +63,7 @@ export function EnergyAreaChart({ data, height = 220 }: { data: Point[]; height?
             cx={p.x}
             cy={p.y}
             r="2.3"
-            fill="var(--color-accent)"
+            fill="#a855f7"
           />
         ))}
         {ticks.map((p) => (
@@ -78,6 +78,8 @@ export function EnergyAreaChart({ data, height = 220 }: { data: Point[]; height?
             {p.label}
           </text>
         ))}
+        <text x="8" y="16" fontSize="10" fill="var(--color-muted-foreground)" fontWeight="500">Watts</text>
+        <text x={width - 8} y="146" fontSize="10" fill="var(--color-muted-foreground)" fontWeight="500" textAnchor="end">Time</text>
       </svg>
     </div>
   );

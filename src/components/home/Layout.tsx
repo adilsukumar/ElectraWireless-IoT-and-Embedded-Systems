@@ -10,6 +10,7 @@ import {
   Sun,
   Bell,
   Menu,
+  ClipboardList,
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -51,20 +52,13 @@ function LayoutInner({ children }: { children: ReactNode }) {
   const { openElly } = useElly();
 
   const path = useRouterState({ select: (s) => s.location.pathname });
-  const [menuOpen, setMenuOpen] = useState(false);
-
   // Always start new pages from the top
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [path]);
 
-  // Close the menu whenever the route changes
-  useEffect(() => {
-    setMenuOpen(false);
-  }, [path]);
-
   return (
-    <div className="relative flex min-h-screen w-full justify-center overflow-hidden bg-secondary/50">
+    <div className="relative flex h-[100dvh] w-full justify-center overflow-hidden bg-secondary/50">
       {/* Ambient static blobs (subtle, no blur filter to avoid per-frame repaint cost) */}
       <div aria-hidden className="pointer-events-none absolute -left-12 -top-12 h-32 w-32 rounded-full bg-primary/[0.08] dark:bg-primary/[0.12]" />
       <div aria-hidden className="pointer-events-none absolute top-20 right-10 h-40 w-40 rounded-full bg-chart-2/[0.08] dark:bg-chart-2/[0.12]" />
@@ -78,71 +72,10 @@ function LayoutInner({ children }: { children: ReactNode }) {
       <div aria-hidden className="pointer-events-none absolute top-3/4 -left-16 h-48 w-48 rounded-full bg-chart-3/[0.05] dark:bg-chart-3/[0.08]" />
 
       {/* Phone-sized app column */}
-      <div className="relative z-10 flex min-h-screen w-full max-w-md flex-col overflow-hidden bg-background shadow-lg shadow-primary/5 ring-1 ring-border/60">
-        {/* In-app slide-over menu (constrained to the phone column) */}
-        {menuOpen && (
-          <>
-            <div
-              className="absolute inset-0 z-40 bg-foreground/25"
-              onClick={() => setMenuOpen(false)}
-              aria-hidden
-            />
-            <aside className="absolute inset-y-0 left-0 z-50 flex w-72 max-w-[80%] flex-col border-r border-border/60 bg-background">
-              <div className="flex items-center gap-3 border-b border-border/60 px-5 py-4">
-                <EllyLogo className="h-9 w-9" />
-                <div className="min-w-0 flex-1">
-                  <p className="truncate font-display text-base font-extrabold leading-none">
-                    ElectraWireless
-                  </p>
-                  <p className="truncate text-[11px] text-muted-foreground">ELLY Home Automation</p>
-                </div>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-8 w-8 rounded-full"
-                  aria-label="Close menu"
-                  onClick={() => setMenuOpen(false)}
-                >
-                  <X className="h-4 w-4" />
-                </Button>
-              </div>
-              <nav className="flex flex-col gap-1 p-3">
-                {nav.map((item) => {
-                  const active = item.exact ? path === item.to : path.startsWith(item.to);
-                  return (
-                    <Link
-                      key={item.to}
-                      to={item.to}
-                      preload="render"
-                      onClick={() => setMenuOpen(false)}
-                      className={cn(
-                        "relative flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-medium transition-colors",
-                        active
-                          ? "bg-primary/15 text-primary"
-                          : "text-muted-foreground hover:bg-muted hover:text-foreground",
-                      )}
-                    >
-                      <item.icon className="h-5 w-5 shrink-0" />
-                      {item.label}
-                    </Link>
-                  );
-                })}
-              </nav>
-            </aside>
-          </>
-        )}
+      <div className="relative z-10 flex h-full w-full max-w-md flex-col overflow-hidden bg-background shadow-lg shadow-primary/5 ring-1 ring-border/60">
         {/* Header */}
         <header className="sticky top-0 z-20 border-b border-border/60 glass">
           <div className="flex items-center gap-3 px-4 py-3">
-            <Button
-              variant="outline"
-              size="icon"
-              className="h-9 w-9 rounded-full"
-              aria-label="Open menu"
-              onClick={() => setMenuOpen(true)}
-            >
-              <Menu className="h-4 w-4" />
-            </Button>
             <EllyLogo className="h-9 w-9" />
             <div className="min-w-0 flex-1">
               <p className="truncate font-display text-base font-extrabold leading-none">
@@ -212,7 +145,37 @@ function LayoutInner({ children }: { children: ReactNode }) {
         </header>
 
         {/* Page content (no re-mount animation, keeps navigation instant) */}
-        <main className="flex-1 px-4 pb-10 pt-5">{children}</main>
+        <main className="flex flex-1 flex-col overflow-y-auto no-scrollbar px-4 pb-4 pt-5">{children}</main>
+
+        {/* Bottom Navigation Bar */}
+        <nav className="mt-auto shrink-0 z-50 flex items-center justify-around border-t border-border/60 bg-background/80 px-2 py-2 backdrop-blur-md">
+          {nav.map((item) => {
+            const active = item.exact ? path === item.to : path.startsWith(item.to);
+            return (
+              <Link
+                key={item.to}
+                to={item.to}
+                preload="render"
+                className={cn(
+                  "flex flex-col items-center gap-1 rounded-xl p-2 text-[10px] font-medium transition-colors",
+                  active
+                    ? "text-primary"
+                    : "text-muted-foreground hover:text-foreground",
+                )}
+              >
+                <div
+                  className={cn(
+                    "flex h-8 w-8 items-center justify-center rounded-full transition-colors",
+                    active ? "bg-primary/15" : "bg-transparent",
+                  )}
+                >
+                  <item.icon className="h-5 w-5 shrink-0" />
+                </div>
+                {item.label}
+              </Link>
+            );
+          })}
+        </nav>
 
         {/* In-app notifications, constrained to the phone column */}
         <Toaster

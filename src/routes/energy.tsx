@@ -1,12 +1,40 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
-import { TrendingUp, TriangleAlert, Check } from "lucide-react";
+import { TrendingUp, TriangleAlert, Check, Activity, Cpu, Zap } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { EnergyAreaChart, EnergyBarChart } from "@/components/home/EnergyChart";
 import { toast } from "sonner";
 import { useHome } from "@/lib/home/store";
+import { cn } from "@/lib/utils";
+
+function StatCard({
+  icon: Icon,
+  label,
+  value,
+  accent,
+}: {
+  icon: typeof Activity;
+  label: string;
+  value: string;
+  accent?: boolean;
+}) {
+  return (
+    <div
+      className={cn(
+        "relative overflow-hidden rounded-2xl border p-4",
+        accent ? "bg-primary text-primary-foreground border-primary" : "bg-card border-border",
+      )}
+    >
+      <span className={cn("techno-glow mb-6 inline-flex", accent ? "" : "")}>
+        <Icon className={cn("h-5 w-5", accent ? "opacity-90" : "text-primary")} />
+      </span>
+      <p className="font-display text-2xl font-extrabold tracking-tight">{value}</p>
+      <p className={cn("text-xs", accent ? "opacity-80" : "text-muted-foreground")}>{label}</p>
+    </div>
+  );
+}
 
 export const Route = createFileRoute("/energy")({
   head: () => ({
@@ -37,7 +65,7 @@ const ranges = {
 };
 
 function EnergyPage() {
-  const { state, dispatch, totalWatts } = useHome();
+  const { state, dispatch, totalWatts, activeCount, alerts } = useHome();
   const [range, setRange] = useState<keyof typeof ranges>("daily");
   const [appliedIds, setAppliedIds] = useState<string[]>([]);
 
@@ -91,31 +119,21 @@ function EnergyPage() {
   return (
     <div className="mx-auto max-w-5xl space-y-6">
       <div>
-        <h1 className="text-2xl font-extrabold">Energy Intelligence</h1>
-        <p className="text-sm text-muted-foreground">
-          Energy is the foundation of the ElectraWireless ecosystem.
-        </p>
+        <h1 className="font-display text-3xl font-extrabold">Energy</h1>
       </div>
 
+      {/* Overview */}
       <div className="grid grid-cols-2 gap-3">
-        <Card className="p-4">
-          <p className="text-sm text-muted-foreground">Live load</p>
-          <p className="font-display text-2xl font-extrabold">
-            {(totalWatts / 1000).toFixed(2)} kW
-          </p>
-        </Card>
-        <Card className="p-4">
-          <p className="text-sm text-muted-foreground">Today</p>
-          <p className="font-display text-2xl font-extrabold">12.4 kWh</p>
-        </Card>
-        <Card className="p-4">
-          <p className="text-sm text-muted-foreground">This week</p>
-          <p className="font-display text-2xl font-extrabold">63 kWh</p>
-        </Card>
-        <Card className="p-4">
-          <p className="text-sm text-muted-foreground">Est. cost</p>
-          <p className="font-display text-2xl font-extrabold">$18.90</p>
-        </Card>
+        {[
+          { icon: Cpu, label: "Devices connected", value: String(state.devices.length) },
+          { icon: Activity, label: "Active now", value: String(activeCount), accent: true },
+          { icon: Zap, label: "Live consumption", value: `${(totalWatts / 1000).toFixed(2)} kW` },
+          { icon: TriangleAlert, label: "Alerts", value: String(alerts.length) },
+        ].map((s) => (
+          <div key={s.label}>
+            <StatCard icon={s.icon} label={s.label} value={s.value} accent={s.accent} />
+          </div>
+        ))}
       </div>
 
       <Card className="p-5">

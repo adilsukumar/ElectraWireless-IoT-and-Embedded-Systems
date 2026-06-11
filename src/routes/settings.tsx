@@ -1,304 +1,137 @@
-import { createFileRoute } from "@tanstack/react-router";
-import {
-  Crown,
-  Users,
-  UserRound,
-  Server,
-  Cpu,
-  Wifi,
-  Bluetooth,
-  Cloud,
-  ArrowDown,
-  Thermometer,
-  Activity,
-  PowerOff,
-  RotateCcw,
-} from "lucide-react";
-import { Card } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { cn } from "@/lib/utils";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { Users, Wifi, ShieldCheck, Server, Shield, TriangleAlert } from "lucide-react";
 import { toast } from "sonner";
 import { useHome } from "@/lib/home/store";
-import { MembersManager } from "@/components/home/MembersManager";
-import type { Role, FallbackStatus } from "@/lib/home/types";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 
 export const Route = createFileRoute("/settings")({
   head: () => ({
     meta: [
       { title: "Settings, ELLY Home Automation" },
-      {
-        name: "description",
-        content: "Roles & permissions, integration gateway, fallback routing and safety.",
-      },
+      { name: "description", content: "Roles & permissions, integration gateway, fallback routing and safety." },
     ],
   }),
   component: SettingsPage,
 });
 
-const roles: { id: Role; label: string; icon: typeof Crown; perms: string[] }[] = [
-  {
-    id: "owner",
-    label: "Owner",
-    icon: Crown,
-    perms: ["Full control", "Add / remove devices", "Create automations"],
-  },
-  {
-    id: "family",
-    label: "Family Member",
-    icon: Users,
-    perms: ["Control devices", "Limited automation editing"],
-  },
-  {
-    id: "guest",
-    label: "Guest",
-    icon: UserRound,
-    perms: ["Restricted device control", "No automation editing"],
-  },
-];
-
-const statusStyles: Record<FallbackStatus, string> = {
-  active: "bg-success/15 text-success border-success/40",
-  standby: "bg-secondary text-secondary-foreground border-border",
-  down: "bg-destructive/15 text-destructive border-destructive/40",
-};
-
-const fallbackIcon: Record<string, typeof Wifi> = { lan: Wifi, ble: Bluetooth, cloud: Cloud };
-
 function SettingsPage() {
   const { state, dispatch } = useHome();
 
   return (
-    <div className="mx-auto max-w-4xl space-y-8">
-      <div>
-        <h1 className="text-2xl font-extrabold">Settings</h1>
-        <p className="text-sm text-muted-foreground">
-          Trust over convenience, security, access and resilience.
-        </p>
-      </div>
+    <div className="bg-black flex-1 text-white pb-6 -mx-4 px-4 sm:-mx-8 sm:px-8 flex flex-col">
+      <div className="mx-auto max-w-4xl w-full space-y-6 pt-2">
+        <div>
+          <h1 className="text-[32px] font-extrabold tracking-tight text-white">Settings</h1>
+        </div>
 
-      {/* Roles */}
-      <section className="space-y-3">
-        <h2 className="text-lg font-bold">Users & Roles</h2>
+        {/* 2x2 Grid */}
         <div className="grid grid-cols-2 gap-3">
-          {roles.map((r) => {
-            const activeRole = state.role === r.id;
-            return (
-              <Card
-                key={r.id}
-                className={cn(
-                  "p-4 transition-colors",
-                  activeRole && "border-accent ring-1 ring-accent",
-                )}
-              >
-                <div className="mb-2 flex items-center gap-2">
-                  <r.icon className="h-5 w-5 text-accent" />
-                  <p className="font-semibold">{r.label}</p>
-                  {activeRole && <Badge className="ml-auto">Active</Badge>}
-                </div>
-                <ul className="mb-3 space-y-1 text-sm text-muted-foreground">
-                  {r.perms.map((p) => (
-                    <li key={p}>• {p}</li>
-                  ))}
-                </ul>
-                <Button
-                  size="sm"
-                  variant={activeRole ? "secondary" : "outline"}
-                  className="w-full"
-                  disabled={activeRole}
-                  onClick={() => {
-                    dispatch({ type: "SET_ROLE", role: r.id });
-                    toast.success(`Now acting as ${r.label}`);
-                  }}
-                >
-                  {activeRole ? "Current role" : `Switch to ${r.label}`}
-                </Button>
-              </Card>
-            );
-          })}
+          <Link to="/settings-users" className="flex flex-col items-center justify-center p-4 rounded-[1.5rem] bg-[#111116] border border-white/5 shadow-lg hover:bg-[#15151a] transition-all gap-2">
+            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#a855f7]/10 border border-[#a855f7]/20 shadow-[0_0_10px_rgba(168,85,247,0.15)]">
+              <Users className="h-5 w-5 text-[#a855f7]" strokeWidth={2} />
+            </div>
+            <span className="font-bold text-white text-xs">Users & Access</span>
+          </Link>
+          
+          <Link to="/settings-network" className="flex flex-col items-center justify-center p-4 rounded-[1.5rem] bg-[#111116] border border-white/5 shadow-lg hover:bg-[#15151a] transition-all gap-2">
+            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-500/10 border border-blue-500/20 shadow-[0_0_10px_rgba(59,130,246,0.15)] relative">
+              <Wifi className="h-5 w-5 text-blue-500 relative -left-0.5" strokeWidth={2} />
+              <div className="absolute -bottom-0.5 -right-0.5 bg-[#111116] rounded-full p-[1px]">
+                <ShieldCheck className="h-3 w-3 text-blue-400" strokeWidth={2.5} />
+              </div>
+            </div>
+            <span className="font-bold text-white text-xs">Network & Fallback</span>
+          </Link>
+
+          <Link to="/settings-gateways" className="flex flex-col items-center justify-center p-4 rounded-[1.5rem] bg-[#111116] border border-white/5 shadow-lg hover:bg-[#15151a] transition-all gap-2">
+            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-neutral-400/10 border border-neutral-400/20 shadow-[0_0_10px_rgba(163,163,163,0.1)]">
+              <Server className="h-5 w-5 text-neutral-400" strokeWidth={2} />
+            </div>
+            <span className="font-bold text-white text-xs">Gateways</span>
+          </Link>
+
+          <Link to="/settings-safety" className="flex flex-col items-center justify-center p-4 rounded-[1.5rem] bg-[#111116] border border-white/5 shadow-lg hover:bg-[#15151a] transition-all gap-2">
+            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-green-500/10 border border-green-500/20 shadow-[0_0_10px_rgba(34,197,94,0.15)]">
+              <Shield className="h-5 w-5 text-green-500" strokeWidth={2} />
+            </div>
+            <span className="font-bold text-white text-xs">Safety</span>
+          </Link>
         </div>
-      </section>
 
-      <MembersManager />
-
-      {/* Gateway architecture */}
-      <section className="space-y-3">
-        <h2 className="text-lg font-bold">Integration Gateway</h2>
-        <Card className="p-5">
-          <div className="flex flex-col items-center gap-2 text-center">
-            <Tier icon={Cpu} title="Smart Appliances" sub="Wi-Fi · BLE · Zigbee · Matter" />
-            <ArrowDown className="h-5 w-5 text-muted-foreground" />
-            <Tier
-              icon={Server}
-              title="Local Integration Gateway"
-              sub="Home Assistant · MQTT Broker · Node-RED"
-              accent
-            />
-            <ArrowDown className="h-5 w-5 text-muted-foreground" />
-            <Tier
-              icon={Activity}
-              title="ELLY AI Engine"
-              sub="Standardized JSON over HTTP / WebSockets"
-            />
-          </div>
-        </Card>
-      </section>
-
-      {/* Fallback routing */}
-      <section className="space-y-3">
-        <div className="flex items-center justify-between">
-          <h2 className="text-lg font-bold">Fallback Routing</h2>
-          <div className="flex gap-2">
-            <Button
-              size="sm"
-              variant="outline"
-              onClick={() => {
-                dispatch({ type: "FAILOVER", key: "ble" });
-                toast("Simulating Wi-Fi outage → BLE");
-              }}
-            >
-              Simulate Wi-Fi failure
-            </Button>
-            <Button
-              size="sm"
-              variant="outline"
-              onClick={() => {
-                dispatch({ type: "RESTORE_NETWORK" });
-                toast.success("Network restored");
-              }}
-            >
-              <RotateCcw className="mr-1 h-3.5 w-3.5" /> Restore
-            </Button>
-          </div>
-        </div>
+        {/* Active Users */}
         <div className="space-y-3">
-          {state.fallback.map((f) => {
-            const Icon = fallbackIcon[f.key];
-            return (
-              <Card key={f.key} className="p-4">
-                <div className="flex items-start gap-3">
-                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-secondary text-secondary-foreground">
-                    <Icon className="h-5 w-5" />
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <div className="flex flex-wrap items-center gap-2">
-                      <p className="font-semibold leading-tight">{f.path}</p>
-                      <Badge variant="secondary" className="shrink-0">
-                        {f.label}
-                      </Badge>
-                    </div>
-                    <p className="mt-1 text-sm text-muted-foreground">{f.scenario}</p>
-                  </div>
-                  <span
-                    className={cn(
-                      "shrink-0 rounded-full border px-2.5 py-1 text-xs font-semibold capitalize",
-                      statusStyles[f.status],
-                    )}
-                  >
-                    {f.status}
-                  </span>
-                </div>
-                {f.status !== "active" && (
-                  <div className="mt-3 flex justify-end">
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      onClick={() => {
-                        dispatch({ type: "FAILOVER", key: f.key });
-                        toast(`Routing via ${f.path}`);
-                      }}
-                    >
-                      Route here
-                    </Button>
-                  </div>
-                )}
-              </Card>
-            );
-          })}
-        </div>
-      </section>
+          <h2 className="text-sm font-bold text-neutral-400 pl-2">Active Users</h2>
+          <div className="rounded-2xl border border-white/5 bg-[#111116] overflow-hidden shadow-lg">
+            {state.members.slice(0, 2).map((m, i) => {
+              const isSarah = m.name.includes("Sarah");
+              const roleDisplay = isSarah ? "Owner" : m.role === "family" ? "Family" : "Guest";
+              const roleColor = roleDisplay === "Owner" 
+                ? "bg-[#a855f7] text-white shadow-[0_0_10px_rgba(168,85,247,0.4)]" 
+                : "bg-white/10 text-neutral-300";
+              
+              const initials = m.name.split(" ").map(n => n[0]).join("").substring(0, 2).toUpperCase();
 
-      {/* Safety */}
-      <section className="space-y-3">
-        <h2 className="text-lg font-bold">Safety & Risk Management</h2>
-        <div className="grid grid-cols-2 gap-3">
-          <SafetyTile icon={Thermometer} label="Overheating" value="Normal" ok />
-          <SafetyTile icon={Activity} label="Abnormal usage" value="None detected" ok />
-          <SafetyTile icon={Server} label="Overload guard" value="Armed" ok />
+              return (
+                <Dialog key={m.id}>
+                  <DialogTrigger asChild>
+                    <div className={`flex w-full items-center justify-between p-3.5 ${i !== 1 ? "border-b border-white/5" : ""} hover:bg-[#15151a] transition-colors cursor-pointer`}>
+                      <div className="flex items-center gap-3">
+                        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#1c1c24] border border-white/10 font-bold text-white text-[11px] tracking-wider shadow-inner">
+                          {initials}
+                        </div>
+                        <span className="font-bold text-white text-sm">{m.name}</span>
+                      </div>
+                      <span className={`px-3 py-1 rounded-full text-[10px] font-bold ${roleColor}`}>
+                        {roleDisplay}
+                      </span>
+                    </div>
+                  </DialogTrigger>
+                  <DialogContent className="bg-[#111116] border border-white/10 text-white rounded-[2rem] sm:max-w-md">
+                    <DialogHeader>
+                      <DialogTitle className="text-xl font-bold">Edit Member Access</DialogTitle>
+                    </DialogHeader>
+                    <div className="py-6 space-y-6">
+                      <div className="flex flex-col items-center gap-3">
+                        <div className="flex h-20 w-20 items-center justify-center rounded-full bg-[#1c1c24] border border-white/10 font-bold text-white text-2xl tracking-widest shadow-inner">
+                          {initials}
+                        </div>
+                        <h2 className="text-2xl font-bold">{m.name}</h2>
+                        <span className={`px-5 py-1.5 rounded-full text-sm font-bold ${roleColor}`}>{roleDisplay}</span>
+                      </div>
+                      <div className="space-y-3 bg-white/5 p-5 rounded-2xl border border-white/5">
+                        <div className="flex justify-between items-center"><span className="text-neutral-400 font-medium">Scope</span><span className="font-bold capitalize">{m.scope} devices</span></div>
+                        <div className="flex justify-between items-center"><span className="text-neutral-400 font-medium">Notes</span><span className="font-bold">{m.note || "None"}</span></div>
+                      </div>
+                      <button className="w-full py-3 rounded-full border border-red-500/20 text-red-500 font-bold hover:bg-red-500/10 transition-all">Remove Member</button>
+                    </div>
+                  </DialogContent>
+                </Dialog>
+              );
+            })}
+          </div>
         </div>
-        <Card className="flex flex-col items-start gap-3 border-destructive/40 bg-destructive/5 p-5 sm:flex-row sm:items-center">
-          <PowerOff className="h-6 w-6 text-destructive" />
-          <p className="flex-1 text-sm">
-            Emergency power cut overrides all automation and immediately de-energizes non-critical
-            circuits.
-          </p>
-          <Button
-            variant="destructive"
+
+        {/* Emergency Power Cut */}
+        <div className="pt-2">
+          <button
             disabled={state.role === "guest"}
             onClick={() => {
               dispatch({ type: "EMERGENCY" });
               toast.error("Emergency power cut executed");
             }}
+            className="w-full flex items-center justify-center gap-2 py-3 rounded-full bg-red-500 hover:bg-red-600 text-white font-bold transition-all shadow-[0_0_15px_rgba(239,68,68,0.3)] disabled:opacity-50 text-xs tracking-wide"
           >
-            Emergency Power Cut
-          </Button>
-        </Card>
-      </section>
-    </div>
-  );
-}
+            <TriangleAlert className="h-4 w-4" strokeWidth={2.5} /> Emergency Power Cut
+          </button>
+        </div>
 
-function Tier({
-  icon: Icon,
-  title,
-  sub,
-  accent,
-}: {
-  icon: typeof Cpu;
-  title: string;
-  sub: string;
-  accent?: boolean;
-}) {
-  return (
-    <div
-      className={cn(
-        "flex w-full max-w-md items-center gap-3 rounded-2xl border p-4",
-        accent ? "border-accent bg-accent/10" : "border-border bg-card",
-      )}
-    >
-      <div
-        className={cn(
-          "flex h-11 w-11 items-center justify-center rounded-xl",
-          accent ? "bg-accent text-accent-foreground" : "bg-secondary text-secondary-foreground",
-        )}
-      >
-        <Icon className="h-5 w-5" />
-      </div>
-      <div className="text-left">
-        <p className="font-semibold">{title}</p>
-        <p className="text-xs text-muted-foreground">{sub}</p>
       </div>
     </div>
-  );
-}
-
-function SafetyTile({
-  icon: Icon,
-  label,
-  value,
-  ok,
-}: {
-  icon: typeof Thermometer;
-  label: string;
-  value: string;
-  ok?: boolean;
-}) {
-  return (
-    <Card className="p-4">
-      <div className="flex items-center gap-2 text-sm text-muted-foreground">
-        <Icon className="h-4 w-4" /> {label}
-      </div>
-      <p className={cn("mt-1 font-bold", ok ? "text-success" : "text-destructive")}>{value}</p>
-    </Card>
   );
 }

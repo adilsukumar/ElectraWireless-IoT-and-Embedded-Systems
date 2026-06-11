@@ -6,6 +6,7 @@ export type DeviceType =
   | "fridge"
   | "appliance"
   | "sensor"
+  | "tv"
   | "wpt"; // wireless power transmitter
 
 export type Role = "owner" | "family" | "guest";

@@ -1,23 +1,16 @@
 import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
-import { ArrowLeft, Thermometer, Gauge, Snowflake } from "lucide-react";
+import { ArrowLeft, Thermometer, Gauge, Snowflake, Activity } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
 import { Slider } from "@/components/ui/slider";
 import { EnergyAreaChart } from "@/components/home/EnergyChart";
-import { SignalIndicator } from "@/components/home/SignalIndicator";
 import { deviceIcon, deviceTypeLabel } from "@/components/home/device-icons";
 import { useHome } from "@/lib/home/store";
 import type { Device } from "@/lib/home/types";
 
 export const Route = createFileRoute("/device/$deviceId")({
-  head: () => ({
-    meta: [
-      { title: "Device Control, ELLY Home" },
-      { name: "description", content: "Advanced device control, energy and automation details." },
-    ],
-  }),
   component: DevicePage,
 });
 
@@ -36,7 +29,7 @@ function DevicePage() {
 
   if (!device) {
     return (
-      <div className="mx-auto max-w-4xl">
+      <div className="mx-auto max-w-4xl p-6 text-white bg-black min-h-screen">
         <p>Device not found.</p>
         <Button asChild variant="link">
           <Link to="/">Back to dashboard</Link>
@@ -52,246 +45,279 @@ function DevicePage() {
     dispatch({ type: "UPDATE_DEVICE", id: device.id, patch: p });
 
   return (
-    <div className="mx-auto max-w-4xl space-y-6">
-      <div className="flex items-center gap-3">
-        <Button
-          variant="outline"
-          size="icon"
-          onClick={() => router.history.back()}
-          aria-label="Back"
-        >
-          <ArrowLeft className="h-4 w-4" />
-        </Button>
-        <div className="flex flex-1 items-center gap-3">
-          <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-accent text-accent-foreground">
-            <Icon className="h-6 w-6" />
-          </span>
-          <div>
-            <h1 className="text-2xl font-extrabold leading-tight">{device.name}</h1>
-            <p className="text-sm text-muted-foreground">
+    <div className="bg-black min-h-screen text-white pb-20 -mx-4 px-4 sm:-mx-8 sm:px-8">
+      <div className="mx-auto max-w-4xl space-y-8 pt-6">
+        
+        {/* Header */}
+        <div className="flex items-center gap-4">
+          <button
+            onClick={() => router.history.back()}
+            className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl border border-white/5 bg-[#111116] transition-colors hover:bg-[#181820]"
+            aria-label="Back"
+          >
+            <ArrowLeft className="h-6 w-6 text-white" />
+          </button>
+          
+          <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl border border-white/5 bg-[#111116]">
+            <Icon className="h-6 w-6 text-neutral-300" />
+          </div>
+          
+          <div className="flex-1 ml-2">
+            <h1 className="text-3xl font-extrabold leading-tight text-white tracking-tight">{device.name}</h1>
+            <p className="text-[15px] font-medium text-neutral-400">
               {deviceTypeLabel[device.type]} · {room?.name}
             </p>
           </div>
+
+          {device.type !== "sensor" && (
+            <Switch
+              checked={device.on}
+              disabled={!device.online || !canEdit}
+              onCheckedChange={() => dispatch({ type: "TOGGLE_DEVICE", id: device.id })}
+              className="data-[state=checked]:bg-[#a855f7] data-[state=checked]:shadow-[0_0_15px_rgba(168,85,247,0.5)] scale-125 ml-4"
+            />
+          )}
         </div>
-        {device.type !== "sensor" && (
-          <Switch
-            checked={device.on}
-            disabled={!device.online || !canEdit}
-            onCheckedChange={() => dispatch({ type: "TOGGLE_DEVICE", id: device.id })}
-          />
-        )}
-      </div>
 
-      <div className="grid gap-4">
-        <div className="space-y-6">
-          {/* Controls */}
-          <Card className="space-y-5 p-5">
-            <h2 className="font-bold">Controls</h2>
+        <div className="grid gap-6">
+          <div className="space-y-6">
+            {/* Controls */}
+            <div className="space-y-5 rounded-[2rem] border border-white/5 bg-[#111116] p-7 shadow-2xl">
+              <h2 className="text-lg font-bold text-neutral-400">Controls</h2>
 
-            {device.type === "light" && (
-              <>
-                <ControlRow label={`Brightness, ${device.brightness ?? 0}%`}>
-                  <Slider
-                    value={[device.brightness ?? 0]}
-                    max={100}
-                    step={1}
-                    disabled={!device.on || !canEdit}
-                    onValueChange={([v]) => patch({ brightness: v })}
-                  />
-                </ControlRow>
-                <ControlRow label={`Color temperature, ${device.colorTemp ?? 4000}K`}>
-                  <Slider
-                    value={[device.colorTemp ?? 4000]}
-                    min={2700}
-                    max={6500}
-                    step={100}
-                    disabled={!device.on || !canEdit}
-                    onValueChange={([v]) => patch({ colorTemp: v })}
-                  />
-                </ControlRow>
-              </>
-            )}
-
-            {(device.type === "ac" || device.type === "fan") && (
-              <>
-                {device.type === "ac" && (
-                  <ControlRow label={`Temperature, ${device.temperature ?? 24}°C`}>
-                    <div className="flex items-center gap-3">
-                      <Snowflake className="h-4 w-4 text-accent" />
-                      <Slider
-                        value={[device.temperature ?? 24]}
-                        min={16}
-                        max={30}
-                        step={1}
-                        disabled={!device.on || !canEdit}
-                        onValueChange={([v]) => patch({ temperature: v })}
-                      />
+              {device.type === "light" && (
+                <div className="space-y-8 mt-2">
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <p className="font-semibold text-white">Brightness</p>
+                      <p className="font-bold text-white text-lg">{device.brightness ?? 0}%</p>
                     </div>
-                  </ControlRow>
-                )}
-                <ControlRow label="Fan speed">
-                  <div className="flex gap-2">
-                    {["Off", "Low", "Med", "High"].map((s, i) => (
-                      <Button
-                        key={s}
-                        size="sm"
-                        variant={(device.fanSpeed ?? 0) === i ? "default" : "outline"}
-                        disabled={!device.on || !canEdit}
-                        onClick={() => patch({ fanSpeed: i })}
-                      >
-                        {s}
-                      </Button>
-                    ))}
+                    <Slider
+                      value={[device.brightness ?? 0]}
+                      max={100}
+                      step={1}
+                      disabled={!device.on || !canEdit}
+                      onValueChange={([v]) => patch({ brightness: v })}
+                      trackClassName="h-3 bg-gradient-to-r from-[#181820] via-neutral-600 to-yellow-100"
+                      rangeClassName="bg-transparent"
+                      thumbClassName="h-6 w-6 border-[5px] border-[#111116] bg-white shadow-xl"
+                    />
                   </div>
-                </ControlRow>
-                {device.type === "ac" && (
-                  <ControlRow label="Mode">
-                    <div className="flex gap-2">
-                      {["Cool", "Heat", "Auto", "Dry"].map((m) => (
-                        <Button
-                          key={m}
-                          size="sm"
-                          variant={device.mode === m ? "default" : "outline"}
+                  
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <p className="font-semibold text-white">Color temperature</p>
+                      <p className="font-bold text-white text-lg">{device.colorTemp ?? 4000}K</p>
+                    </div>
+                    <Slider
+                      value={[device.colorTemp ?? 4000]}
+                      min={2700}
+                      max={6500}
+                      step={100}
+                      disabled={!device.on || !canEdit}
+                      onValueChange={([v]) => patch({ colorTemp: v })}
+                      trackClassName="h-3 bg-gradient-to-r from-amber-500 via-white to-blue-500"
+                      rangeClassName="bg-transparent"
+                      thumbClassName="h-6 w-6 border-[5px] border-[#111116] bg-white shadow-xl"
+                    />
+                  </div>
+                </div>
+              )}
+
+              {(device.type === "ac" || device.type === "fan") && (
+                <div className="space-y-8 mt-2">
+                  {device.type === "ac" && (
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-between">
+                        <p className="font-semibold text-white">Temperature</p>
+                        <p className="font-bold text-white text-lg">{device.temperature ?? 24}°C</p>
+                      </div>
+                      <div className="flex items-center gap-4">
+                        <Snowflake className="h-6 w-6 text-blue-400" />
+                        <Slider
+                          value={[device.temperature ?? 24]}
+                          min={16}
+                          max={30}
+                          step={1}
                           disabled={!device.on || !canEdit}
-                          onClick={() => patch({ mode: m })}
+                          onValueChange={([v]) => patch({ temperature: v })}
+                          trackClassName="h-3 bg-gradient-to-r from-blue-500 to-red-500"
+                          rangeClassName="bg-transparent"
+                          thumbClassName="h-6 w-6 border-[5px] border-[#111116] bg-white shadow-xl"
+                        />
+                      </div>
+                    </div>
+                  )}
+                  <div className="space-y-4">
+                    <p className="font-semibold text-white">Fan speed</p>
+                    <div className="flex gap-3">
+                      {["Off", "Low", "Med", "High"].map((s, i) => (
+                        <button
+                          key={s}
+                          disabled={!device.on || !canEdit}
+                          onClick={() => patch({ fanSpeed: i })}
+                          className={`flex-1 py-3 rounded-xl font-bold transition-all ${
+                            (device.fanSpeed ?? 0) === i 
+                              ? "bg-white text-black shadow-lg" 
+                              : "bg-white/5 text-neutral-400 hover:bg-white/10"
+                          }`}
                         >
-                          {m}
-                        </Button>
+                          {s}
+                        </button>
                       ))}
                     </div>
-                  </ControlRow>
-                )}
-              </>
-            )}
+                  </div>
+                  {device.type === "ac" && (
+                    <div className="space-y-4">
+                      <p className="font-semibold text-white">Mode</p>
+                      <div className="flex gap-3">
+                        {["Cool", "Heat", "Auto", "Dry"].map((m) => (
+                          <button
+                            key={m}
+                            disabled={!device.on || !canEdit}
+                            onClick={() => patch({ mode: m })}
+                            className={`flex-1 py-3 rounded-xl font-bold transition-all ${
+                              device.mode === m 
+                                ? "bg-white text-black shadow-lg" 
+                                : "bg-white/5 text-neutral-400 hover:bg-white/10"
+                            }`}
+                          >
+                            {m}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
 
-            {device.type === "plug" && (
-              <p className="text-sm text-muted-foreground">
-                Live draw:{" "}
-                <span className="font-semibold text-foreground">
-                  {device.on ? device.watts : 0} W
+              {device.type === "plug" && (
+                <div className="mt-4 flex items-center justify-between p-4 rounded-2xl bg-white/5 border border-white/5">
+                  <div className="flex items-center gap-3">
+                    <Activity className="h-5 w-5 text-purple-400" />
+                    <span className="font-semibold text-neutral-300">Live draw</span>
+                  </div>
+                  <span className="text-xl font-bold text-white">
+                    {device.on ? device.watts : 0} W
+                  </span>
+                </div>
+              )}
+
+              {device.type === "wpt" && (
+                <div className="space-y-8 mt-2">
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <p className="font-semibold text-white">Power output</p>
+                      <p className="font-bold text-white text-lg">{device.output ?? 0}%</p>
+                    </div>
+                    <Slider
+                      value={[device.output ?? 0]}
+                      max={100}
+                      step={5}
+                      disabled={!device.on || !canEdit}
+                      onValueChange={([v]) => patch({ output: v, watts: Math.round(v * 5) })}
+                      trackClassName="h-3 bg-gradient-to-r from-[#181820] to-[#a855f7]"
+                      rangeClassName="bg-transparent"
+                      thumbClassName="h-6 w-6 border-[5px] border-[#111116] bg-white shadow-xl"
+                    />
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className={`rounded-2xl border p-4 ${((device.thermal ?? 0) > 55) ? "border-red-500/30 bg-red-500/10" : "border-white/5 bg-white/5"}`}>
+                      <div className="flex items-center gap-2 text-sm font-medium text-neutral-400 mb-2">
+                        <Thermometer className="h-4 w-4" /> Thermal
+                      </div>
+                      <p className={`text-2xl font-bold ${((device.thermal ?? 0) > 55) ? "text-red-400" : "text-white"}`}>
+                        {device.thermal ?? 0}°C
+                      </p>
+                    </div>
+                    <div className="rounded-2xl border border-white/5 bg-white/5 p-4">
+                      <div className="flex items-center gap-2 text-sm font-medium text-neutral-400 mb-2">
+                        <Gauge className="h-4 w-4" /> Connected
+                      </div>
+                      <p className="text-2xl font-bold text-white">2 devices</p>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {device.type === "sensor" && (
+                <div className="mt-4 rounded-2xl bg-white/5 p-4 border border-white/5">
+                  <p className="text-sm font-medium text-neutral-300">
+                    Reporting normally · Connected to automation trigger
+                  </p>
+                </div>
+              )}
+            </div>
+
+            {/* Energy graph */}
+            <div className="rounded-[2rem] border border-white/5 bg-[#111116] p-7 shadow-2xl">
+              <h2 className="mb-6 text-lg font-bold text-neutral-400">Energy, last 24h</h2>
+              <div className="-ml-2 -mr-4">
+                <EnergyAreaChart data={makeSeries(device.watts || 10)} height={200} />
+              </div>
+            </div>
+          </div>
+
+          {/* Side info */}
+          <div className="space-y-6">
+            <div className="rounded-[2rem] border border-white/5 bg-[#111116] p-7 shadow-2xl space-y-5">
+              <h2 className="text-lg font-bold text-neutral-400">Details</h2>
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <span className="text-[15px] font-medium text-neutral-400">Device ID</span>
+                  <span className="text-[15px] font-bold text-white">{device.id}</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-[15px] font-medium text-neutral-400">Room</span>
+                  <span className="text-[15px] font-bold text-white">{room?.name ?? ", "}</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-[15px] font-medium text-neutral-400">Connection</span>
+                  <span className="flex items-center gap-2 text-[15px] font-bold text-white">
+                    <span className={`h-2.5 w-2.5 rounded-full ${device.online ? "bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.6)]" : "bg-red-500"}`} />
+                    {device.online ? "Online" : "Offline"}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-[15px] font-medium text-neutral-400">Live draw</span>
+                  <span className="text-[15px] font-bold text-white">{device.on ? device.watts : 0} W</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="rounded-[2rem] border border-white/5 bg-[#111116] p-7 shadow-2xl space-y-5">
+              <h2 className="text-lg font-bold text-neutral-400">Linked Automations</h2>
+              {linked.length === 0 ? (
+                <p className="text-[15px] font-medium text-neutral-500">None enabled.</p>
+              ) : (
+                <div className="space-y-4">
+                  {linked.slice(0, 3).map((a) => (
+                    <div key={a.id} className="flex items-center justify-between">
+                      <span className="text-[15px] font-bold text-white">{a.name}</span>
+                      <span className="rounded-full bg-white/5 border border-white/5 px-4 py-1.5 text-xs font-semibold text-neutral-300 tracking-wide">
+                        {a.type}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            <div className="rounded-[2rem] border border-white/5 bg-[#111116] p-7 shadow-2xl space-y-5">
+              <h2 className="text-lg font-bold text-neutral-400">Assigned Users</h2>
+              <div className="flex flex-wrap gap-3">
+                <span className="rounded-full bg-[#a855f7] px-6 py-2 text-sm font-bold text-white shadow-[0_0_12px_rgba(168,85,247,0.4)]">
+                  Owner
                 </span>
-              </p>
-            )}
-
-            {device.type === "wpt" && (
-              <>
-                <ControlRow label={`Power output, ${device.output ?? 0}%`}>
-                  <Slider
-                    value={[device.output ?? 0]}
-                    max={100}
-                    step={5}
-                    disabled={!device.on || !canEdit}
-                    onValueChange={([v]) => patch({ output: v, watts: Math.round(v * 5) })}
-                  />
-                </ControlRow>
-                <div className="grid grid-cols-2 gap-3">
-                  <Stat
-                    icon={Thermometer}
-                    label="Thermal"
-                    value={`${device.thermal ?? 0}°C`}
-                    warn={(device.thermal ?? 0) > 55}
-                  />
-                  <Stat icon={Gauge} label="Connected" value="2 appliances" />
-                </div>
-                <p className="rounded-xl bg-secondary p-3 text-xs text-secondary-foreground">
-                  ⚡ Safety active, output capped on overheat.
-                </p>
-              </>
-            )}
-
-            {device.type === "sensor" && (
-              <p className="text-sm text-muted-foreground">
-                Reporting normally · automation trigger.
-              </p>
-            )}
-          </Card>
-
-          {/* Energy graph */}
-          <Card className="p-5">
-            <h2 className="mb-2 font-bold">Energy, last 24h</h2>
-            <EnergyAreaChart data={makeSeries(device.watts || 10)} />
-          </Card>
+                <span className="rounded-full bg-white/10 px-6 py-2 text-sm font-bold text-white">
+                  Family
+                </span>
+              </div>
+            </div>
+          </div>
         </div>
 
-        {/* Side info */}
-        <div className="space-y-4">
-          <Card className="space-y-3 p-5 text-sm">
-            <h2 className="font-bold">Details</h2>
-            <InfoRow label="Device ID" value={device.id} />
-            <InfoRow label="Room" value={room?.name ?? ", "} />
-            <div className="flex items-center justify-between">
-              <span className="text-muted-foreground">Connection</span>
-              <span className="flex items-center gap-2">
-                <SignalIndicator online={device.online} /> {device.online ? "Online" : "Offline"}
-              </span>
-            </div>
-            <InfoRow label="Live draw" value={`${device.on ? device.watts : 0} W`} />
-          </Card>
-
-          <Card className="space-y-2 p-5 text-sm">
-            <h2 className="font-bold">Linked Automations</h2>
-            {linked.length === 0 ? (
-              <p className="text-muted-foreground">None enabled.</p>
-            ) : (
-              linked.slice(0, 3).map((a) => (
-                <div key={a.id} className="flex items-center justify-between">
-                  <span>{a.name}</span>
-                  <Badge variant="secondary">{a.type}</Badge>
-                </div>
-              ))
-            )}
-          </Card>
-
-          <Card className="space-y-2 p-5 text-sm">
-            <h2 className="font-bold">Assigned Users</h2>
-            <div className="flex flex-wrap gap-2">
-              <Badge>Owner</Badge>
-              <Badge variant="secondary">Family</Badge>
-            </div>
-          </Card>
-        </div>
       </div>
-    </div>
-  );
-}
-
-function ControlRow({ label, children }: { label: string; children: React.ReactNode }) {
-  return (
-    <div className="space-y-2">
-      <p className="text-sm font-medium">{label}</p>
-      {children}
-    </div>
-  );
-}
-
-function InfoRow({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="flex items-center justify-between">
-      <span className="text-muted-foreground">{label}</span>
-      <span className="font-medium">{value}</span>
-    </div>
-  );
-}
-
-function Stat({
-  icon: Icon,
-  label,
-  value,
-  warn,
-}: {
-  icon: typeof Thermometer;
-  label: string;
-  value: string;
-  warn?: boolean;
-}) {
-  return (
-    <div
-      className={`rounded-xl border p-3 ${warn ? "border-destructive/50 bg-destructive/10" : "border-border"}`}
-    >
-      <div className="flex items-center gap-2 text-xs text-muted-foreground">
-        <Icon className="h-3.5 w-3.5" /> {label}
-      </div>
-      <p className={`mt-1 font-bold ${warn ? "text-destructive" : ""}`}>{value}</p>
     </div>
   );
 }

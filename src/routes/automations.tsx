@@ -56,8 +56,7 @@ function AutomationsPage() {
     <div className="mx-auto max-w-4xl space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-extrabold">Flows</h1>
-          <p className="text-sm text-muted-foreground">Smart rules, your control.</p>
+          <h1 className="font-display text-3xl font-extrabold">Automations</h1>
         </div>
         {canEdit && <NewAutomation />}
       </div>

@@ -14,7 +14,21 @@ import {
   ChevronRight,
   Video,
   Camera,
+  DoorOpen,
+  ClipboardList,
+  Tv,
+  Sun,
+  Home,
+  User
 } from "lucide-react";
+import {
+  Drawer,
+  DrawerContent,
+  DrawerDescription,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerTrigger,
+} from "@/components/ui/drawer";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -49,33 +63,6 @@ export const Route = createFileRoute("/")({
   }),
   component: Dashboard,
 });
-
-function StatCard({
-  icon: Icon,
-  label,
-  value,
-  accent,
-}: {
-  icon: typeof Activity;
-  label: string;
-  value: string;
-  accent?: boolean;
-}) {
-  return (
-    <div
-      className={cn(
-        "relative overflow-hidden rounded-2xl border p-4",
-        accent ? "bg-primary text-primary-foreground border-primary" : "bg-card border-border",
-      )}
-    >
-      <span className={cn("techno-glow mb-6 inline-flex", accent ? "" : "")}>
-        <Icon className={cn("h-5 w-5", accent ? "opacity-90" : "text-primary")} />
-      </span>
-      <p className="font-display text-2xl font-extrabold tracking-tight">{value}</p>
-      <p className={cn("text-xs", accent ? "opacity-80" : "text-muted-foreground")}>{label}</p>
-    </div>
-  );
-}
 
 function Dashboard() {
   const { state, dispatch, totalWatts, activeCount, alerts, canEdit } = useHome();
@@ -119,32 +106,10 @@ function Dashboard() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="font-display text-3xl font-extrabold">
-          {mood.title} {mood.emoji}
-        </h1>
-        <p className={mood.className}>{mood.message}</p>
-      </div>
 
-      {/* Overview */}
-      <div className="grid grid-cols-2 gap-3">
-        {[
-          { icon: Cpu, label: "Devices connected", value: String(state.devices.length) },
-          { icon: Activity, label: "Active now", value: String(activeCount), accent: true },
-          { icon: Zap, label: "Live consumption", value: `${(totalWatts / 1000).toFixed(2)} kW` },
-          { icon: TriangleAlert, label: "Alerts", value: String(alerts.length) },
-        ].map((s) => (
-          <div key={s.label}>
-            <StatCard icon={s.icon} label={s.label} value={s.value} accent={s.accent} />
-          </div>
-        ))}
-      </div>
 
       {/* Quick actions */}
       <div>
-        <h2 className="mb-3 text-xs font-semibold uppercase tracking-widest text-muted-foreground">
-          Quick Actions
-        </h2>
         <div className="grid grid-cols-3 gap-3">
           <QuickAction
             icon={Power}
@@ -152,6 +117,30 @@ function Dashboard() {
             onClick={() => {
               dispatch({ type: "ALL_OFF" });
               toast.success("All non-critical devices off");
+            }}
+            disabled={!canEdit}
+          />
+          <QuickAction
+            icon={Sun}
+            label="Morning"
+            onClick={() => {
+              toast.success("Morning Routine started");
+            }}
+            disabled={!canEdit}
+          />
+          <QuickAction
+            icon={Home}
+            label="Home"
+            onClick={() => {
+              toast.success("Welcome Home");
+            }}
+            disabled={!canEdit}
+          />
+          <QuickAction
+            icon={User}
+            label="Guest"
+            onClick={() => {
+              toast.success("Guest Mode activated");
             }}
             disabled={!canEdit}
           />
@@ -182,6 +171,33 @@ function Dashboard() {
             }}
             disabled={!canEdit}
           />
+          <Link
+            to="/devices"
+            className="flex flex-col items-center justify-center gap-3 py-5 px-2 rounded-[1.5rem] bg-[#111116] border border-white/5 transition-all hover:bg-[#181820] hover:scale-[1.02] active:scale-95 shadow-lg group"
+          >
+            <span className="flex h-12 w-12 items-center justify-center rounded-full bg-blue-500 text-white shadow-[0_0_15px_rgba(59,130,246,0.4)] transition-transform group-hover:scale-105">
+              <Cpu className="h-6 w-6" />
+            </span>
+            <span className="font-semibold text-white text-[13px]">Devices</span>
+          </Link>
+          <Link
+            to="/activity"
+            className="flex flex-col items-center justify-center gap-3 py-5 px-2 rounded-[1.5rem] bg-[#111116] border border-white/5 transition-all hover:bg-[#181820] hover:scale-[1.02] active:scale-95 shadow-lg group"
+          >
+            <span className="flex h-12 w-12 items-center justify-center rounded-full bg-teal-500 text-white shadow-[0_0_15px_rgba(20,184,166,0.4)] transition-transform group-hover:scale-105">
+              <ClipboardList className="h-6 w-6" />
+            </span>
+            <span className="font-semibold text-white text-[13px]">Activity</span>
+          </Link>
+          <Link
+            to="/remotes"
+            className="flex flex-col items-center justify-center gap-3 py-5 px-2 rounded-[1.5rem] bg-[#111116] border border-white/5 transition-all hover:bg-[#181820] hover:scale-[1.02] active:scale-95 shadow-lg group"
+          >
+            <span className="flex h-12 w-12 items-center justify-center rounded-full bg-indigo-500 text-white shadow-[0_0_15px_rgba(99,102,241,0.4)] transition-transform group-hover:scale-105">
+              <Tv className="h-6 w-6" />
+            </span>
+            <span className="font-semibold text-white text-[13px]">Remotes</span>
+          </Link>
           <EmergencyAction
             disabled={!canEdit}
             onConfirm={() => {
@@ -192,93 +208,6 @@ function Dashboard() {
         </div>
       </div>
 
-      {/* Rooms */}
-      <div>
-        <h2 className="mb-3 text-xs font-semibold uppercase tracking-widest text-muted-foreground">
-          Rooms
-        </h2>
-        <div className="space-y-3">
-          {roomStats.map(({ room, count, active, watts }) => (
-            <div key={room.id}>
-              <Link
-                to="/room/$roomId"
-                params={{ roomId: room.id }}
-                className="block rounded-3xl bg-card p-4"
-              >
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="font-display text-lg font-bold">{room.name}</p>
-                    <p className="text-sm text-muted-foreground">
-                      {active} of {count} active · {watts} W
-                    </p>
-                  </div>
-                  <ChevronRight className="h-5 w-5 text-muted-foreground" />
-                </div>
-                <div className="mt-3 h-1.5 w-full overflow-hidden rounded-full bg-muted">
-                  <div
-                    className="h-full rounded-full bg-primary"
-                    style={{ width: `${count ? (active / count) * 100 : 0}%` }}
-                  />
-                </div>
-              </Link>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Camera mini */}
-      <div>
-        <h2 className="mb-3 text-xs font-semibold uppercase tracking-widest text-muted-foreground">
-          Smart Camera
-        </h2>
-        <div className="overflow-hidden rounded-3xl bg-card">
-          <div className="relative flex aspect-video items-center justify-center bg-primary/90 text-primary-foreground">
-            {state.cameraEnabled && !state.cameraPrivacy ? (
-              <>
-                <Video className="h-10 w-10 opacity-80" />
-                <span className="absolute left-3 top-3 flex items-center gap-1.5 rounded-full bg-destructive px-2 py-0.5 text-xs font-semibold">
-                  <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-white" /> LIVE
-                </span>
-              </>
-            ) : (
-              <div className="flex flex-col items-center gap-2 text-center">
-                <Camera className="h-9 w-9 opacity-70" />
-                <span className="text-xs opacity-80">Privacy Mode, camera off</span>
-              </div>
-            )}
-          </div>
-          <div className="flex items-center justify-between p-3 text-sm">
-            <span className="text-muted-foreground">
-              {state.cameraMotionAlerts ? "Motion alerts on" : "Motion alerts off"}
-            </span>
-            <Button asChild variant="ghost" size="sm">
-              <Link to="/camera">Open</Link>
-            </Button>
-          </div>
-        </div>
-      </div>
-
-      {/* Activity log */}
-      <div>
-        <h2 className="mb-3 text-xs font-semibold uppercase tracking-widest text-muted-foreground">
-          Activity Log
-        </h2>
-        <div className="max-h-56 space-y-2 overflow-y-auto rounded-3xl bg-card p-4 text-sm">
-          {state.logs.slice(0, 10).map((l) => (
-            <div key={l.id} className="flex gap-2">
-              <span className="shrink-0 font-mono text-xs text-muted-foreground">{l.time}</span>
-              <span
-                className={cn(
-                  l.source === "voice" && "text-primary",
-                  l.source === "system" && "text-muted-foreground",
-                )}
-              >
-                {l.text}
-              </span>
-            </div>
-          ))}
-        </div>
-      </div>
     </div>
   );
 }
@@ -288,23 +217,24 @@ function QuickAction({
   label,
   onClick,
   disabled,
+  colorClass = "bg-[#a855f7] shadow-[0_0_15px_rgba(168,85,247,0.4)]"
 }: {
-  icon: typeof Power;
+  icon: any;
   label: string;
   onClick: () => void;
   disabled?: boolean;
+  colorClass?: string;
 }) {
   return (
     <button
       onClick={onClick}
       disabled={disabled}
-      className="flex flex-col items-center gap-2 rounded-2xl border border-border bg-card py-4 text-xs font-medium text-foreground transition-colors hover:bg-muted active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50"
+      className="flex flex-col items-center justify-center gap-3 py-5 px-2 rounded-[1.5rem] bg-[#111116] border border-white/5 transition-all hover:bg-[#181820] hover:scale-[1.02] active:scale-95 disabled:cursor-not-allowed disabled:opacity-50 shadow-lg group"
     >
-      <span className="flex h-10 w-10 items-center justify-center rounded-2xl bg-primary text-primary-foreground">
-        <Icon className="h-5 w-5" />
+      <span className={cn("flex h-12 w-12 items-center justify-center rounded-full text-white transition-transform group-hover:scale-105", colorClass)}>
+        <Icon className="h-6 w-6" />
       </span>
-
-      {label}
+      <span className="font-semibold text-white text-[13px]">{label}</span>
     </button>
   );
 }
@@ -316,12 +246,12 @@ function EmergencyAction({ onConfirm, disabled }: { onConfirm: () => void; disab
       <AlertDialogTrigger asChild>
         <button
           disabled={disabled}
-          className="flex w-full flex-col items-center gap-2 rounded-3xl bg-destructive/10 py-4 text-xs font-medium text-destructive transition-colors hover:bg-destructive/20 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50"
+          className="flex flex-col items-center justify-center gap-3 py-5 px-2 rounded-[1.5rem] bg-[#111116] border border-red-500/10 transition-all hover:bg-[#181820] hover:scale-[1.02] active:scale-95 disabled:cursor-not-allowed disabled:opacity-50 shadow-lg group col-span-2"
         >
-          <span className="flex h-10 w-10 items-center justify-center rounded-2xl bg-destructive text-destructive-foreground">
-            <OctagonAlert className="h-5 w-5" />
+          <span className="flex h-12 w-12 items-center justify-center rounded-full bg-red-500 text-white shadow-[0_0_15px_rgba(239,68,68,0.4)] transition-transform group-hover:scale-105">
+            <OctagonAlert className="h-6 w-6" />
           </span>
-          Emergency
+          <span className="font-semibold text-red-500 text-[13px]">Emergency</span>
         </button>
       </AlertDialogTrigger>
       <AlertDialogContent>

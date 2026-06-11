@@ -83,11 +83,11 @@ export function MembersManager() {
     <section className="space-y-4">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-lg font-bold">Household Members</h2>
-          <p className="text-sm text-muted-foreground">
+          <h2 className="text-sm font-bold text-neutral-300">Household Members</h2>
+          <p className="text-[10px] text-neutral-500 mt-0.5">
             {isOwner
-              ? "Manage who can control your home and what they can access."
-              : "You can view members. Only the owner can add or edit access."}
+              ? "Manage who can control your home."
+              : "Only the owner can edit access."}
           </p>
         </div>
         {isOwner && (
@@ -141,41 +141,39 @@ function MemberGroup({
 }) {
   const { dispatch } = useHome();
   return (
-    <div className="space-y-3">
-      <div className="flex items-center gap-2 text-sm font-semibold text-muted-foreground">
-        <Icon className="h-4 w-4" /> {title}
+    <div className="space-y-2">
+      <div className="flex items-center gap-1.5 text-xs font-bold text-neutral-400">
+        <Icon className="h-3 w-3" /> {title}
       </div>
       {members.length === 0 ? (
-        <p className="rounded-xl border border-dashed border-border p-4 text-sm text-muted-foreground">
+        <p className="rounded-xl border border-dashed border-white/10 bg-white/5 p-3 text-xs text-neutral-500">
           {emptyText}
         </p>
       ) : (
-        <div className="grid gap-3 sm:grid-cols-2">
+        <div className="grid gap-2 sm:grid-cols-2">
           {members.map((m) => (
-            <Card key={m.id} className="p-4">
+            <div key={m.id} className="p-3 rounded-2xl bg-[#111116] border border-white/5 shadow-lg relative overflow-hidden">
               <div className="flex items-start justify-between gap-2">
                 <div className="min-w-0 flex-1">
                   <div className="flex flex-wrap items-center gap-2">
-                    <p className="font-semibold leading-tight">{m.name}</p>
-                    <Badge variant="secondary" className="shrink-0 capitalize">
+                    <p className="font-bold text-xs">{m.name}</p>
+                    <span className="px-2 py-0.5 rounded-full bg-[#a855f7]/20 text-[#a855f7] text-[9px] font-bold uppercase tracking-wider">
                       {m.role}
-                    </Badge>
+                    </span>
                   </div>
-                  {m.note && <p className="mt-0.5 text-xs text-muted-foreground">{m.note}</p>}
+                  {m.note && <p className="mt-1 text-[10px] text-neutral-500">{m.note}</p>}
                 </div>
                 {isOwner && (
                   <div className="flex shrink-0 gap-1">
                     <MemberDialog
                       initial={m}
                       trigger={
-                        <Button
-                          size="icon"
-                          variant="ghost"
-                          className="h-8 w-8"
+                        <button
+                          className="h-6 w-6 flex items-center justify-center rounded-full hover:bg-white/10 text-neutral-400 transition-colors"
                           aria-label="Edit member"
                         >
-                          <Pencil className="h-4 w-4" />
-                        </Button>
+                          <Pencil className="h-3 w-3" />
+                        </button>
                       }
                       onSave={(updated) => {
                         dispatch({ type: "UPDATE_MEMBER", id: m.id, patch: updated });
@@ -184,26 +182,24 @@ function MemberGroup({
                     />
                     <AlertDialog>
                       <AlertDialogTrigger asChild>
-                        <Button
-                          size="icon"
-                          variant="ghost"
-                          className="h-8 w-8 text-destructive"
+                        <button
+                          className="h-6 w-6 flex items-center justify-center rounded-full hover:bg-red-500/20 text-red-500 transition-colors"
                           aria-label="Remove member"
                         >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
+                          <Trash2 className="h-3 w-3" />
+                        </button>
                       </AlertDialogTrigger>
-                      <AlertDialogContent>
+                      <AlertDialogContent className="bg-[#111116] border border-white/10 text-white rounded-[2rem]">
                         <AlertDialogHeader>
-                          <AlertDialogTitle>Remove {m.name}?</AlertDialogTitle>
-                          <AlertDialogDescription>
+                          <AlertDialogTitle className="text-xl">Remove {m.name}?</AlertDialogTitle>
+                          <AlertDialogDescription className="text-neutral-400">
                             They will lose all access to your home.
                           </AlertDialogDescription>
                         </AlertDialogHeader>
                         <AlertDialogFooter>
-                          <AlertDialogCancel>Cancel</AlertDialogCancel>
+                          <AlertDialogCancel className="bg-white/5 hover:bg-white/10 border-white/10 rounded-full border">Cancel</AlertDialogCancel>
                           <AlertDialogAction
-                            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                            className="bg-red-500 text-white hover:bg-red-600 rounded-full"
                             onClick={() => {
                               dispatch({ type: "REMOVE_MEMBER", id: m.id });
                               toast.success(`${m.name} removed`);
@@ -217,14 +213,14 @@ function MemberGroup({
                   </div>
                 )}
               </div>
-              <div className="mt-3 flex items-start gap-2 rounded-lg bg-secondary/60 p-2.5 text-xs">
+              <div className="mt-3 flex items-start gap-2 rounded-xl bg-[#1c1c24] p-2 text-[10px]">
                 <AccessIcon scope={m.scope} />
                 <div>
-                  <p className="font-medium">{accessLabel(m.scope)}</p>
-                  <p className="text-muted-foreground">{scopeSummary(m, roomName, deviceName)}</p>
+                  <p className="font-bold text-neutral-300">{accessLabel(m.scope)}</p>
+                  <p className="text-neutral-500 mt-0.5 leading-tight">{scopeSummary(m, roomName, deviceName)}</p>
                 </div>
               </div>
-            </Card>
+            </div>
           ))}
         </div>
       )}
@@ -294,15 +290,15 @@ function MemberDialog({
     >
       <DialogTrigger asChild>
         {trigger ?? (
-          <Button size="sm">
-            <Plus className="mr-1 h-4 w-4" /> Add member
-          </Button>
+          <button className="flex items-center gap-1.5 bg-[#a855f7] hover:bg-[#b065f8] text-white px-4 py-2 rounded-full text-xs font-bold shadow-[0_0_15px_rgba(168,85,247,0.3)] transition-colors">
+            <Plus className="h-3.5 w-3.5" /> Give Access
+          </button>
         )}
       </DialogTrigger>
-      <DialogContent className="max-h-[85vh] overflow-y-auto sm:max-w-md">
+      <DialogContent className="max-h-[85vh] overflow-y-auto sm:max-w-md bg-[#111116] border border-white/10 text-white rounded-[2rem]">
         <DialogHeader>
-          <DialogTitle>{initial ? "Edit member" : "Add member"}</DialogTitle>
-          <DialogDescription>
+          <DialogTitle className="text-xl font-bold">{initial ? "Edit access" : "Give access"}</DialogTitle>
+          <DialogDescription className="text-neutral-400 text-sm">
             Set their name, role and exactly what they can control.
           </DialogDescription>
         </DialogHeader>
@@ -416,11 +412,11 @@ function MemberDialog({
           </div>
         </div>
 
-        <DialogFooter>
-          <Button variant="outline" onClick={() => setOpen(false)}>
+        <DialogFooter className="pt-2">
+          <button className="px-4 py-2 text-sm font-bold border border-white/10 rounded-full hover:bg-white/5 transition-colors" onClick={() => setOpen(false)}>
             Cancel
-          </Button>
-          <Button onClick={save}>{initial ? "Save changes" : "Add member"}</Button>
+          </button>
+          <button className="px-4 py-2 text-sm font-bold bg-[#a855f7] text-white rounded-full hover:bg-[#b065f8] transition-colors shadow-[0_0_15px_rgba(168,85,247,0.3)]" onClick={save}>{initial ? "Save changes" : "Give access"}</button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

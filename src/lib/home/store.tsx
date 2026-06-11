@@ -309,6 +309,8 @@ function log(text: string, source: LogEntry["source"]): LogEntry {
 type Action =
   | { type: "TOGGLE_DEVICE"; id: string }
   | { type: "UPDATE_DEVICE"; id: string; patch: Partial<Device> }
+  | { type: "ADD_DEVICE"; device: Device }
+  | { type: "ADD_ROOM"; room: Room }
   | { type: "ALL_OFF" }
   | { type: "ALL_ON" }
   | { type: "NIGHT_MODE" }
@@ -356,6 +358,18 @@ function reducer(state: HomeState, action: Action): HomeState {
       );
       return { ...state, devices };
     }
+    case "ADD_DEVICE": {
+      return pushLog(
+        { ...state, devices: [...state.devices, action.device] },
+        log(`Device "${action.device.name}" added`, "manual"),
+      );
+    }
+    case "ADD_ROOM": {
+      return pushLog(
+        { ...state, rooms: [...state.rooms, action.room] },
+        log(`Room "${action.room.name}" created`, "manual"),
+      );
+    }
     case "ALL_OFF": {
       const devices = state.devices.map((x) =>
         x.type === "sensor" || x.type === "fridge" ? x : { ...x, on: false },
@@ -391,6 +405,7 @@ function reducer(state: HomeState, action: Action): HomeState {
         if (x.type === "light") return { ...x, brightness: Math.min(x.brightness ?? 60, 50) };
         if (x.type === "ac") return { ...x, temperature: Math.max(x.temperature ?? 24, 26) };
         if (x.type === "plug" && x.name.toLowerCase().includes("tv")) return { ...x, on: false };
+        if (x.type === "tv") return { ...x, on: false };
         return x;
       });
       return pushLog({ ...state, devices }, log("Energy Saver Mode applied", "manual"));
@@ -586,9 +601,11 @@ export function HomeProvider({ children }: { children: ReactNode }) {
             ? "fan"
             : t.includes("fridge") || t.includes("refriger")
               ? "fridge"
-              : t.includes("plug") || t.includes("tv")
-                ? "plug"
-                : null;
+              : t.includes("tv") || t.includes("television")
+                ? "tv"
+                : t.includes("plug")
+                  ? "plug"
+                  : null;
       const room = state.rooms.find((r) => t.includes(r.name.toLowerCase().split(" ")[0]));
       const inRoomMatch = t.match(/\bin\s+(\w+)/);
 
