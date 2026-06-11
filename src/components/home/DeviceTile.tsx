@@ -9,7 +9,7 @@ import { deviceIcon } from "./device-icons";
 import { SignalIndicator } from "./SignalIndicator";
 
 export function DeviceTile({ device }: { device: Device }) {
-  const { dispatch } = useHome();
+  const { dispatch, toggleDevice, canEdit } = useHome();
   const Icon = deviceIcon[device.type];
   const status = !device.online
     ? "Offline"
@@ -100,11 +100,12 @@ export function DeviceTile({ device }: { device: Device }) {
           </span>
         )}
         {device.type !== "sensor" && (
-          <Switch
-            checked={device.on}
-            disabled={!device.online}
-            onCheckedChange={() => dispatch({ type: "TOGGLE_DEVICE", id: device.id })}
-          />
+          <div onClickCapture={() => toggleDevice(device.id)}>
+            <Switch
+              checked={device.on}
+              disabled={!device.online}
+            />
+          </div>
         )}
       </div>
     </motion.div>

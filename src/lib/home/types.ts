@@ -22,6 +22,7 @@ export interface Device {
   // optional per-type state
   brightness?: number; // 0-100
   colorTemp?: number; // 2700-6500
+  color?: string; // hex string for RGB
   temperature?: number; // ac target C
   fanSpeed?: number; // 0-3
   mode?: string;

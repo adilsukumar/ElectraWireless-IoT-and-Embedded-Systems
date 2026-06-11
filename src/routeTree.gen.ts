@@ -29,6 +29,7 @@ import { Route as AllDevicesRouteImport } from './routes/all-devices'
 import { Route as AddRoomRouteImport } from './routes/add-room'
 import { Route as AddDeviceRouteImport } from './routes/add-device'
 import { Route as ActivityRouteImport } from './routes/activity'
+import { Route as ActionsRouteImport } from './routes/actions'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as RoomRoomIdRouteImport } from './routes/room.$roomId'
 import { Route as DeviceDeviceIdRouteImport } from './routes/device.$deviceId'
@@ -134,6 +135,11 @@ const ActivityRoute = ActivityRouteImport.update({
   path: '/activity',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ActionsRoute = ActionsRouteImport.update({
+  id: '/actions',
+  path: '/actions',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -157,6 +163,7 @@ const ApiChatRoute = ApiChatRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/actions': typeof ActionsRoute
   '/activity': typeof ActivityRoute
   '/add-device': typeof AddDeviceRoute
   '/add-room': typeof AddRoomRoute
@@ -183,6 +190,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/actions': typeof ActionsRoute
   '/activity': typeof ActivityRoute
   '/add-device': typeof AddDeviceRoute
   '/add-room': typeof AddRoomRoute
@@ -210,6 +218,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/actions': typeof ActionsRoute
   '/activity': typeof ActivityRoute
   '/add-device': typeof AddDeviceRoute
   '/add-room': typeof AddRoomRoute
@@ -238,6 +247,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/actions'
     | '/activity'
     | '/add-device'
     | '/add-room'
@@ -264,6 +274,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/actions'
     | '/activity'
     | '/add-device'
     | '/add-room'
@@ -290,6 +301,7 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/actions'
     | '/activity'
     | '/add-device'
     | '/add-room'
@@ -317,6 +329,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  ActionsRoute: typeof ActionsRoute
   ActivityRoute: typeof ActivityRoute
   AddDeviceRoute: typeof AddDeviceRoute
   AddRoomRoute: typeof AddRoomRoute
@@ -484,6 +497,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ActivityRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/actions': {
+      id: '/actions'
+      path: '/actions'
+      fullPath: '/actions'
+      preLoaderRoute: typeof ActionsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -517,6 +537,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  ActionsRoute: ActionsRoute,
   ActivityRoute: ActivityRoute,
   AddDeviceRoute: AddDeviceRoute,
   AddRoomRoute: AddRoomRoute,

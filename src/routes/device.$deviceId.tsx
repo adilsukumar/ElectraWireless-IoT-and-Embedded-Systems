@@ -23,7 +23,7 @@ function makeSeries(base: number) {
 
 function DevicePage() {
   const { deviceId } = Route.useParams();
-  const { state, dispatch, canEdit } = useHome();
+  const { state, dispatch, canEdit, toggleDevice, toggleActivation } = useHome();
   const router = useRouter();
   const device = state.devices.find((d) => d.id === deviceId);
 
@@ -70,12 +70,13 @@ function DevicePage() {
           </div>
 
           {device.type !== "sensor" && (
-            <Switch
-              checked={device.on}
-              disabled={!device.online || !canEdit}
-              onCheckedChange={() => dispatch({ type: "TOGGLE_DEVICE", id: device.id })}
-              className="data-[state=checked]:bg-[#a855f7] data-[state=checked]:shadow-[0_0_15px_rgba(168,85,247,0.5)] scale-125 ml-4"
-            />
+            <div onClickCapture={() => toggleActivation(device.id)} className="ml-4">
+              <Switch
+                checked={device.activated ?? false}
+                disabled={!device.online || !canEdit}
+                className="data-[state=checked]:bg-[#a855f7] data-[state=checked]:shadow-[0_0_15px_rgba(168,85,247,0.5)] scale-125"
+              />
+            </div>
           )}
         </div>
 
@@ -87,6 +88,21 @@ function DevicePage() {
 
               {device.type === "light" && (
                 <div className="space-y-8 mt-2">
+                  <div className="flex justify-between items-center bg-[#181820] p-4 rounded-2xl border border-white/5">
+                    <div className="font-semibold text-white">Master Switch</div>
+                    <Button 
+                      onClick={() => toggleDevice(device.id)}
+                      disabled={!device.online || !canEdit}
+                      className={`h-12 px-8 rounded-xl font-bold transition-all ${
+                        device.on 
+                          ? "bg-purple-500 hover:bg-purple-600 text-white shadow-[0_0_15px_rgba(168,85,247,0.5)]" 
+                          : "bg-[#2a2a35] hover:bg-[#353545] text-white"
+                      }`}
+                    >
+                      {device.on ? "TURN OFF" : "TURN ON"}
+                    </Button>
+                  </div>
+
                   <div className="space-y-4">
                     <div className="flex items-center justify-between">
                       <p className="font-semibold text-white">Brightness</p>
@@ -105,21 +121,53 @@ function DevicePage() {
                   </div>
                   
                   <div className="space-y-4">
-                    <div className="flex items-center justify-between">
-                      <p className="font-semibold text-white">Color temperature</p>
-                      <p className="font-bold text-white text-lg">{device.colorTemp ?? 4000}K</p>
+                    <p className="font-semibold text-white">Tone</p>
+                    <div className="flex gap-3">
+                      {[
+                        { label: "Warm", value: 2700, color: "bg-amber-500" },
+                        { label: "Normal", value: 4000, color: "bg-[#f5f5f5]" },
+                        { label: "Cool", value: 6500, color: "bg-blue-300" },
+                      ].map((t) => (
+                        <button
+                          key={t.label}
+                          disabled={!device.on || !canEdit}
+                          onClick={() => patch({ colorTemp: t.value, color: undefined })}
+                          className={`flex-1 flex flex-col items-center justify-center gap-2 py-4 rounded-xl font-bold transition-all border ${
+                            device.colorTemp === t.value && !device.color
+                              ? "border-white bg-white/10 shadow-lg" 
+                              : "border-white/5 bg-[#181820] text-neutral-400 hover:bg-[#202028]"
+                          }`}
+                        >
+                          <div className={`w-6 h-6 rounded-full shadow-[0_0_10px_currentColor] ${t.color}`} />
+                          <span className={device.colorTemp === t.value && !device.color ? "text-white" : ""}>{t.label}</span>
+                        </button>
+                      ))}
                     </div>
-                    <Slider
-                      value={[device.colorTemp ?? 4000]}
-                      min={2700}
-                      max={6500}
-                      step={100}
-                      disabled={!device.on || !canEdit}
-                      onValueChange={([v]) => patch({ colorTemp: v })}
-                      trackClassName="h-3 bg-gradient-to-r from-amber-500 via-white to-blue-500"
-                      rangeClassName="bg-transparent"
-                      thumbClassName="h-6 w-6 border-[5px] border-[#111116] bg-white shadow-xl"
-                    />
+                  </div>
+
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <p className="font-semibold text-white">RGB Color</p>
+                    </div>
+                    <div className="flex flex-wrap gap-4">
+                      {[
+                        "#ef4444", "#f97316", "#eab308", 
+                        "#22c55e", "#0ea5e9", "#3b82f6", 
+                        "#a855f7", "#ec4899"
+                      ].map((c) => (
+                        <button
+                          key={c}
+                          disabled={!device.on || !canEdit}
+                          onClick={() => patch({ color: c })}
+                          className={`w-12 h-12 rounded-full transition-all border-2 ${
+                            device.color === c
+                              ? "border-white scale-110 shadow-[0_0_15px_currentColor]" 
+                              : "border-transparent scale-100 opacity-60 hover:opacity-100 hover:scale-105"
+                          }`}
+                          style={{ backgroundColor: c, color: c }}
+                        />
+                      ))}
+                    </div>
                   </div>
                 </div>
               )}

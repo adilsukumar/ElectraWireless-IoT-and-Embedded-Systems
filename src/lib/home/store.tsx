@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useMemo, useReducer, type ReactNode } from "react";
 import { toast } from "sonner";
+import { toggleBluetoothDevice, activateBluetoothDevice } from "./bluetooth";
 import type { Automation, Device, FallbackTier, HomeState, LogEntry, Member, Role } from "./types";
 
 const STORAGE_KEY = "elly-home-state-v1";
@@ -489,6 +490,8 @@ function reducer(state: HomeState, action: Action): HomeState {
 interface Ctx {
   state: HomeState;
   dispatch: React.Dispatch<Action>;
+  toggleDevice: (id: string) => Promise<void>;
+  toggleActivation: (id: string) => Promise<void>;
   totalWatts: number;
   activeCount: number;
   alerts: string[];
@@ -656,7 +659,39 @@ export function HomeProvider({ children }: { children: ReactNode }) {
     return false;
   };
 
-  const value: Ctx = { state, dispatch, totalWatts, activeCount, alerts, canEdit, runVoiceCommand };
+  const toggleActivation = async (id: string) => {
+    const d = state.devices.find((x) => x.id === id);
+    if (!d) return;
+
+    if (!d.activated) {
+      // Prompt for bluetooth if not connected
+      const success = await activateBluetoothDevice(id);
+      if (success) {
+        dispatch({ type: "UPDATE_DEVICE", id, patch: { activated: true } });
+        toast.success(`ELLY: ${d.name} activated.`);
+      }
+    } else {
+      dispatch({ type: "UPDATE_DEVICE", id, patch: { activated: false } });
+      toast.success(`ELLY: ${d.name} deactivated.`);
+    }
+  };
+
+  const toggleDevice = async (id: string) => {
+    const d = state.devices.find((x) => x.id === id);
+    if (!d) return;
+    
+    // First, attempt to send the command to the hardware via Bluetooth
+    const success = await toggleBluetoothDevice(id, !d.on);
+    
+    if (success) {
+      // If hardware acknowledges, update the UI
+      dispatch({ type: "TOGGLE_DEVICE", id });
+    } else {
+      toast.error(`Failed to send command to ${d.name} over Bluetooth. Ensure it is powered on and in range.`);
+    }
+  };
+
+  const value: Ctx = { state, dispatch, toggleDevice, toggleActivation, totalWatts, activeCount, alerts, canEdit, runVoiceCommand };
   return <HomeContext.Provider value={value}>{children}</HomeContext.Provider>;
 }
 

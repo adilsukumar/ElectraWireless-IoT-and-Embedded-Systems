@@ -182,6 +182,8 @@ function LayoutInner({ children }: { children: ReactNode }) {
           position="top-center"
           offset={16}
           mobileOffset={16}
+          expand={true}
+          richColors={true}
           style={{ position: "absolute" }}
         />
       </div>

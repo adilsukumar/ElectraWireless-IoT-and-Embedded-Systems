@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import '@tensorflow/tfjs';
 import * as mobilenet from '@tensorflow-models/mobilenet';
+import * as cocoSsd from '@tensorflow-models/coco-ssd';
 import { createFileRoute } from "@tanstack/react-router";
 import { Mic, Moon, ShieldCheck, Circle, Bell, CameraOff, RefreshCw } from "lucide-react";
 import { toast } from "sonner";
@@ -27,6 +28,7 @@ function CameraPage() {
   const active = state.cameraEnabled && !state.cameraPrivacy;
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const micStreamRef = useRef<MediaStream | null>(null);
   const [camError, setCamError] = useState<string | null>(null);
   const [starting, setStarting] = useState(false);
@@ -93,13 +95,36 @@ function CameraPage() {
 
   // Real Edge AI Detections using MobileNet
   const [model, setModel] = useState<mobilenet.MobileNet | null>(null);
+  const [objectDetector, setObjectDetector] = useState<cocoSsd.ObjectDetection | null>(null);
+  const [snehalEmbeddings, setSnehalEmbeddings] = useState<Float32Array[]>([]);
   const [prediction, setPrediction] = useState<{ className: string; probability: number } | null>(null);
 
   // Load MobileNet once on component mount
   useEffect(() => {
     let isMounted = true;
-    mobilenet.load().then((m) => {
-      if (isMounted) setModel(m);
+    Promise.all([mobilenet.load(), cocoSsd.load()]).then(async ([m, objDetector]) => {
+      if (!isMounted) return;
+      setModel(m);
+      setObjectDetector(objDetector);
+
+      const embeddings: Float32Array[] = [];
+      for (let i = 1; i <= 6; i++) {
+        try {
+          const img = new Image();
+          img.crossOrigin = "anonymous";
+          img.src = `/snehaldixitpic/img${i}.jpg`;
+          await new Promise((resolve, reject) => {
+            img.onload = resolve;
+            img.onerror = reject;
+          });
+          const activation = m.infer(img, true);
+          embeddings.push(activation.dataSync() as Float32Array);
+          activation.dispose();
+        } catch (e) {
+          console.error(`Failed to load training image img${i}.jpg`, e);
+        }
+      }
+      setSnehalEmbeddings(embeddings);
     });
     return () => { isMounted = false; };
   }, []);
@@ -115,50 +140,114 @@ function CameraPage() {
     let lastLogTime = 0;
 
     const detectFrame = async () => {
-      if (videoRef.current && videoRef.current.readyState >= 2) {
-        // MobileNet classify returns array of top 3 predictions
-        const predictions = await model.classify(videoRef.current);
+      if (videoRef.current && videoRef.current.readyState >= 2 && canvasRef.current && objectDetector) {
+        const video = videoRef.current;
+        const canvas = canvasRef.current;
         
-        if (predictions && predictions.length > 0) {
-          let topResult = predictions[0];
+        canvas.width = video.clientWidth;
+        canvas.height = video.clientHeight;
+        const ctx = canvas.getContext('2d');
+        
+        if (ctx) {
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
           
-          // ImageNet (MobileNet) doesn't have a generic "person" class; it detects clothing/accessories
-          const humanClasses = ["suit", "t-shirt", "jersey", "sweatshirt", "cardigan", "jean", "wig", "sunglasses", "seat belt", "neck brace", "bow tie", "mask", "abaya", "academic gown", "apron", "bathing cap", "bikini", "brassiere", "cowboy hat", "crash helmet", "fur coat", "gown", "lab coat", "miniskirt", "overskirt", "pajama", "poncho", "shower cap", "ski mask", "sombrero", "stole", "swimming trunks", "trench coat", "vest", "nipple", "face powder", "hair spray", "lipstick", "lotion", "perfume", "stethoscope"];
+          const detections = await objectDetector.detect(video);
           
-          const isHuman = humanClasses.some(hc => topResult.className.toLowerCase().includes(hc));
-          
-          if (isHuman) {
-            topResult = { className: "ELLY ID: SM-101 (Sarah)", probability: topResult.probability };
-          }
-          
-          // Only show confident predictions (lower threshold for humans since clothing match can be noisy)
-          if (topResult.probability > (isHuman ? 0.15 : 0.3)) {
-            setPrediction(topResult);
+          for (const det of detections) {
+            let label = det.class;
+            
+            const [x, y, width, height] = det.bbox;
+            const cropCanvas = document.createElement('canvas');
+            cropCanvas.width = width;
+            cropCanvas.height = height;
+            const cropCtx = cropCanvas.getContext('2d');
+            
+            if (cropCtx && det.score > 0.5) {
+              cropCtx.drawImage(video, x, y, width, height, 0, 0, width, height);
+              
+              try {
+                const predictions = await model.classify(cropCanvas);
+                if (predictions && predictions.length > 0) {
+                  const mobileNetClass = predictions[0].className.split(',')[0].toLowerCase();
+                  const isHumanClothing = ["suit", "t-shirt", "jersey", "sweatshirt", "cardigan", "jean", "wig", "sunglasses", "seat belt", "neck brace", "bow tie", "mask", "abaya", "academic gown", "apron", "bathing cap", "bikini", "brassiere", "cowboy hat", "crash helmet", "fur coat", "gown", "lab coat", "miniskirt", "overskirt", "pajama", "poncho", "shower cap", "ski mask", "sombrero", "stole", "swimming trunks", "trench coat", "vest", "nipple", "face powder", "hair spray", "lipstick", "lotion", "perfume", "stethoscope"].some(c => mobileNetClass.includes(c));
 
-            // Periodically log new interesting objects to the event history
+                  if (det.class === "person" || isHumanClothing) {
+                    if (snehalEmbeddings.length > 0) {
+                      const activation = model.infer(cropCanvas, true);
+                      const data = activation.dataSync() as Float32Array;
+                      activation.dispose();
+
+                      let maxSim = 0;
+                      for (const emb of snehalEmbeddings) {
+                        let dotProduct = 0, normA = 0, normB = 0;
+                        for (let i = 0; i < data.length; i++) {
+                          dotProduct += data[i] * emb[i];
+                          normA += data[i] * data[i];
+                          normB += emb[i] * emb[i];
+                        }
+                        const sim = dotProduct / (Math.sqrt(normA) * Math.sqrt(normB));
+                        if (sim > maxSim) maxSim = sim;
+                      }
+
+                      if (maxSim > 0.60) {
+                        label = `Snehal Dixit #Elly ID : #0001 (${Math.round(maxSim * 100)}%)`;
+                      } else {
+                        label = `Unknown Person (${Math.round(maxSim * 100)}%)`;
+                      }
+                    } else {
+                      label = "Unknown Person";
+                    }
+                  } else {
+                    // It's an object! Use MobileNet's 1000-class label
+                    label = mobileNetClass.charAt(0).toUpperCase() + mobileNetClass.slice(1);
+                  }
+                }
+              } catch (e) {}
+            }
+            
+            const scaleX = canvas.width / video.videoWidth;
+            const scaleY = canvas.height / video.videoHeight;
+            const scale = Math.max(scaleX, scaleY);
+            const offsetX = (canvas.width - video.videoWidth * scale) / 2;
+            const offsetY = (canvas.height - video.videoHeight * scale) / 2;
+
+            const drawX = x * scale + offsetX;
+            const drawY = y * scale + offsetY;
+            const drawW = width * scale;
+            const drawH = height * scale;
+
+            ctx.strokeStyle = '#a855f7';
+            ctx.lineWidth = 3;
+            ctx.strokeRect(drawX, drawY, drawW, drawH);
+            
+            ctx.fillStyle = '#a855f7';
+            const textWidth = ctx.measureText(label).width;
+            ctx.fillRect(drawX, drawY - 24, textWidth + 10, 24);
+            
+            ctx.fillStyle = 'white';
+            ctx.font = '14px Arial';
+            ctx.fillText(label, drawX + 5, drawY - 6);
+
             const now = Date.now();
-            if (topResult.probability > 0.7 && now - lastLogTime > 15000) {
+            if (det.score > 0.7 && now - lastLogTime > 15000) {
               dispatch({ 
                 type: "LOG", 
                 entry: { 
                   id: now.toString(), 
                   time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }), 
                   source: "system", 
-                  text: `Vision AI: High confidence match - ${topResult.className.split(',')[0]}` 
+                  text: `Vision AI: High confidence match - ${label}` 
                 } 
               });
               lastLogTime = now;
             }
-          } else {
-            setPrediction(null);
           }
         }
       }
       
-      // Throttle slightly to keep UI smooth and prevent 100% CPU lock
       setTimeout(() => {
         animationFrameId = requestAnimationFrame(detectFrame);
-      }, 200);
+      }, 100);
     };
 
     detectFrame();
@@ -166,7 +255,7 @@ function CameraPage() {
     return () => {
       cancelAnimationFrame(animationFrameId);
     };
-  }, [active, model, dispatch]);
+  }, [active, model, objectDetector, snehalEmbeddings, dispatch]);
 
   useEffect(() => {
     if (active) startStream();
@@ -209,6 +298,10 @@ function CameraPage() {
               autoPlay
               className={active && !camError ? "h-full w-full object-cover" : "hidden"}
             />
+            <canvas
+              ref={canvasRef}
+              className={active && !camError ? "absolute inset-0 h-full w-full pointer-events-none z-10" : "hidden"}
+            />
 
             {active && !camError && (
               <>
@@ -220,21 +313,7 @@ function CameraPage() {
                     <Circle className="h-2 w-2 animate-pulse fill-red-500 text-red-500" /> REC
                   </span>
                 )}
-                {/* AI MobileNet Prediction */}
-                {prediction && (
-                  <div className="absolute bottom-6 left-1/2 -translate-x-1/2 bg-black/60 backdrop-blur-md border border-white/10 px-4 py-2 rounded-2xl flex items-center gap-3 shadow-2xl transition-all pointer-events-none">
-                    <span className="relative flex h-3 w-3">
-                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#a855f7] opacity-75"></span>
-                      <span className="relative inline-flex rounded-full h-3 w-3 bg-[#a855f7]"></span>
-                    </span>
-                    <span className="text-sm font-bold text-white capitalize tracking-wide">
-                      {prediction.className.split(',')[0]}
-                    </span>
-                    <span className="text-xs font-semibold text-neutral-400">
-                      {Math.round(prediction.probability * 100)}% Match
-                    </span>
-                  </div>
-                )}
+
                 {!model && active && !camError && (
                   <span className="absolute bottom-6 left-1/2 -translate-x-1/2 bg-black/60 backdrop-blur-md border border-white/10 px-4 py-2 rounded-2xl text-[13px] font-bold text-white tracking-wide z-10 shadow-lg">
                     Loading AI Model...
