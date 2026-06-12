@@ -72,9 +72,6 @@ function LayoutInner({ children }: { children: ReactNode }) {
     
     // Auto connect bluetooth if saved
     autoConnectBluetooth();
-    
-    // Enable background mode automatically to run 24/7
-    enableBackgroundListening();
   }, []);
 
   const path = useRouterState({ select: (s) => s.location.pathname });

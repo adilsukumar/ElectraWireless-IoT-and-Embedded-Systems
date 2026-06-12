@@ -87,8 +87,14 @@ export async function enableBackgroundListening() {
   if (typeof window !== 'undefined' && 'Notification' in window) {
     if (Notification.permission !== 'granted') {
       try {
-        await Notification.requestPermission();
-      } catch (e) {}
+        const perm = await Notification.requestPermission();
+        if (perm !== 'granted') {
+          toast.error("Notification permission required for background service.");
+          return;
+        }
+      } catch (e) {
+        return;
+      }
     }
   }
   
@@ -104,10 +110,13 @@ export async function enableBackgroundListening() {
           hidden: false,
           bigText: true
       });
-      bgMode.enable();
-      bgMode.disableWebViewOptimizations();
-      bgMode.disableBatteryOptimizations();
-      toast.success("Foreground Service Started! You can now close the app.");
+      // Small delay to ensure permissions are fully propagated in native layer
+      setTimeout(() => {
+        bgMode.enable();
+        bgMode.disableWebViewOptimizations();
+        bgMode.disableBatteryOptimizations();
+        toast.success("Foreground Service Started! You can now close the app.");
+      }, 500);
     } catch (err) {
       console.error(err);
       toast.error("Failed to start service. Check permissions.");
