@@ -689,12 +689,30 @@ export function HomeProvider({ children }: { children: ReactNode }) {
     if (!d) return false;
     
     let success = false;
-    if (!d.macAddress) {
-      toast.error("Bluetooth not linked! Please link a device in the Bluetooth Setup section.");
-      return "REDIRECT";
-    } else {
-      success = await toggleBluetoothDevice(d.id, !d.on, d.macAddress);
+    let targetMac = d.macAddress;
+    
+    if (!targetMac) {
+      // The user requested that we do NOT redirect or show a notification telling them to pair in settings.
+      // Instead, we will initiate pairing immediately.
+      toast.loading("No Bluetooth linked. Starting discovery...", { id: "bt-pair-toggle" });
+      try {
+        const { scanBluetoothDevices } = await import("./bluetooth");
+        const devices = await scanBluetoothDevices();
+        if (devices && devices.length > 0) {
+          toast.success("Found devices! Automatically linking to the first available...", { id: "bt-pair-toggle" });
+          targetMac = devices[0].address;
+          dispatch({ type: "UPDATE_DEVICE", id: d.id, patch: { macAddress: targetMac } });
+        } else {
+          toast.error("No unpaired devices found nearby.", { id: "bt-pair-toggle" });
+          return "REDIRECT";
+        }
+      } catch (err: any) {
+        toast.error(`Pairing failed: ${err.message}`, { id: "bt-pair-toggle" });
+        return "REDIRECT";
+      }
     }
+    
+    success = await toggleBluetoothDevice(d.id, !d.on, targetMac);
     
     if (success) {
       // If hardware acknowledges, update the UI

@@ -111,7 +111,7 @@ export function DeviceTile({ device }: { device: Device }) {
           }}>
             <Switch
               checked={device.on}
-              disabled={!device.online}
+              disabled={!canEdit}
             />
           </div>
         )}

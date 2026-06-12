@@ -99,7 +99,7 @@ function DevicePage() {
             <div onClickCapture={() => toggleActivation(device.id)} className="ml-4">
               <Switch
                 checked={device.activated ?? false}
-                disabled={!device.online || !canEdit}
+                disabled={!canEdit}
                 className="data-[state=checked]:bg-[#a855f7] data-[state=checked]:shadow-[0_0_15px_rgba(168,85,247,0.5)] scale-125"
               />
             </div>
@@ -118,7 +118,7 @@ function DevicePage() {
                     <div className="font-semibold text-slate-900 dark:text-white">Master Switch</div>
                     <Button 
                       onClick={() => toggleDevice(device.id)}
-                      disabled={!device.online || !canEdit}
+                      disabled={!canEdit}
                       className={`h-12 px-8 rounded-xl font-bold transition-all ${
                         device.on 
                           ? "bg-purple-500 hover:bg-purple-600 text-slate-900 dark:text-white shadow-[0_0_15px_rgba(168,85,247,0.5)]" 
