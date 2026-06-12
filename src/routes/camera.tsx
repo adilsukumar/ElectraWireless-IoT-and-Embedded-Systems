@@ -254,18 +254,27 @@ function CameraPage() {
           const detections = await objectDetector.detect(video);
           
           try {
-            const globalPredictions = await model.classify(video);
-            if (globalPredictions && globalPredictions.length > 0) {
-              const topLabel = globalPredictions[0].className.split(',')[0].toUpperCase();
-              const topScore = Math.round(globalPredictions[0].probability * 100);
-              currentDetectionsHtml += `
-                <div class="flex justify-between items-center bg-blue-500/10 border border-blue-500/30 px-3 py-1.5 rounded-lg mb-2 shadow-[0_0_10px_rgba(59,130,246,0.1)]">
-                  <span class="text-xs font-bold text-slate-900 dark:text-white tracking-wider">GLOBAL SCENE: ${topLabel}</span>
-                  <span class="text-[10px] font-mono text-blue-500 bg-blue-500/20 px-1.5 py-0.5 rounded">${topScore}%</span>
-                </div>
-              `;
+            // Debounce the global scene prediction (1 call every 1.5 seconds)
+            const now = Date.now();
+            if (now - lastLogTime > 1500) {
+              const globalPredictions = await model.classify(video);
+              if (globalPredictions && globalPredictions.length > 0) {
+                const topLabel = globalPredictions[0].className.split(',')[0].toUpperCase();
+                const topScore = Math.round(globalPredictions[0].probability * 100);
+                setPrediction({ className: topLabel, probability: topScore });
+              }
+              lastLogTime = now;
             }
           } catch(e) {}
+          
+          if (prediction) {
+            currentDetectionsHtml += `
+              <div class="flex justify-between items-center bg-blue-500/10 border border-blue-500/30 px-3 py-1.5 rounded-lg mb-2 shadow-[0_0_10px_rgba(59,130,246,0.1)]">
+                <span class="text-xs font-bold text-slate-900 dark:text-white tracking-wider">GLOBAL SCENE: ${prediction.className}</span>
+                <span class="text-[10px] font-mono text-blue-500 bg-blue-500/20 px-1.5 py-0.5 rounded">${prediction.probability}%</span>
+              </div>
+            `;
+          }
 
           
           for (const det of detections) {
@@ -311,8 +320,8 @@ function CameraPage() {
                         }
                       }
 
-                      // Increased threshold to 0.85 to stop false positives
-                      if (highestSim > 0.85 && bestMatch) {
+                      // Lowered threshold to 0.55 to prevent Unknown Person error
+                      if (highestSim > 0.55 && bestMatch) {
                         label = `${bestMatch.name} #Elly ID: #${bestMatch.id} (${Math.round(highestSim * 100)}%)`;
                       } else {
                         label = `Unknown Person (${Math.round(highestSim * 100)}%)`;
@@ -517,7 +526,7 @@ function CameraPage() {
               <button
                 disabled={!active || starting}
                 onClick={() => setFacingMode(f => f === "environment" ? "user" : "environment")}
-                className="flex items-center gap-2 rounded-full bg-slate-100 dark:bg-white/5 px-4 py-2 text-xs font-bold text-slate-900 dark:text-white hover:bg-slate-200 dark:bg-white/10 transition-colors disabled:opacity-50"
+                className="flex items-center gap-2 rounded-full bg-slate-100 dark:bg-white dark:bg-[#111116]/5 px-4 py-2 text-xs font-bold text-slate-900 dark:text-white hover:bg-slate-200 dark:bg-white dark:bg-[#111116]/10 transition-colors disabled:opacity-50"
               >
                 <SwitchCamera className="h-4 w-4" />
                 FLIP
@@ -554,7 +563,7 @@ function CameraPage() {
             disabled={!state.cameraEnabled}
             className="flex flex-col items-center justify-center gap-3 py-5 px-2 rounded-[1.5rem] bg-white dark:bg-[#111116] border border-slate-200 dark:border-white/5 transition-all hover:bg-slate-50 dark:bg-[#181820] hover:scale-[1.02] active:scale-95 disabled:cursor-not-allowed disabled:opacity-50 shadow-lg group"
           >
-            <span className={`flex h-12 w-12 items-center justify-center rounded-full text-slate-900 dark:text-white transition-transform group-hover:scale-105 ${state.cameraPrivacy ? "bg-[#a855f7] shadow-[0_0_15px_rgba(168,85,247,0.4)]" : "bg-slate-200 dark:bg-white/10"}`}>
+            <span className={`flex h-12 w-12 items-center justify-center rounded-full text-slate-900 dark:text-white transition-transform group-hover:scale-105 ${state.cameraPrivacy ? "bg-[#a855f7] shadow-[0_0_15px_rgba(168,85,247,0.4)]" : "bg-slate-200 dark:bg-white dark:bg-[#111116]/10"}`}>
               <Moon className="h-6 w-6" />
             </span>
             <span className="font-semibold text-slate-900 dark:text-white text-[13px]">Privacy</span>
@@ -565,7 +574,7 @@ function CameraPage() {
             disabled={!active}
             className="flex flex-col items-center justify-center gap-3 py-5 px-2 rounded-[1.5rem] bg-white dark:bg-[#111116] border border-slate-200 dark:border-white/5 transition-all hover:bg-slate-50 dark:bg-[#181820] hover:scale-[1.02] active:scale-95 disabled:cursor-not-allowed disabled:opacity-50 shadow-lg group"
           >
-            <span className={`flex h-12 w-12 items-center justify-center rounded-full text-slate-900 dark:text-white transition-transform group-hover:scale-105 ${state.cameraMotionAlerts ? "bg-[#a855f7] shadow-[0_0_15px_rgba(168,85,247,0.4)]" : "bg-slate-200 dark:bg-white/10"}`}>
+            <span className={`flex h-12 w-12 items-center justify-center rounded-full text-slate-900 dark:text-white transition-transform group-hover:scale-105 ${state.cameraMotionAlerts ? "bg-[#a855f7] shadow-[0_0_15px_rgba(168,85,247,0.4)]" : "bg-slate-200 dark:bg-white dark:bg-[#111116]/10"}`}>
               <Bell className="h-6 w-6" />
             </span>
             <span className="font-semibold text-slate-900 dark:text-white text-[13px]">Alerts</span>
@@ -576,7 +585,7 @@ function CameraPage() {
             disabled={!active}
             className="flex flex-col items-center justify-center gap-3 py-5 px-2 rounded-[1.5rem] bg-white dark:bg-[#111116] border border-slate-200 dark:border-white/5 transition-all hover:bg-slate-50 dark:bg-[#181820] hover:scale-[1.02] active:scale-95 disabled:cursor-not-allowed disabled:opacity-50 shadow-lg group"
           >
-            <span className={`flex h-12 w-12 items-center justify-center rounded-full text-slate-900 dark:text-white transition-transform group-hover:scale-105 ${state.cameraRecording ? "bg-blue-500 text-white shadow-[0_0_15px_rgba(59,130,246,0.4)]" : "bg-slate-200 dark:bg-white/10"}`}>
+            <span className={`flex h-12 w-12 items-center justify-center rounded-full text-slate-900 dark:text-white transition-transform group-hover:scale-105 ${state.cameraRecording ? "bg-blue-500 text-white shadow-[0_0_15px_rgba(59,130,246,0.4)]" : "bg-slate-200 dark:bg-white dark:bg-[#111116]/10"}`}>
               <Circle className="h-6 w-6" />
             </span>
             <span className="font-semibold text-slate-900 dark:text-white text-[13px]">Record</span>
@@ -587,7 +596,7 @@ function CameraPage() {
             disabled={!active}
             className="flex flex-col items-center justify-center gap-3 py-5 px-2 rounded-[1.5rem] bg-white dark:bg-[#111116] border border-slate-200 dark:border-white/5 transition-all hover:bg-slate-50 dark:bg-[#181820] hover:scale-[1.02] active:scale-95 disabled:cursor-not-allowed disabled:opacity-50 shadow-lg group col-span-2"
           >
-            <span className={`flex h-12 w-12 items-center justify-center rounded-full text-slate-900 dark:text-white transition-transform group-hover:scale-105 ${talking ? "bg-red-500 shadow-[0_0_15px_rgba(239,68,68,0.4)] animate-pulse" : "bg-slate-200 dark:bg-white/10"}`}>
+            <span className={`flex h-12 w-12 items-center justify-center rounded-full text-slate-900 dark:text-white transition-transform group-hover:scale-105 ${talking ? "bg-red-500 shadow-[0_0_15px_rgba(239,68,68,0.4)] animate-pulse" : "bg-slate-200 dark:bg-white dark:bg-[#111116]/10"}`}>
               <Mic className="h-6 w-6" />
             </span>
             <span className="font-semibold text-slate-900 dark:text-white text-[13px]">{talking ? "Speaking..." : "Talk"}</span>
@@ -597,7 +606,7 @@ function CameraPage() {
             disabled={!active}
             className="flex flex-col items-center justify-center gap-3 py-5 px-2 rounded-[1.5rem] bg-white dark:bg-[#111116] border border-slate-200 dark:border-white/5 transition-all hover:bg-slate-50 dark:bg-[#181820] hover:scale-[1.02] active:scale-95 disabled:cursor-not-allowed disabled:opacity-50 shadow-lg group"
           >
-            <span className={`flex h-12 w-12 items-center justify-center rounded-full text-slate-900 dark:text-white transition-transform group-hover:scale-105 ${active ? "bg-teal-500 shadow-[0_0_15px_rgba(20,184,166,0.4)]" : "bg-slate-200 dark:bg-white/10"}`}>
+            <span className={`flex h-12 w-12 items-center justify-center rounded-full text-slate-900 dark:text-white transition-transform group-hover:scale-105 ${active ? "bg-teal-500 shadow-[0_0_15px_rgba(20,184,166,0.4)]" : "bg-slate-200 dark:bg-white dark:bg-[#111116]/10"}`}>
               <span className="text-[11px] font-extrabold uppercase tracking-widest text-slate-900 dark:text-white">Auto</span>
             </span>
             <span className="font-semibold text-slate-900 dark:text-white text-[13px]">Night</span>
@@ -652,13 +661,13 @@ function FaceManagerDialog({
   const [localName, setLocalName] = useState("");
   
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 max-w-md mx-auto">
       <div className="w-full max-w-sm rounded-[2rem] bg-white dark:bg-[#111116] p-6 shadow-2xl border border-slate-200 dark:border-white/10">
         <div className="flex justify-between items-center mb-6">
           <h3 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
             <UserPlus className="h-5 w-5 text-purple-400" /> Face Management
           </h3>
-          <button onClick={onClose} className="text-slate-500 dark:text-neutral-400 hover:text-slate-900 dark:hover:text-white transition-colors">
+          <button onClick={onClose} className="text-slate-500 dark:text-neutral-400 hover:text-slate-900 dark:text-white dark:hover:text-slate-900 dark:text-white transition-colors">
             <X className="h-6 w-6" />
           </button>
         </div>
@@ -671,7 +680,7 @@ function FaceManagerDialog({
               placeholder="e.g. Adil Sukumar"
               value={localName}
               onChange={(e) => setLocalName(e.target.value)}
-              className="mt-1 w-full rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 px-4 py-3 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-white/20 focus:outline-none focus:ring-2 focus:ring-purple-500/50 transition-all"
+              className="mt-1 w-full rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white dark:bg-[#111116]/5 px-4 py-3 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-900 dark:text-white/20 focus:outline-none focus:ring-2 focus:ring-purple-500/50 transition-all"
             />
           </div>
 
@@ -681,7 +690,7 @@ function FaceManagerDialog({
                 <span>Scanning...</span>
                 <span>{scanProgress}%</span>
               </div>
-              <div className="h-2 w-full overflow-hidden rounded-full bg-slate-200 dark:bg-white/10">
+              <div className="h-2 w-full overflow-hidden rounded-full bg-slate-200 dark:bg-white dark:bg-[#111116]/10">
                 <div 
                   className="h-full bg-purple-500 transition-all duration-300"
                   style={{ width: `${scanProgress}%` }}
@@ -693,7 +702,7 @@ function FaceManagerDialog({
           <button
             type="submit"
             disabled={!localName.trim() || scanProgress > 0}
-            className="w-full rounded-xl bg-purple-600 px-4 py-3 font-bold text-white transition-colors hover:bg-purple-700 disabled:opacity-50"
+            className="w-full rounded-xl bg-purple-600 px-4 py-3 font-bold text-slate-900 dark:text-white transition-colors hover:bg-purple-700 disabled:opacity-50"
           >
             {scanProgress > 0 ? "Scanning..." : "Start Scan"}
           </button>
@@ -703,7 +712,7 @@ function FaceManagerDialog({
               <h4 className="text-xs font-bold text-slate-500 dark:text-neutral-400 uppercase tracking-widest mb-3">Registered Users</h4>
               <div className="space-y-2 max-h-40 overflow-y-auto custom-scrollbar pr-2">
                 {customFaces.map((face) => (
-                  <div key={face.id} className="flex justify-between items-center bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg p-2 px-3">
+                  <div key={face.id} className="flex justify-between items-center bg-slate-100 dark:bg-white dark:bg-[#111116]/5 border border-slate-200 dark:border-white/10 rounded-lg p-2 px-3">
                     <div>
                       <p className="text-sm font-bold text-slate-900 dark:text-white">{face.name}</p>
                       <p className="text-[10px] text-slate-500 dark:text-neutral-400 font-mono">ID: #{face.id}</p>

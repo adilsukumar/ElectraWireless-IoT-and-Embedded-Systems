@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef } from 'react';
 import { toast } from 'sonner';
 
-export function useHeyElly({ onWakeWord, pause }: { onWakeWord?: () => void, pause?: boolean } = {}) {
+export function useHeyElly({ onWakeWord, pause }: { onWakeWord?: (cmd?: string) => void, pause?: boolean } = {}) {
   const [isListening, setIsListening] = useState(false);
   const recognitionRef = useRef<any>(null);
 
@@ -39,8 +39,9 @@ export function useHeyElly({ onWakeWord, pause }: { onWakeWord?: () => void, pau
       console.log("Heard:", transcript);
 
       if (transcript.includes("hey elly") || transcript.includes("hi elly")) {
-        toast.success("ELLY: I am awake! How can I help you?");
-        if (onWakeWord) onWakeWord();
+        let cmd = transcript.replace("hey elly", "").replace("hi elly", "").trim();
+        toast.success("ELLY: I am awake!");
+        if (onWakeWord) onWakeWord(cmd || undefined);
       }
     };
 

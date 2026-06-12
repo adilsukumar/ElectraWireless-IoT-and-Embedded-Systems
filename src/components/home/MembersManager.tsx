@@ -146,7 +146,7 @@ function MemberGroup({
         <Icon className="h-3 w-3" /> {title}
       </div>
       {members.length === 0 ? (
-        <p className="rounded-xl border border-dashed border-white/10 bg-white/5 p-3 text-xs text-neutral-500">
+        <p className="rounded-xl border border-dashed border-white/10 bg-white dark:bg-[#111116]/5 p-3 text-xs text-neutral-500">
           {emptyText}
         </p>
       ) : (
@@ -169,7 +169,7 @@ function MemberGroup({
                       initial={m}
                       trigger={
                         <button
-                          className="h-6 w-6 flex items-center justify-center rounded-full hover:bg-white/10 text-neutral-400 transition-colors"
+                          className="h-6 w-6 flex items-center justify-center rounded-full hover:bg-white dark:bg-[#111116]/10 text-neutral-400 transition-colors"
                           aria-label="Edit member"
                         >
                           <Pencil className="h-3 w-3" />
@@ -189,7 +189,7 @@ function MemberGroup({
                           <Trash2 className="h-3 w-3" />
                         </button>
                       </AlertDialogTrigger>
-                      <AlertDialogContent className="bg-white dark:bg-[#111116] border border-white/10 text-white rounded-[2rem]">
+                      <AlertDialogContent className="bg-white dark:bg-[#111116] border border-white/10 text-slate-900 dark:text-white rounded-[2rem]">
                         <AlertDialogHeader>
                           <AlertDialogTitle className="text-xl">Remove {m.name}?</AlertDialogTitle>
                           <AlertDialogDescription className="text-neutral-400">
@@ -197,9 +197,9 @@ function MemberGroup({
                           </AlertDialogDescription>
                         </AlertDialogHeader>
                         <AlertDialogFooter>
-                          <AlertDialogCancel className="bg-white/5 hover:bg-white/10 border-white/10 rounded-full border">Cancel</AlertDialogCancel>
+                          <AlertDialogCancel className="bg-white dark:bg-[#111116]/5 hover:bg-white dark:bg-[#111116]/10 border-white/10 rounded-full border">Cancel</AlertDialogCancel>
                           <AlertDialogAction
-                            className="bg-red-500 text-white hover:bg-red-600 rounded-full"
+                            className="bg-red-500 text-slate-900 dark:text-white hover:bg-red-600 rounded-full"
                             onClick={() => {
                               dispatch({ type: "REMOVE_MEMBER", id: m.id });
                               toast.success(`${m.name} removed`);
@@ -290,12 +290,12 @@ function MemberDialog({
     >
       <DialogTrigger asChild>
         {trigger ?? (
-          <button className="flex items-center gap-1.5 bg-[#a855f7] hover:bg-[#b065f8] text-white px-4 py-2 rounded-full text-xs font-bold shadow-[0_0_15px_rgba(168,85,247,0.3)] transition-colors">
+          <button className="flex items-center gap-1.5 bg-[#a855f7] hover:bg-[#b065f8] text-slate-900 dark:text-white px-4 py-2 rounded-full text-xs font-bold shadow-[0_0_15px_rgba(168,85,247,0.3)] transition-colors">
             <Plus className="h-3.5 w-3.5" /> Give Access
           </button>
         )}
       </DialogTrigger>
-      <DialogContent className="max-h-[85vh] overflow-y-auto sm:max-w-md bg-white dark:bg-[#111116] border border-white/10 text-white rounded-[2rem]">
+      <DialogContent className="max-h-[85vh] overflow-y-auto sm:max-w-md bg-white dark:bg-[#111116] border border-white/10 text-slate-900 dark:text-white rounded-[2rem]">
         <DialogHeader>
           <DialogTitle className="text-xl font-bold">{initial ? "Edit access" : "Give access"}</DialogTitle>
           <DialogDescription className="text-neutral-400 text-sm">
@@ -413,10 +413,10 @@ function MemberDialog({
         </div>
 
         <DialogFooter className="pt-2">
-          <button className="px-4 py-2 text-sm font-bold border border-white/10 rounded-full hover:bg-white/5 transition-colors" onClick={() => setOpen(false)}>
+          <button className="px-4 py-2 text-sm font-bold border border-white/10 rounded-full hover:bg-white dark:bg-[#111116]/5 transition-colors" onClick={() => setOpen(false)}>
             Cancel
           </button>
-          <button className="px-4 py-2 text-sm font-bold bg-[#a855f7] text-white rounded-full hover:bg-[#b065f8] transition-colors shadow-[0_0_15px_rgba(168,85,247,0.3)]" onClick={save}>{initial ? "Save changes" : "Give access"}</button>
+          <button className="px-4 py-2 text-sm font-bold bg-[#a855f7] text-slate-900 dark:text-white rounded-full hover:bg-[#b065f8] transition-colors shadow-[0_0_15px_rgba(168,85,247,0.3)]" onClick={save}>{initial ? "Save changes" : "Give access"}</button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

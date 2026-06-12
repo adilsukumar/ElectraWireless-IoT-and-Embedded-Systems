@@ -178,25 +178,25 @@ function Dashboard() {
             <span className="flex h-12 w-12 items-center justify-center rounded-full bg-blue-500 text-white shadow-[0_0_15px_rgba(59,130,246,0.4)] transition-transform group-hover:scale-105">
               <Cpu className="h-6 w-6" />
             </span>
-            <span className="font-semibold text-white text-[13px]">Devices</span>
+            <span className="font-semibold text-slate-900 dark:text-white text-[13px]">Devices</span>
           </Link>
           <Link
             to="/activity"
             className="flex flex-col items-center justify-center gap-3 py-5 px-2 rounded-[1.5rem] bg-white dark:bg-[#111116] border border-white/5 transition-all hover:bg-[#181820] hover:scale-[1.02] active:scale-95 shadow-lg group"
           >
-            <span className="flex h-12 w-12 items-center justify-center rounded-full bg-teal-500 text-white shadow-[0_0_15px_rgba(20,184,166,0.4)] transition-transform group-hover:scale-105">
+            <span className="flex h-12 w-12 items-center justify-center rounded-full bg-teal-500 text-slate-900 dark:text-white shadow-[0_0_15px_rgba(20,184,166,0.4)] transition-transform group-hover:scale-105">
               <ClipboardList className="h-6 w-6" />
             </span>
-            <span className="font-semibold text-white text-[13px]">Activity</span>
+            <span className="font-semibold text-slate-900 dark:text-white text-[13px]">Activity</span>
           </Link>
           <Link
             to="/remotes"
             className="flex flex-col items-center justify-center gap-3 py-5 px-2 rounded-[1.5rem] bg-white dark:bg-[#111116] border border-white/5 transition-all hover:bg-[#181820] hover:scale-[1.02] active:scale-95 shadow-lg group"
           >
-            <span className="flex h-12 w-12 items-center justify-center rounded-full bg-indigo-500 text-white shadow-[0_0_15px_rgba(99,102,241,0.4)] transition-transform group-hover:scale-105">
+            <span className="flex h-12 w-12 items-center justify-center rounded-full bg-indigo-500 text-slate-900 dark:text-white shadow-[0_0_15px_rgba(99,102,241,0.4)] transition-transform group-hover:scale-105">
               <Tv className="h-6 w-6" />
             </span>
-            <span className="font-semibold text-white text-[13px]">Remotes</span>
+            <span className="font-semibold text-slate-900 dark:text-white text-[13px]">Remotes</span>
           </Link>
           <EmergencyAction
             disabled={!canEdit}
@@ -231,10 +231,10 @@ function QuickAction({
       disabled={disabled}
       className="flex flex-col items-center justify-center gap-3 py-5 px-2 rounded-[1.5rem] bg-white dark:bg-[#111116] border border-white/5 transition-all hover:bg-[#181820] hover:scale-[1.02] active:scale-95 disabled:cursor-not-allowed disabled:opacity-50 shadow-lg group"
     >
-      <span className={cn("flex h-12 w-12 items-center justify-center rounded-full text-white transition-transform group-hover:scale-105", colorClass)}>
+      <span className={cn("flex h-12 w-12 items-center justify-center rounded-full text-slate-900 dark:text-white transition-transform group-hover:scale-105", colorClass)}>
         <Icon className="h-6 w-6" />
       </span>
-      <span className="font-semibold text-white text-[13px]">{label}</span>
+      <span className="font-semibold text-slate-900 dark:text-white text-[13px]">{label}</span>
     </button>
   );
 }
@@ -248,7 +248,7 @@ function EmergencyAction({ onConfirm, disabled }: { onConfirm: () => void; disab
           disabled={disabled}
           className="flex flex-col items-center justify-center gap-3 py-5 px-2 rounded-[1.5rem] bg-white dark:bg-[#111116] border border-red-500/10 transition-all hover:bg-[#181820] hover:scale-[1.02] active:scale-95 disabled:cursor-not-allowed disabled:opacity-50 shadow-lg group col-span-2"
         >
-          <span className="flex h-12 w-12 items-center justify-center rounded-full bg-red-500 text-white shadow-[0_0_15px_rgba(239,68,68,0.4)] transition-transform group-hover:scale-105">
+          <span className="flex h-12 w-12 items-center justify-center rounded-full bg-red-500 text-slate-900 dark:text-white shadow-[0_0_15px_rgba(239,68,68,0.4)] transition-transform group-hover:scale-105">
             <OctagonAlert className="h-6 w-6" />
           </span>
           <span className="font-semibold text-red-500 text-[13px]">Emergency</span>

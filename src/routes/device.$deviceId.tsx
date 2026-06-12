@@ -142,7 +142,7 @@ function DevicePage() {
                       onValueChange={([v]) => patch({ brightness: v })}
                       trackClassName="h-3 bg-gradient-to-r from-[#181820] via-neutral-600 to-yellow-100"
                       rangeClassName="bg-transparent"
-                      thumbClassName="h-6 w-6 border-[5px] border-[#111116] bg-white shadow-xl"
+                      thumbClassName="h-6 w-6 border-[5px] border-[#111116] bg-white dark:bg-[#111116] shadow-xl"
                     />
                   </div>
                   
@@ -160,7 +160,7 @@ function DevicePage() {
                           onClick={() => patch({ colorTemp: t.value, color: undefined })}
                           className={`flex-1 flex flex-col items-center justify-center gap-2 py-4 rounded-xl font-bold transition-all border ${
                             device.colorTemp === t.value && !device.color
-                              ? "border-white bg-white/10 shadow-lg" 
+                              ? "border-white bg-white dark:bg-[#111116]/10 shadow-lg" 
                               : "border-white/5 bg-[#181820] text-neutral-400 hover:bg-[#202028]"
                           }`}
                         >
@@ -217,7 +217,7 @@ function DevicePage() {
                           onValueChange={([v]) => patch({ temperature: v })}
                           trackClassName="h-3 bg-gradient-to-r from-blue-500 to-red-500"
                           rangeClassName="bg-transparent"
-                          thumbClassName="h-6 w-6 border-[5px] border-[#111116] bg-white shadow-xl"
+                          thumbClassName="h-6 w-6 border-[5px] border-[#111116] bg-white dark:bg-[#111116] shadow-xl"
                         />
                       </div>
                     </div>
@@ -232,8 +232,8 @@ function DevicePage() {
                           onClick={() => patch({ fanSpeed: i })}
                           className={`flex-1 py-3 rounded-xl font-bold transition-all ${
                             (device.fanSpeed ?? 0) === i 
-                              ? "bg-white text-black shadow-lg" 
-                              : "bg-white/5 text-neutral-400 hover:bg-white/10"
+                              ? "bg-white dark:bg-[#111116] text-black shadow-lg" 
+                              : "bg-white dark:bg-[#111116]/5 text-neutral-400 hover:bg-white dark:bg-[#111116]/10"
                           }`}
                         >
                           {s}
@@ -252,8 +252,8 @@ function DevicePage() {
                             onClick={() => patch({ mode: m })}
                             className={`flex-1 py-3 rounded-xl font-bold transition-all ${
                               device.mode === m 
-                                ? "bg-white text-black shadow-lg" 
-                                : "bg-white/5 text-neutral-400 hover:bg-white/10"
+                                ? "bg-white dark:bg-[#111116] text-black shadow-lg" 
+                                : "bg-white dark:bg-[#111116]/5 text-neutral-400 hover:bg-white dark:bg-[#111116]/10"
                             }`}
                           >
                             {m}
@@ -266,7 +266,7 @@ function DevicePage() {
               )}
 
               {device.type === "plug" && (
-                <div className="mt-4 flex items-center justify-between p-4 rounded-2xl bg-white/5 border border-white/5">
+                <div className="mt-4 flex items-center justify-between p-4 rounded-2xl bg-white dark:bg-[#111116]/5 border border-white/5">
                   <div className="flex items-center gap-3">
                     <Activity className="h-5 w-5 text-purple-400" />
                     <span className="font-semibold text-neutral-300">Live draw</span>
@@ -292,11 +292,11 @@ function DevicePage() {
                       onValueChange={([v]) => patch({ output: v, watts: Math.round(v * 5) })}
                       trackClassName="h-3 bg-gradient-to-r from-[#181820] to-[#a855f7]"
                       rangeClassName="bg-transparent"
-                      thumbClassName="h-6 w-6 border-[5px] border-[#111116] bg-white shadow-xl"
+                      thumbClassName="h-6 w-6 border-[5px] border-[#111116] bg-white dark:bg-[#111116] shadow-xl"
                     />
                   </div>
                   <div className="grid grid-cols-2 gap-4">
-                    <div className={`rounded-2xl border p-4 ${((device.thermal ?? 0) > 55) ? "border-red-500/30 bg-red-500/10" : "border-white/5 bg-white/5"}`}>
+                    <div className={`rounded-2xl border p-4 ${((device.thermal ?? 0) > 55) ? "border-red-500/30 bg-red-500/10" : "border-white/5 bg-white dark:bg-[#111116]/5"}`}>
                       <div className="flex items-center gap-2 text-sm font-medium text-neutral-400 mb-2">
                         <Thermometer className="h-4 w-4" /> Thermal
                       </div>
@@ -304,7 +304,7 @@ function DevicePage() {
                         {device.thermal ?? 0}°C
                       </p>
                     </div>
-                    <div className="rounded-2xl border border-white/5 bg-white/5 p-4">
+                    <div className="rounded-2xl border border-white/5 bg-white dark:bg-[#111116]/5 p-4">
                       <div className="flex items-center gap-2 text-sm font-medium text-neutral-400 mb-2">
                         <Gauge className="h-4 w-4" /> Connected
                       </div>
@@ -315,7 +315,7 @@ function DevicePage() {
               )}
 
               {device.type === "sensor" && (
-                <div className="mt-4 rounded-2xl bg-white/5 p-4 border border-white/5">
+                <div className="mt-4 rounded-2xl bg-white dark:bg-[#111116]/5 p-4 border border-white/5">
                   <p className="text-sm font-medium text-neutral-300">
                     Reporting normally · Connected to automation trigger
                   </p>
@@ -358,7 +358,7 @@ function DevicePage() {
                           toast.success("Device forgotten.");
                         }}
                       >
-                        <Unlink className="h-4 w-4 mr-2" /> Forget Device & Re-pair
+                        <Unlink className="h-4 w-4 mr-2" /> Reset Module
                       </Button>
                     </div>
                   ) : (
@@ -367,7 +367,7 @@ function DevicePage() {
                       
                       {!isLinking ? (
                         <Button 
-                          className="w-full bg-orange-500 hover:bg-orange-600 text-white font-bold"
+                          className="w-full bg-orange-500 hover:bg-orange-600 text-slate-900 dark:text-white font-bold"
                           onClick={() => {
                              setIsLinking(true);
                              handleRefreshDevices();
@@ -401,7 +401,7 @@ function DevicePage() {
                                     setIsLinking(false);
                                     toast.success(`Successfully linked ${d.name} (${d.address}) to ${device.name}!`);
                                   }}
-                                  className="p-3 rounded-md cursor-pointer transition-colors bg-white/5 hover:bg-white/10"
+                                  className="p-3 rounded-md cursor-pointer transition-colors bg-white dark:bg-[#111116]/5 hover:bg-white dark:bg-[#111116]/10"
                                 >
                                   <div className="font-semibold text-sm text-slate-900 dark:text-white">{d.name || "Unknown"}</div>
                                   <div className="text-xs text-neutral-400">{d.address}</div>
@@ -450,7 +450,7 @@ function DevicePage() {
                   {linked.slice(0, 3).map((a) => (
                     <div key={a.id} className="flex items-center justify-between">
                       <span className="text-[15px] font-bold text-slate-900 dark:text-white">{a.name}</span>
-                      <span className="rounded-full bg-white/5 border border-white/5 px-4 py-1.5 text-xs font-semibold text-neutral-300 tracking-wide">
+                      <span className="rounded-full bg-white dark:bg-[#111116]/5 border border-white/5 px-4 py-1.5 text-xs font-semibold text-neutral-300 tracking-wide">
                         {a.type}
                       </span>
                     </div>
@@ -465,7 +465,7 @@ function DevicePage() {
                 <span className="rounded-full bg-[#a855f7] px-6 py-2 text-sm font-bold text-slate-900 dark:text-white shadow-[0_0_12px_rgba(168,85,247,0.4)]">
                   Owner
                 </span>
-                <span className="rounded-full bg-white/10 px-6 py-2 text-sm font-bold text-slate-900 dark:text-white">
+                <span className="rounded-full bg-white dark:bg-[#111116]/10 px-6 py-2 text-sm font-bold text-slate-900 dark:text-white">
                   Family
                 </span>
               </div>

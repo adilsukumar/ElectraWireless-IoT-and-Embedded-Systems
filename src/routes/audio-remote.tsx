@@ -21,7 +21,7 @@ function AudioRemotePage() {
   return (
     <div className="mx-auto max-w-5xl space-y-6 pb-20">
       <div className="flex items-center gap-3">
-        <Link to="/remotes" className="p-2 -ml-2 rounded-full hover:bg-white/10 transition-colors">
+        <Link to="/remotes" className="p-2 -ml-2 rounded-full hover:bg-white dark:bg-[#111116]/10 transition-colors">
           <ArrowLeft className="w-5 h-5" />
         </Link>
         <div>
@@ -46,14 +46,14 @@ function AudioRemotePage() {
 
         {/* Playback Controls */}
         <div className="flex items-center gap-8 mt-2">
-          <button onClick={() => handleAction('Skip Back')} className="w-12 h-12 flex items-center justify-center rounded-full text-neutral-400 hover:text-white hover:bg-white/5 active:scale-95 transition"><SkipBack className="w-6 h-6 fill-current" /></button>
+          <button onClick={() => handleAction('Skip Back')} className="w-12 h-12 flex items-center justify-center rounded-full text-neutral-400 hover:text-slate-900 dark:text-white hover:bg-white dark:bg-[#111116]/5 active:scale-95 transition"><SkipBack className="w-6 h-6 fill-current" /></button>
           <button 
             onClick={() => setAudioState(audioState === 'Playing' ? 'Paused' : 'Playing')} 
             className="w-20 h-20 rounded-full bg-orange-500/20 text-orange-400 border border-orange-500/30 shadow-[0_0_20px_rgba(249,115,22,0.3)] flex items-center justify-center active:scale-95 transition"
           >
             {audioState === 'Playing' ? <Pause className="w-8 h-8 fill-current" /> : <Play className="w-8 h-8 fill-current ml-1" />}
           </button>
-          <button onClick={() => handleAction('Skip Forward')} className="w-12 h-12 flex items-center justify-center rounded-full text-neutral-400 hover:text-white hover:bg-white/5 active:scale-95 transition"><SkipForward className="w-6 h-6 fill-current" /></button>
+          <button onClick={() => handleAction('Skip Forward')} className="w-12 h-12 flex items-center justify-center rounded-full text-neutral-400 hover:text-slate-900 dark:text-white hover:bg-white dark:bg-[#111116]/5 active:scale-95 transition"><SkipForward className="w-6 h-6 fill-current" /></button>
         </div>
 
         {/* Volume Slider */}

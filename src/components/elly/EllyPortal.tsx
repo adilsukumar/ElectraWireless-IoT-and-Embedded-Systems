@@ -6,6 +6,7 @@ import { cn } from "@/lib/utils";
 import { useHome } from "@/lib/home/store";
 import { handleLocalChat } from "@/lib/home/bot";
 import { EllyLogo } from "./EllyLogo";
+import { TextToSpeech } from "@capacitor-community/text-to-speech";
 
 const chips = [
   "Turn off all lights",
@@ -37,7 +38,7 @@ const GREETING: ChatMsg = {
     "Hi, I'm ELLY. Ask me anything or tell me what to do, like turning off the lights or setting the AC.",
 };
 
-export function EllyPortal({ open, onClose }: { open: boolean; onClose: () => void }) {
+export function EllyPortal({ open, onClose, initialCmd }: { open: boolean; onClose: () => void; initialCmd?: string }) {
   const { runVoiceCommand, state, totalWatts, activeCount, dispatch } = useHome();
   const [listening, setListening] = useState(false);
   const [text, setText] = useState("");
@@ -57,6 +58,17 @@ export function EllyPortal({ open, onClose }: { open: boolean; onClose: () => vo
     };
   }, [open]);
 
+  // Process initial command if woken with one
+  useEffect(() => {
+    if (open && initialCmd) {
+      // Small delay to let UI render before sending
+      setTimeout(() => sendMessage(initialCmd), 500);
+    } else if (open && !initialCmd && !listening) {
+      // If opened with just "Hey Elly", start listening automatically
+      startListening();
+    }
+  }, [open, initialCmd]);
+
   // Auto-scroll on new messages
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
@@ -67,14 +79,26 @@ export function EllyPortal({ open, onClose }: { open: boolean; onClose: () => vo
     if (open && !listening) inputRef.current?.focus();
   }, [open, listening, messages]);
 
-  const speak = (s: string) => {
-    if (!voiceReplies || typeof window === "undefined" || !window.speechSynthesis) return;
+  const speak = async (s: string) => {
+    if (!voiceReplies) return;
     try {
-      window.speechSynthesis.cancel();
-      const u = new SpeechSynthesisUtterance(s);
-      u.rate = 1.02;
-      u.pitch = 1.05;
-      window.speechSynthesis.speak(u);
+      if (typeof window !== "undefined" && (window as any).cordova) {
+        await TextToSpeech.stop();
+        await TextToSpeech.speak({
+          text: s,
+          lang: 'en-US',
+          rate: 1.0,
+          pitch: 1.0,
+          volume: 1.0,
+          category: 'ambient',
+        });
+      } else if (typeof window !== "undefined" && window.speechSynthesis) {
+        window.speechSynthesis.cancel();
+        const u = new SpeechSynthesisUtterance(s);
+        u.rate = 1.02;
+        u.pitch = 1.05;
+        window.speechSynthesis.speak(u);
+      }
     } catch {
       /* ignore */
     }
@@ -175,7 +199,13 @@ export function EllyPortal({ open, onClose }: { open: boolean; onClose: () => vo
       setHeard("");
       setText("");
       setThinking(false);
-      if (typeof window !== "undefined" && window.speechSynthesis) window.speechSynthesis.cancel();
+      try {
+        if (typeof window !== "undefined" && (window as any).cordova) {
+          TextToSpeech.stop();
+        } else if (typeof window !== "undefined" && window.speechSynthesis) {
+          window.speechSynthesis.cancel();
+        }
+      } catch (e) {}
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open]);

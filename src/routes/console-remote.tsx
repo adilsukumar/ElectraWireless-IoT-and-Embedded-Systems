@@ -15,7 +15,7 @@ function ConsoleRemotePage() {
   return (
     <div className="mx-auto max-w-5xl space-y-6 pb-20">
       <div className="flex items-center gap-3">
-        <Link to="/remotes" className="p-2 -ml-2 rounded-full hover:bg-white/10 transition-colors">
+        <Link to="/remotes" className="p-2 -ml-2 rounded-full hover:bg-white dark:bg-[#111116]/10 transition-colors">
           <ArrowLeft className="w-5 h-5" />
         </Link>
         <div>
@@ -71,13 +71,13 @@ function ConsoleRemotePage() {
           <div className="grid grid-cols-3 gap-3">
             <button onClick={() => handleAction('Launching Game 1')} className="aspect-square rounded-2xl bg-gradient-to-br from-indigo-500/20 to-purple-500/20 border border-indigo-500/20 flex items-center justify-center hover:scale-[1.02] active:scale-95 transition shadow-lg relative overflow-hidden group">
               <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&q=80&w=200')] bg-cover bg-center opacity-40 group-hover:opacity-60 transition" />
-              <span className="relative z-10 font-bold text-white drop-shadow-md text-sm">RPG</span>
+              <span className="relative z-10 font-bold text-slate-900 dark:text-white drop-shadow-md text-sm">RPG</span>
             </button>
             <button onClick={() => handleAction('Launching Game 2')} className="aspect-square rounded-2xl bg-gradient-to-br from-blue-500/20 to-cyan-500/20 border border-blue-500/20 flex items-center justify-center hover:scale-[1.02] active:scale-95 transition shadow-lg relative overflow-hidden group">
               <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1552820728-8b83bb6b773f?auto=format&fit=crop&q=80&w=200')] bg-cover bg-center opacity-40 group-hover:opacity-60 transition" />
-              <span className="relative z-10 font-bold text-white drop-shadow-md text-sm">RACING</span>
+              <span className="relative z-10 font-bold text-slate-900 dark:text-white drop-shadow-md text-sm">RACING</span>
             </button>
-            <button onClick={() => handleAction('Launching App')} className="aspect-square rounded-2xl bg-neutral-800/80 border border-white/5 flex items-center justify-center hover:scale-[1.02] active:scale-95 transition shadow-lg text-neutral-400 hover:text-white">
+            <button onClick={() => handleAction('Launching App')} className="aspect-square rounded-2xl bg-neutral-800/80 border border-white/5 flex items-center justify-center hover:scale-[1.02] active:scale-95 transition shadow-lg text-neutral-400 hover:text-slate-900 dark:text-white">
               <span className="font-bold text-sm">MEDIA</span>
             </button>
           </div>
