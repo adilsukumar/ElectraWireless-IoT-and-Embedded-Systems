@@ -1,4 +1,4 @@
-import { Link } from "@tanstack/react-router";
+import { Link, useRouter } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 import { Settings2 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -9,6 +9,7 @@ import { deviceIcon } from "./device-icons";
 import { SignalIndicator } from "./SignalIndicator";
 
 export function DeviceTile({ device }: { device: Device }) {
+  const router = useRouter();
   const { dispatch, toggleDevice, canEdit } = useHome();
   const Icon = deviceIcon[device.type];
   const status = !device.online
@@ -100,7 +101,14 @@ export function DeviceTile({ device }: { device: Device }) {
           </span>
         )}
         {device.type !== "sensor" && (
-          <div onClickCapture={() => toggleDevice(device.id)}>
+          <div onClickCapture={async (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            const res = await toggleDevice(device.id);
+            if (res === "REDIRECT") {
+              router.navigate({ to: "/device/$deviceId", params: { deviceId: device.id } });
+            }
+          }}>
             <Switch
               checked={device.on}
               disabled={!device.online}

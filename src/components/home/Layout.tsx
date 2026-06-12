@@ -11,7 +11,11 @@ import {
   Bell,
   Menu,
   ClipboardList,
+  PowerOff,
+  Power
 } from "lucide-react";
+import { KeepAwake } from '@capacitor-community/keep-awake';
+import { useHeyElly, enableBackgroundListening, disableBackgroundListening } from "@/hooks/useHeyElly";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -38,6 +42,8 @@ const nav = [
   { to: "/settings", label: "Settings", icon: Settings, exact: false },
 ] as const;
 
+import { autoConnectBluetooth } from "@/lib/home/bluetooth";
+
 export function Layout({ children }: { children: ReactNode }) {
   return (
     <EllyProvider>
@@ -49,7 +55,24 @@ export function Layout({ children }: { children: ReactNode }) {
 function LayoutInner({ children }: { children: ReactNode }) {
   const { theme, toggle } = useTheme();
   const { alerts, state } = useHome();
-  const { openElly } = useElly();
+  const { openElly, open: isEllyOpen } = useElly();
+  const { isListening } = useHeyElly({ onWakeWord: openElly, pause: isEllyOpen });
+  const [bgEnabled, setBgEnabled] = useState(false);
+
+  useEffect(() => {
+    // Keep screen on permanently for 24/7 kiosk mode
+    const keepAwake = async () => {
+      try {
+        await KeepAwake.keepAwake();
+      } catch (e) {
+        // Ignore if unsupported (e.g. on web)
+      }
+    };
+    keepAwake();
+    
+    // Auto connect bluetooth if saved
+    autoConnectBluetooth();
+  }, []);
 
   const path = useRouterState({ select: (s) => s.location.pathname });
   // Always start new pages from the top
@@ -124,6 +147,23 @@ function LayoutInner({ children }: { children: ReactNode }) {
               aria-label="Toggle theme"
             >
               {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+            </Button>
+            <Button
+              variant={bgEnabled ? "default" : "outline"}
+              size="icon"
+              className={`h-9 w-9 rounded-full ${bgEnabled ? 'bg-purple-600 hover:bg-purple-700 shadow-[0_0_10px_rgba(168,85,247,0.5)]' : ''}`}
+              onClick={() => {
+                if (bgEnabled) {
+                  disableBackgroundListening();
+                  setBgEnabled(false);
+                } else {
+                  enableBackgroundListening();
+                  setBgEnabled(true);
+                }
+              }}
+              aria-label="Toggle Background Service"
+            >
+              {bgEnabled ? <Power className="h-4 w-4 text-slate-900 dark:text-white" /> : <PowerOff className="h-4 w-4" />}
             </Button>
           </div>
           <div className="px-4 pb-3">

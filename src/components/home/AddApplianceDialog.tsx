@@ -1,7 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import '@tensorflow/tfjs';
-import * as mobilenet from '@tensorflow-models/mobilenet';
-import * as cocoSsd from '@tensorflow-models/coco-ssd';
+
 import {
   Dialog,
   DialogContent,
@@ -22,7 +20,7 @@ import {
 } from "@/components/ui/select";
 import { Plus, Wifi, Bluetooth, Zap, Loader2, Camera, ScanLine, X } from "lucide-react";
 import { useHome } from "@/lib/home/store";
-import { pairBluetoothDevice } from "../../lib/home/bluetooth";
+import { scanBluetoothDevices, openBluetoothSettings, listPairedDevices, pairBluetoothDevice, type BluetoothDevice } from "../../lib/home/bluetooth";
 import type { DeviceType, Device } from "@/lib/home/types";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
@@ -43,14 +41,9 @@ export function AddApplianceDialog({ defaultRoomId }: { defaultRoomId?: string }
   // Pairing & AI State
   const [isPairing, setIsPairing] = useState(false);
   const [isScanning, setIsScanning] = useState(false);
-  const videoRef = useRef<HTMLVideoElement | null>(null);
-  const streamRef = useRef<MediaStream | null>(null);
-  const canvasRef = useRef<HTMLCanvasElement | null>(null);
-  const [model, setModel] = useState<mobilenet.MobileNet | null>(null);
-  const [objectDetector, setObjectDetector] = useState<cocoSsd.ObjectDetection | null>(null);
-  const [snehalEmbeddings, setSnehalEmbeddings] = useState<Float32Array[]>([]);
-  const [prediction, setPrediction] = useState<string | null>(null);
-  const [scanProb, setScanProb] = useState<number>(0);
+  const [scannedDevices, setScannedDevices] = useState<BluetoothDevice[]>([]);
+  const [selectedMac, setSelectedMac] = useState<string>("");
+
 
   // Reset state when opened
   useEffect(() => {
@@ -64,41 +57,11 @@ export function AddApplianceDialog({ defaultRoomId }: { defaultRoomId?: string }
       setLightMode("normal");
       setIsPairing(false);
       setIsScanning(false);
-      setPrediction(null);
-      setScanProb(0);
-    } else {
-      stopCamera();
+      setScannedDevices([]);
+      setSelectedMac("");
     }
   }, [open, defaultRoomId, state.rooms]);
 
-  useEffect(() => {
-    let isMounted = true;
-    Promise.all([mobilenet.load(), cocoSsd.load()]).then(async ([m, objDetector]) => {
-      if (!isMounted) return;
-      setModel(m);
-      setObjectDetector(objDetector);
-      
-      const embeddings: Float32Array[] = [];
-      for (let i = 1; i <= 6; i++) {
-        try {
-          const img = new Image();
-          img.crossOrigin = "anonymous";
-          img.src = `/snehaldixitpic/img${i}.jpg`;
-          await new Promise((resolve, reject) => {
-            img.onload = resolve;
-            img.onerror = reject;
-          });
-          const activation = m.infer(img, true);
-          embeddings.push(activation.dataSync() as Float32Array);
-          activation.dispose();
-        } catch (e) {
-          console.error(`Failed to load training image img${i}.jpg`, e);
-        }
-      }
-      setSnehalEmbeddings(embeddings);
-    });
-    return () => { isMounted = false; };
-  }, []);
 
   const handleNext = () => setStep((s) => s + 1);
   const handleBack = () => setStep((s) => s - 1);
@@ -123,6 +86,23 @@ export function AddApplianceDialog({ defaultRoomId }: { defaultRoomId?: string }
     }
   };
 
+  
+  const handleRefreshDevices = async () => {
+    setIsScanning(true);
+    try {
+      const devices = await scanBluetoothDevices();
+      const paired = await listPairedDevices();
+      // combine and deduplicate
+      const all = [...paired, ...devices];
+      const unique = Array.from(new Map(all.map(item => [item.address, item])).values());
+      setScannedDevices(unique);
+      setScannedDevices(devices);
+      if (devices.length === 0) toast("No paired devices found. Pair in settings first.");
+    } catch(e) {
+      toast.error("Failed to load paired devices.");
+    }
+    setIsScanning(false);
+  };
   const stopCamera = () => {
     streamRef.current?.getTracks().forEach(t => t.stop());
     streamRef.current = null;
@@ -266,12 +246,12 @@ export function AddApplianceDialog({ defaultRoomId }: { defaultRoomId?: string }
     setIsPairing(true);
     
     try {
-      const bleDevice = await pairBluetoothDevice();
+      const bleDevice = await pairBluetoothDevice(undefined, connectionType === "third-party" ? selectedMac : undefined);
       if (bleDevice) {
         setName(bleDevice.name);
         toast.success(`Connected to Bluetooth hardware: ${bleDevice.name}`);
         setIsPairing(false);
-        handleSave(bleDevice.name, bleDevice.id);
+        handleSave(bleDevice.name, bleDevice.id, bleDevice.macAddress);
       }
     } catch (error: any) {
       toast.error("Bluetooth pairing failed or cancelled. Simulating connection instead.");
@@ -282,7 +262,7 @@ export function AddApplianceDialog({ defaultRoomId }: { defaultRoomId?: string }
     }
   };
 
-  const handleSave = (overrideName?: string, overrideId?: string) => {
+  const handleSave = (overrideName?: string, overrideId?: string, overrideMac?: string) => {
     const newDevice: Device = {
       id: overrideId || `ELLY-${deviceType.toString().toUpperCase().slice(0, 2)}-${Math.random().toString(36).slice(2, 6)}`,
       name: overrideName || name || `${brand} ${deviceType}`,
@@ -293,6 +273,7 @@ export function AddApplianceDialog({ defaultRoomId }: { defaultRoomId?: string }
       watts: 15,
       brand,
       connectionType,
+      macAddress: overrideMac,
     };
 
     if (deviceType === "light") {
@@ -314,10 +295,10 @@ export function AddApplianceDialog({ defaultRoomId }: { defaultRoomId?: string }
           Add Appliance
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px] border-white/10 bg-[#111116] text-white">
+      <DialogContent className="sm:max-w-[425px] border-slate-200 dark:border-white/10 bg-white dark:bg-[#111116] text-slate-900 dark:text-white">
         <DialogHeader>
           <DialogTitle className="text-xl font-bold">Add New Appliance</DialogTitle>
-          <DialogDescription className="text-neutral-400">
+          <DialogDescription className="text-slate-500 dark:text-neutral-400">
             {step === 1 && "Select the room for this appliance."}
             {step === 2 && "How does this appliance connect?"}
             {step === 3 && "What type of appliance is it?"}
@@ -330,12 +311,12 @@ export function AddApplianceDialog({ defaultRoomId }: { defaultRoomId?: string }
         <div className="py-4">
           {step === 1 && (
             <div className="flex flex-col gap-3">
-              <label className="text-sm font-medium text-neutral-300">Room</label>
+              <label className="text-sm font-medium text-slate-700 dark:text-neutral-300">Room</label>
               <Select value={roomId} onValueChange={setRoomId}>
-                <SelectTrigger className="border-white/10 bg-white/5 focus:ring-blue-500">
+                <SelectTrigger className="border-slate-200 dark:border-white/10 bg-slate-100 dark:bg-white/5 focus:ring-blue-500">
                   <SelectValue placeholder="Select a room" />
                 </SelectTrigger>
-                <SelectContent className="border-white/10 bg-[#181820] text-white">
+                <SelectContent className="border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#181820] text-slate-900 dark:text-white">
                   {state.rooms.map((r) => (
                     <SelectItem key={r.id} value={r.id}>
                       {r.name}
@@ -348,7 +329,7 @@ export function AddApplianceDialog({ defaultRoomId }: { defaultRoomId?: string }
 
           {step === 2 && (
             <div className="flex flex-col gap-3">
-              <label className="text-sm font-medium text-neutral-300">Connection Method</label>
+              <label className="text-sm font-medium text-slate-700 dark:text-neutral-300">Connection Method</label>
               <div className="grid grid-cols-1 gap-3">
                 <Button
                   variant={connectionType === "direct" ? "default" : "outline"}
@@ -356,7 +337,7 @@ export function AddApplianceDialog({ defaultRoomId }: { defaultRoomId?: string }
                     "h-auto justify-start p-4 text-left transition-all",
                     connectionType === "direct" 
                       ? "bg-blue-500 hover:bg-blue-600 text-white shadow-[0_0_15px_rgba(59,130,246,0.4)] border-transparent" 
-                      : "bg-white/5 border-white/10 hover:bg-white/10 text-white"
+                      : "bg-slate-100 dark:bg-white/5 border-slate-200 dark:border-white/10 hover:bg-slate-200 dark:bg-white/10 text-white"
                   )}
                   onClick={() => setConnectionType("direct")}
                 >
@@ -376,7 +357,7 @@ export function AddApplianceDialog({ defaultRoomId }: { defaultRoomId?: string }
                     "h-auto justify-start p-4 text-left transition-all",
                     connectionType === "third-party" 
                       ? "bg-blue-500 hover:bg-blue-600 text-white shadow-[0_0_15px_rgba(59,130,246,0.4)] border-transparent" 
-                      : "bg-white/5 border-white/10 hover:bg-white/10 text-white"
+                      : "bg-slate-100 dark:bg-white/5 border-slate-200 dark:border-white/10 hover:bg-slate-200 dark:bg-white/10 text-white"
                   )}
                   onClick={() => setConnectionType("third-party")}
                 >
@@ -403,7 +384,7 @@ export function AddApplianceDialog({ defaultRoomId }: { defaultRoomId?: string }
                 <>
                   <Button 
                     variant="outline" 
-                    className="w-full h-32 flex flex-col items-center justify-center gap-3 border-white/10 bg-white/5 hover:bg-white/10 text-white group transition-all"
+                    className="w-full h-32 flex flex-col items-center justify-center gap-3 border-slate-200 dark:border-white/10 bg-slate-100 dark:bg-white/5 hover:bg-slate-200 dark:bg-white/10 text-white group transition-all"
                     onClick={startCamera}
                   >
                     <div className="p-3 rounded-full bg-blue-500/20 group-hover:bg-blue-500/30 transition-colors">
@@ -411,23 +392,23 @@ export function AddApplianceDialog({ defaultRoomId }: { defaultRoomId?: string }
                     </div>
                     <div>
                       <span className="block font-bold">AI Vision Scan</span>
-                      <span className="text-xs text-neutral-400">Point camera to auto-detect</span>
+                      <span className="text-xs text-slate-500 dark:text-neutral-400">Point camera to auto-detect</span>
                     </div>
                   </Button>
                   
                   <div className="flex items-center gap-3">
-                    <div className="h-px flex-1 bg-white/10" />
+                    <div className="h-px flex-1 bg-slate-200 dark:bg-white/10" />
                     <span className="text-xs text-neutral-500 font-medium uppercase tracking-wider">OR</span>
-                    <div className="h-px flex-1 bg-white/10" />
+                    <div className="h-px flex-1 bg-slate-200 dark:bg-white/10" />
                   </div>
 
                   <div className="flex flex-col gap-3">
-                    <label className="text-sm font-medium text-neutral-300">Select Manually</label>
+                    <label className="text-sm font-medium text-slate-700 dark:text-neutral-300">Select Manually</label>
                     <Select value={deviceType} onValueChange={(v) => setDeviceType(v as DeviceType)}>
-                      <SelectTrigger className="border-white/10 bg-white/5 focus:ring-blue-500">
+                      <SelectTrigger className="border-slate-200 dark:border-white/10 bg-slate-100 dark:bg-white/5 focus:ring-blue-500">
                         <SelectValue placeholder="Select appliance type" />
                       </SelectTrigger>
-                      <SelectContent className="border-white/10 bg-[#181820] text-white">
+                      <SelectContent className="border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#181820] text-slate-900 dark:text-white">
                         <SelectItem value="light">Smart Light</SelectItem>
                         <SelectItem value="ac">Air Conditioner</SelectItem>
                         <SelectItem value="fan">Fan</SelectItem>
@@ -486,20 +467,58 @@ export function AddApplianceDialog({ defaultRoomId }: { defaultRoomId?: string }
 
           {step === 4 && (
             <div className="flex flex-col gap-3">
-              <label className="text-sm font-medium text-neutral-300">Brand</label>
-              <Select value={brand} onValueChange={setBrand}>
-                <SelectTrigger className="border-white/10 bg-white/5 focus:ring-blue-500">
-                  <SelectValue placeholder="Select brand" />
-                </SelectTrigger>
-                <SelectContent className="border-white/10 bg-[#181820] text-white">
-                  <SelectItem value="ElectraWireless">ElectraWireless</SelectItem>
-                  <SelectItem value="Philips">Philips</SelectItem>
-                  <SelectItem value="LG">LG</SelectItem>
-                  <SelectItem value="Samsung">Samsung</SelectItem>
-                  <SelectItem value="Tuya">Tuya</SelectItem>
-                  <SelectItem value="Generic">Generic / Other</SelectItem>
-                </SelectContent>
-              </Select>
+              {connectionType === "direct" ? (
+                <>
+                  <label className="text-sm font-medium text-slate-700 dark:text-neutral-300">Brand</label>
+                  <Select value={brand} onValueChange={setBrand}>
+                    <SelectTrigger className="border-slate-200 dark:border-white/10 bg-slate-100 dark:bg-white/5 focus:ring-blue-500">
+                      <SelectValue placeholder="Select brand" />
+                    </SelectTrigger>
+                    <SelectContent className="border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#181820] text-slate-900 dark:text-white">
+                      <SelectItem value="ElectraWireless">ElectraWireless</SelectItem>
+                      <SelectItem value="Philips">Philips</SelectItem>
+                      <SelectItem value="LG">LG</SelectItem>
+                      <SelectItem value="Samsung">Samsung</SelectItem>
+                      <SelectItem value="Tuya">Tuya</SelectItem>
+                      <SelectItem value="Generic">Generic / Other</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </>
+              ) : (
+                <div className="flex flex-col gap-4">
+                  <p className="text-sm text-slate-500 dark:text-neutral-400">
+                    Pair your appliance in Android Bluetooth Settings first, then select it below.
+                  </p>
+                  <Button variant="outline" className="border-blue-500/30 text-blue-500 hover:bg-blue-500/10" onClick={openBluetoothSettings}>
+                    Open System Bluetooth Settings
+                  </Button>
+                  
+                  <div className="flex items-center justify-between mt-2">
+                    <label className="text-sm font-medium text-slate-700 dark:text-neutral-300">Paired Devices</label>
+                    <Button variant="ghost" size="sm" onClick={handleRefreshDevices} disabled={isScanning}>
+                      {isScanning ? <Loader2 className="h-4 w-4 animate-spin" /> : <RefreshCw className="h-4 w-4 mr-2" />}
+                      Refresh
+                    </Button>
+                  </div>
+                  
+                  <div className="flex flex-col gap-2 max-h-48 overflow-y-auto rounded-lg border border-slate-200 dark:border-white/10 p-2">
+                    {scannedDevices.length === 0 ? (
+                      <p className="text-xs text-center p-4 text-slate-500">No devices found. Click refresh.</p>
+                    ) : (
+                      scannedDevices.map(d => (
+                        <div 
+                          key={d.address}
+                          onClick={() => setSelectedMac(d.address)}
+                          className={`p-3 rounded-md cursor-pointer transition-colors ${selectedMac === d.address ? 'bg-blue-500 text-white' : 'bg-slate-100 dark:bg-white/5 hover:bg-slate-200 dark:hover:bg-white/10'}`}
+                        >
+                          <div className="font-semibold">{d.name || "Unknown"}</div>
+                          <div className="text-xs opacity-70">{d.address}</div>
+                        </div>
+                      ))
+                    )}
+                  </div>
+                </div>
+              )}
             </div>
           )}
 
@@ -507,12 +526,12 @@ export function AddApplianceDialog({ defaultRoomId }: { defaultRoomId?: string }
             <div className="flex flex-col gap-4">
               {deviceType === "light" && (
                 <div className="flex flex-col gap-3">
-                  <label className="text-sm font-medium text-neutral-300">Lighting Capabilities</label>
+                  <label className="text-sm font-medium text-slate-700 dark:text-neutral-300">Lighting Capabilities</label>
                   <Select value={lightMode} onValueChange={(v) => setLightMode(v as any)}>
-                    <SelectTrigger className="border-white/10 bg-white/5 focus:ring-blue-500">
+                    <SelectTrigger className="border-slate-200 dark:border-white/10 bg-slate-100 dark:bg-white/5 focus:ring-blue-500">
                       <SelectValue placeholder="Select lighting options" />
                     </SelectTrigger>
-                    <SelectContent className="border-white/10 bg-[#181820] text-white">
+                    <SelectContent className="border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#181820] text-slate-900 dark:text-white">
                       <SelectItem value="normal">Standard (On/Off only)</SelectItem>
                       <SelectItem value="warm">Warm White Dimmable</SelectItem>
                       <SelectItem value="cool">Cool White Dimmable</SelectItem>
@@ -523,9 +542,9 @@ export function AddApplianceDialog({ defaultRoomId }: { defaultRoomId?: string }
               )}
               
               <div className="flex flex-col gap-2">
-                <label className="text-sm font-medium text-neutral-300">Appliance Name</label>
+                <label className="text-sm font-medium text-slate-700 dark:text-neutral-300">Appliance Name</label>
                 <Input
-                  className="border-white/10 bg-white/5 focus:border-blue-500 focus:ring-blue-500 text-white placeholder:text-neutral-500"
+                  className="border-slate-200 dark:border-white/10 bg-slate-100 dark:bg-white/5 focus:border-blue-500 focus:ring-blue-500 text-white placeholder:text-neutral-500"
                   placeholder={`e.g. ${brand} ${deviceType}`}
                   value={name}
                   onChange={(e) => setName(e.target.value)}
@@ -542,7 +561,7 @@ export function AddApplianceDialog({ defaultRoomId }: { defaultRoomId?: string }
                     <div className="absolute inset-0 rounded-full blur-xl bg-blue-500/20 animate-pulse" />
                     <Loader2 className="relative h-12 w-12 animate-spin text-blue-500" />
                   </div>
-                  <p className="text-sm text-neutral-400 text-center mt-4">
+                  <p className="text-sm text-slate-500 dark:text-neutral-400 text-center mt-4">
                     {connectionType === "third-party" 
                       ? "Connecting via Bluetooth/WiFi protocol..." 
                       : "Searching for ELLY Direct signal..."}
@@ -568,7 +587,7 @@ export function AddApplianceDialog({ defaultRoomId }: { defaultRoomId?: string }
               variant="ghost" 
               onClick={handleBack} 
               disabled={step === 1 || (step === 2 && defaultRoomId !== undefined) || isScanning}
-              className="text-neutral-400 hover:text-white hover:bg-white/5"
+              className="text-slate-500 dark:text-neutral-400 hover:text-white hover:bg-slate-100 dark:bg-white/5"
             >
               Back
             </Button>
@@ -578,7 +597,7 @@ export function AddApplianceDialog({ defaultRoomId }: { defaultRoomId?: string }
                 disabled={
                   (step === 1 && !roomId) || 
                   (step === 3 && !deviceType) || 
-                  (step === 4 && !brand) ||
+                  (step === 4 && connectionType !== 'third-party' && !brand) || (step === 4 && connectionType === 'third-party' && !selectedMac) ||
                   isScanning
                 }
                 className="bg-blue-500 hover:bg-blue-600 text-white font-semibold"

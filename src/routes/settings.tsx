@@ -24,7 +24,7 @@ function SettingsPage() {
   const { state, dispatch } = useHome();
 
   return (
-    <div className="bg-black flex-1 text-white pb-6 -mx-4 px-4 sm:-mx-8 sm:px-8 flex flex-col">
+    <div className="bg-slate-50 dark:bg-black flex-1 text-white pb-6 -mx-4 px-4 sm:-mx-8 sm:px-8 flex flex-col">
       <div className="mx-auto max-w-4xl w-full space-y-6 pt-2">
         <div>
           <h1 className="text-[32px] font-extrabold tracking-tight text-white">Settings</h1>
@@ -32,31 +32,31 @@ function SettingsPage() {
 
         {/* 2x2 Grid */}
         <div className="grid grid-cols-2 gap-3">
-          <Link to="/settings-users" className="flex flex-col items-center justify-center p-4 rounded-[1.5rem] bg-[#111116] border border-white/5 shadow-lg hover:bg-[#15151a] transition-all gap-2">
+          <Link to="/settings-users" className="flex flex-col items-center justify-center p-4 rounded-[1.5rem] bg-white dark:bg-[#111116] border border-white/5 shadow-lg hover:bg-[#15151a] transition-all gap-2">
             <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#a855f7]/10 border border-[#a855f7]/20 shadow-[0_0_10px_rgba(168,85,247,0.15)]">
               <Users className="h-5 w-5 text-[#a855f7]" strokeWidth={2} />
             </div>
             <span className="font-bold text-white text-xs">Users & Access</span>
           </Link>
           
-          <Link to="/settings-network" className="flex flex-col items-center justify-center p-4 rounded-[1.5rem] bg-[#111116] border border-white/5 shadow-lg hover:bg-[#15151a] transition-all gap-2">
+          <Link to="/settings-network" className="flex flex-col items-center justify-center p-4 rounded-[1.5rem] bg-white dark:bg-[#111116] border border-white/5 shadow-lg hover:bg-[#15151a] transition-all gap-2">
             <div className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-500/10 border border-blue-500/20 shadow-[0_0_10px_rgba(59,130,246,0.15)] relative">
               <Wifi className="h-5 w-5 text-blue-500 relative -left-0.5" strokeWidth={2} />
-              <div className="absolute -bottom-0.5 -right-0.5 bg-[#111116] rounded-full p-[1px]">
+              <div className="absolute -bottom-0.5 -right-0.5 bg-white dark:bg-[#111116] rounded-full p-[1px]">
                 <ShieldCheck className="h-3 w-3 text-blue-400" strokeWidth={2.5} />
               </div>
             </div>
             <span className="font-bold text-white text-xs">Network & Fallback</span>
           </Link>
 
-          <Link to="/settings-gateways" className="flex flex-col items-center justify-center p-4 rounded-[1.5rem] bg-[#111116] border border-white/5 shadow-lg hover:bg-[#15151a] transition-all gap-2">
+          <Link to="/settings-gateways" className="flex flex-col items-center justify-center p-4 rounded-[1.5rem] bg-white dark:bg-[#111116] border border-white/5 shadow-lg hover:bg-[#15151a] transition-all gap-2">
             <div className="flex h-10 w-10 items-center justify-center rounded-full bg-neutral-400/10 border border-neutral-400/20 shadow-[0_0_10px_rgba(163,163,163,0.1)]">
               <Server className="h-5 w-5 text-neutral-400" strokeWidth={2} />
             </div>
             <span className="font-bold text-white text-xs">Gateways</span>
           </Link>
 
-          <Link to="/settings-safety" className="flex flex-col items-center justify-center p-4 rounded-[1.5rem] bg-[#111116] border border-white/5 shadow-lg hover:bg-[#15151a] transition-all gap-2">
+          <Link to="/settings-safety" className="flex flex-col items-center justify-center p-4 rounded-[1.5rem] bg-white dark:bg-[#111116] border border-white/5 shadow-lg hover:bg-[#15151a] transition-all gap-2">
             <div className="flex h-10 w-10 items-center justify-center rounded-full bg-green-500/10 border border-green-500/20 shadow-[0_0_10px_rgba(34,197,94,0.15)]">
               <Shield className="h-5 w-5 text-green-500" strokeWidth={2} />
             </div>
@@ -67,7 +67,7 @@ function SettingsPage() {
         {/* Active Users */}
         <div className="space-y-3">
           <h2 className="text-sm font-bold text-neutral-400 pl-2">Active Users</h2>
-          <div className="rounded-2xl border border-white/5 bg-[#111116] overflow-hidden shadow-lg">
+          <div className="rounded-2xl border border-white/5 bg-white dark:bg-[#111116] overflow-hidden shadow-lg">
             {state.members.slice(0, 2).map((m, i) => {
               const isSarah = m.name.includes("Sarah");
               const roleDisplay = isSarah ? "Owner" : m.role === "family" ? "Family" : "Guest";
@@ -92,7 +92,7 @@ function SettingsPage() {
                       </span>
                     </div>
                   </DialogTrigger>
-                  <DialogContent className="bg-[#111116] border border-white/10 text-white rounded-[2rem] sm:max-w-md">
+                  <DialogContent className="bg-white dark:bg-[#111116] border border-white/10 text-white rounded-[2rem] sm:max-w-md">
                     <DialogHeader>
                       <DialogTitle className="text-xl font-bold">Edit Member Access</DialogTitle>
                     </DialogHeader>

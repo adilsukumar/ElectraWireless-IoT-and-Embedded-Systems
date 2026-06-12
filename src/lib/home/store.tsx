@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useMemo, useReducer, type ReactNode } from "react";
 import { toast } from "sonner";
-import { toggleBluetoothDevice, activateBluetoothDevice } from "./bluetooth";
+import { toggleBluetoothDevice, activateBluetoothDevice, pairBluetoothDevice } from "./bluetooth";
 import type { Automation, Device, FallbackTier, HomeState, LogEntry, Member, Role } from "./types";
 
 const STORAGE_KEY = "elly-home-state-v1";
@@ -311,6 +311,7 @@ type Action =
   | { type: "TOGGLE_DEVICE"; id: string }
   | { type: "UPDATE_DEVICE"; id: string; patch: Partial<Device> }
   | { type: "ADD_DEVICE"; device: Device }
+  | { type: "REMOVE_DEVICE"; id: string }
   | { type: "ADD_ROOM"; room: Room }
   | { type: "ALL_OFF" }
   | { type: "ALL_ON" }
@@ -358,6 +359,13 @@ function reducer(state: HomeState, action: Action): HomeState {
         x.id === action.id ? { ...x, ...action.patch } : x,
       );
       return { ...state, devices };
+    }
+    case "REMOVE_DEVICE": {
+      const d = state.devices.find((x) => x.id === action.id);
+      return pushLog(
+        { ...state, devices: state.devices.filter((x) => x.id !== action.id) },
+        log(`Device "${d?.name}" deleted`, "manual")
+      );
     }
     case "ADD_DEVICE": {
       return pushLog(
@@ -490,7 +498,7 @@ function reducer(state: HomeState, action: Action): HomeState {
 interface Ctx {
   state: HomeState;
   dispatch: React.Dispatch<Action>;
-  toggleDevice: (id: string) => Promise<void>;
+  toggleDevice: (id: string) => Promise<boolean | "REDIRECT">;
   toggleActivation: (id: string) => Promise<void>;
   totalWatts: number;
   activeCount: number;
@@ -676,18 +684,25 @@ export function HomeProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const toggleDevice = async (id: string) => {
+  const toggleDevice = async (id: string): Promise<boolean | "REDIRECT"> => {
     const d = state.devices.find((x) => x.id === id);
-    if (!d) return;
+    if (!d) return false;
     
-    // First, attempt to send the command to the hardware via Bluetooth
-    const success = await toggleBluetoothDevice(id, !d.on);
+    let success = false;
+    if (!d.macAddress) {
+      toast.error("Bluetooth not linked! Please link a device in the Bluetooth Setup section.");
+      return "REDIRECT";
+    } else {
+      success = await toggleBluetoothDevice(d.id, !d.on, d.macAddress);
+    }
     
     if (success) {
       // If hardware acknowledges, update the UI
       dispatch({ type: "TOGGLE_DEVICE", id });
+      return true;
     } else {
       toast.error(`Failed to send command to ${d.name} over Bluetooth. Ensure it is powered on and in range.`);
+      return false;
     }
   };
 

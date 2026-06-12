@@ -3,7 +3,7 @@ import '@tensorflow/tfjs';
 import * as mobilenet from '@tensorflow-models/mobilenet';
 import * as cocoSsd from '@tensorflow-models/coco-ssd';
 import { createFileRoute } from "@tanstack/react-router";
-import { Mic, Moon, ShieldCheck, Circle, Bell, CameraOff, RefreshCw } from "lucide-react";
+import { Mic, Moon, ShieldCheck, Circle, Bell, CameraOff, RefreshCw, SwitchCamera, ListTree, UserPlus, X } from "lucide-react";
 import { toast } from "sonner";
 import { useHome } from "@/lib/home/store";
 
@@ -33,6 +33,26 @@ function CameraPage() {
   const [camError, setCamError] = useState<string | null>(null);
   const [starting, setStarting] = useState(false);
   const [talking, setTalking] = useState(false);
+  const [facingMode, setFacingMode] = useState<"environment" | "user">("environment");
+  const detectionsListRef = useRef<HTMLDivElement>(null);
+  const stateRef = useRef(state);
+  
+  // Custom Face Registration State
+  const [isRegisteringFace, setIsRegisteringFace] = useState(false);
+  const isRegisteringFaceRef = useRef(isRegisteringFace);
+  
+  useEffect(() => {
+    isRegisteringFaceRef.current = isRegisteringFace;
+  }, [isRegisteringFace]);
+
+    const [scanProgress, setScanProgress] = useState(0);
+  const [customFaces, setCustomFaces] = useState<{ id: string, name: string, embeddings: Float32Array[] }[]>([]);
+  const customFacesRef = useRef(customFaces);
+  useEffect(() => { customFacesRef.current = customFaces; }, [customFaces]);
+
+  useEffect(() => {
+    stateRef.current = state;
+  }, [state]);
 
   const toggleTalk = async () => {
     if (talking) {
@@ -73,7 +93,7 @@ function CameraPage() {
     setCamError(null);
     try {
       const stream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: "environment" },
+        video: { facingMode },
         audio: false,
       });
       streamRef.current = stream;
@@ -99,35 +119,95 @@ function CameraPage() {
   const [snehalEmbeddings, setSnehalEmbeddings] = useState<Float32Array[]>([]);
   const [prediction, setPrediction] = useState<{ className: string; probability: number } | null>(null);
 
-  // Load MobileNet once on component mount
+  // Load custom faces & models on component mount
   useEffect(() => {
     let isMounted = true;
+    
+    // Load custom faces
+    const saved = localStorage.getItem("elly_registered_faces");
+    const loadedFaces: { id: string, name: string, embeddings: Float32Array[] }[] = [];
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        const faces = parsed.map((f: any) => ({
+          ...f,
+          embeddings: f.embeddings.map((e: number[]) => new Float32Array(e))
+        }));
+        loadedFaces.push(...faces);
+      } catch(e) {}
+    }
+
     Promise.all([mobilenet.load(), cocoSsd.load()]).then(async ([m, objDetector]) => {
       if (!isMounted) return;
       setModel(m);
       setObjectDetector(objDetector);
-
-      const embeddings: Float32Array[] = [];
-      for (let i = 1; i <= 6; i++) {
-        try {
-          const img = new Image();
-          img.crossOrigin = "anonymous";
-          img.src = `/snehaldixitpic/img${i}.jpg`;
-          await new Promise((resolve, reject) => {
-            img.onload = resolve;
-            img.onerror = reject;
-          });
-          const activation = m.infer(img, true);
-          embeddings.push(activation.dataSync() as Float32Array);
-          activation.dispose();
-        } catch (e) {
-          console.error(`Failed to load training image img${i}.jpg`, e);
-        }
-      }
-      setSnehalEmbeddings(embeddings);
+      setCustomFaces(loadedFaces);
     });
     return () => { isMounted = false; };
   }, []);
+  
+  const registerNewFace = async (nameToRegister: string) => {
+    if (!nameToRegister.trim() || !model || !videoRef.current) return;
+    const newUserName = nameToRegister;
+    
+    const embeddings: Float32Array[] = [];
+    setScanProgress(10);
+    
+    for (let i = 0; i < 10; i++) {
+      await new Promise(r => setTimeout(r, 300));
+      if (!videoRef.current) break;
+      const cropCanvas = document.createElement('canvas');
+      cropCanvas.width = videoRef.current.videoWidth;
+      cropCanvas.height = videoRef.current.videoHeight;
+      const ctx = cropCanvas.getContext('2d');
+      if (ctx) {
+        ctx.drawImage(videoRef.current, 0, 0);
+        const activation = model.infer(cropCanvas, true);
+        embeddings.push(activation.dataSync() as Float32Array);
+        activation.dispose();
+      }
+      setScanProgress(10 + (i+1)*9);
+    }
+
+    const newFace = {
+      id: Math.floor(Math.random() * 10000).toString().padStart(4, '0'),
+      name: newUserName.trim(),
+      embeddings
+    };
+
+    const updatedFaces = [...customFaces, newFace];
+    setCustomFaces(updatedFaces);
+    
+    const serializable = updatedFaces.map(f => ({
+      ...f,
+      embeddings: f.embeddings.map(e => Array.from(e))
+    }));
+    localStorage.setItem("elly_registered_faces", JSON.stringify(serializable));
+    
+    toast.success(`User ${newFace.name} registered with Elly ID #${newFace.id}`);
+    setIsRegisteringFace(false);
+    setNewUserName("");
+    setScanProgress(0);
+  };
+
+
+  const deleteFace = (id: string) => {
+    const updatedFaces = customFaces.filter(f => f.id !== id);
+    setCustomFaces(updatedFaces);
+    const serializable = updatedFaces.map(f => ({
+      ...f,
+      embeddings: f.embeddings.map(e => Array.from(e))
+    }));
+    localStorage.setItem("elly_registered_faces", JSON.stringify(serializable));
+    toast.success("Face removed");
+  };
+
+  const clearDatabase = () => {
+    localStorage.removeItem("elly_registered_faces");
+    setCustomFaces([]);
+    toast.success("Face Database Wiped");
+    setIsRegisteringFace(false);
+  };
 
   // Run classification loop when camera is active and model is loaded
   useEffect(() => {
@@ -140,6 +220,13 @@ function CameraPage() {
     let lastLogTime = 0;
 
     const detectFrame = async () => {
+      if (isRegisteringFaceRef.current) {
+        // Pause all heavy AI processing while typing/registering to fix lag
+        await new Promise(r => setTimeout(r, 500));
+        animationFrameId = requestAnimationFrame(detectFrame);
+        return;
+      }
+
       if (videoRef.current && videoRef.current.readyState >= 2 && canvasRef.current && objectDetector) {
         const video = videoRef.current;
         const canvas = canvasRef.current;
@@ -147,11 +234,39 @@ function CameraPage() {
         canvas.width = video.clientWidth;
         canvas.height = video.clientHeight;
         const ctx = canvas.getContext('2d');
+        let currentDetectionsHtml = "";
         
         if (ctx) {
           ctx.clearRect(0, 0, canvas.width, canvas.height);
           
+          const videoWidth = video.videoWidth;
+          const videoHeight = video.videoHeight;
+          const displayWidth = video.clientWidth;
+          const displayHeight = video.clientHeight;
+
+          const scaleX = displayWidth / videoWidth;
+          const scaleY = displayHeight / videoHeight;
+          const scale = Math.max(scaleX, scaleY);
+          const offsetX = (displayWidth - videoWidth * scale) / 2;
+          const offsetY = (displayHeight - videoHeight * scale) / 2;
+
+          
           const detections = await objectDetector.detect(video);
+          
+          try {
+            const globalPredictions = await model.classify(video);
+            if (globalPredictions && globalPredictions.length > 0) {
+              const topLabel = globalPredictions[0].className.split(',')[0].toUpperCase();
+              const topScore = Math.round(globalPredictions[0].probability * 100);
+              currentDetectionsHtml += `
+                <div class="flex justify-between items-center bg-blue-500/10 border border-blue-500/30 px-3 py-1.5 rounded-lg mb-2 shadow-[0_0_10px_rgba(59,130,246,0.1)]">
+                  <span class="text-xs font-bold text-slate-900 dark:text-white tracking-wider">GLOBAL SCENE: ${topLabel}</span>
+                  <span class="text-[10px] font-mono text-blue-500 bg-blue-500/20 px-1.5 py-0.5 rounded">${topScore}%</span>
+                </div>
+              `;
+            }
+          } catch(e) {}
+
           
           for (const det of detections) {
             let label = det.class;
@@ -162,7 +277,7 @@ function CameraPage() {
             cropCanvas.height = height;
             const cropCtx = cropCanvas.getContext('2d');
             
-            if (cropCtx && det.score > 0.5) {
+            if (cropCtx && det.score > 0.25) {
               cropCtx.drawImage(video, x, y, width, height, 0, 0, width, height);
               
               try {
@@ -172,27 +287,35 @@ function CameraPage() {
                   const isHumanClothing = ["suit", "t-shirt", "jersey", "sweatshirt", "cardigan", "jean", "wig", "sunglasses", "seat belt", "neck brace", "bow tie", "mask", "abaya", "academic gown", "apron", "bathing cap", "bikini", "brassiere", "cowboy hat", "crash helmet", "fur coat", "gown", "lab coat", "miniskirt", "overskirt", "pajama", "poncho", "shower cap", "ski mask", "sombrero", "stole", "swimming trunks", "trench coat", "vest", "nipple", "face powder", "hair spray", "lipstick", "lotion", "perfume", "stethoscope"].some(c => mobileNetClass.includes(c));
 
                   if (det.class === "person" || isHumanClothing) {
-                    if (snehalEmbeddings.length > 0) {
+                    if (customFacesRef.current.length > 0) {
                       const activation = model.infer(cropCanvas, true);
                       const data = activation.dataSync() as Float32Array;
                       activation.dispose();
 
-                      let maxSim = 0;
-                      for (const emb of snehalEmbeddings) {
-                        let dotProduct = 0, normA = 0, normB = 0;
-                        for (let i = 0; i < data.length; i++) {
-                          dotProduct += data[i] * emb[i];
-                          normA += data[i] * data[i];
-                          normB += emb[i] * emb[i];
+                      let bestMatch = null;
+                      let highestSim = 0;
+
+                      for (const face of customFacesRef.current) {
+                        for (const emb of face.embeddings) {
+                          let dotProduct = 0, normA = 0, normB = 0;
+                          for (let i = 0; i < data.length; i++) {
+                            dotProduct += data[i] * emb[i];
+                            normA += data[i] * data[i];
+                            normB += emb[i] * emb[i];
+                          }
+                          const sim = dotProduct / (Math.sqrt(normA) * Math.sqrt(normB));
+                          if (sim > highestSim) {
+                            highestSim = sim;
+                            bestMatch = face;
+                          }
                         }
-                        const sim = dotProduct / (Math.sqrt(normA) * Math.sqrt(normB));
-                        if (sim > maxSim) maxSim = sim;
                       }
 
-                      if (maxSim > 0.60) {
-                        label = `Snehal Dixit #Elly ID : #0001 (${Math.round(maxSim * 100)}%)`;
+                      // Increased threshold to 0.85 to stop false positives
+                      if (highestSim > 0.85 && bestMatch) {
+                        label = `${bestMatch.name} #Elly ID: #${bestMatch.id} (${Math.round(highestSim * 100)}%)`;
                       } else {
-                        label = `Unknown Person (${Math.round(maxSim * 100)}%)`;
+                        label = `Unknown Person (${Math.round(highestSim * 100)}%)`;
                       }
                     } else {
                       label = "Unknown Person";
@@ -205,28 +328,46 @@ function CameraPage() {
               } catch (e) {}
             }
             
-            const scaleX = canvas.width / video.videoWidth;
-            const scaleY = canvas.height / video.videoHeight;
-            const scale = Math.max(scaleX, scaleY);
-            const offsetX = (canvas.width - video.videoWidth * scale) / 2;
-            const offsetY = (canvas.height - video.videoHeight * scale) / 2;
-
             const drawX = x * scale + offsetX;
             const drawY = y * scale + offsetY;
             const drawW = width * scale;
             const drawH = height * scale;
 
-            ctx.strokeStyle = '#a855f7';
-            ctx.lineWidth = 3;
-            ctx.strokeRect(drawX, drawY, drawW, drawH);
-            
-            ctx.fillStyle = '#a855f7';
-            const textWidth = ctx.measureText(label).width;
-            ctx.fillRect(drawX, drawY - 24, textWidth + 10, 24);
+            // Sci-Fi HUD Box Styling
+            ctx.strokeStyle = 'rgba(168, 85, 247, 0.8)';
+            ctx.lineWidth = 2;
+            const cornerL = 15;
+            ctx.beginPath();
+            // Top left
+            ctx.moveTo(drawX, drawY + cornerL); ctx.lineTo(drawX, drawY); ctx.lineTo(drawX + cornerL, drawY);
+            // Top right
+            ctx.moveTo(drawX + drawW - cornerL, drawY); ctx.lineTo(drawX + drawW, drawY); ctx.lineTo(drawX + drawW, drawY + cornerL);
+            // Bottom left
+            ctx.moveTo(drawX, drawY + drawH - cornerL); ctx.lineTo(drawX, drawY + drawH); ctx.lineTo(drawX + cornerL, drawY + drawH);
+            // Bottom right
+            ctx.moveTo(drawX + drawW - cornerL, drawY + drawH); ctx.lineTo(drawX + drawW, drawY + drawH); ctx.lineTo(drawX + drawW, drawY + drawH - cornerL);
+            ctx.stroke();
+
+            // Glassmorphism label background
+            ctx.fillStyle = 'rgba(168, 85, 247, 0.15)';
+            ctx.fillRect(drawX, drawY, drawW, drawH);
+
+            ctx.fillStyle = 'rgba(168, 85, 247, 0.9)';
+            const textWidth = ctx.measureText(label.toUpperCase()).width;
+            ctx.fillRect(drawX, drawY - 24, textWidth + 16, 24);
             
             ctx.fillStyle = 'white';
-            ctx.font = '14px Arial';
-            ctx.fillText(label, drawX + 5, drawY - 6);
+            ctx.font = 'bold 12px monospace';
+            ctx.fillText(label.toUpperCase(), drawX + 8, drawY - 7);
+
+            // Add to live detections overlay
+            const scorePercent = Math.round((det.score > 0.25 ? det.score : 0.5) * 100);
+            currentDetectionsHtml += `
+              <div class="flex justify-between items-center bg-[#a855f7]/10 border border-[#a855f7]/30 px-3 py-1.5 rounded-lg mb-2 shadow-[0_0_10px_rgba(168,85,247,0.1)]">
+                <span class="text-xs font-bold text-slate-900 dark:text-white tracking-wider">${label.toUpperCase()}</span>
+                <span class="text-[10px] font-mono text-[#a855f7] bg-[#a855f7]/20 px-1.5 py-0.5 rounded">${scorePercent}%</span>
+              </div>
+            `;
 
             const now = Date.now();
             if (det.score > 0.7 && now - lastLogTime > 15000) {
@@ -239,20 +380,35 @@ function CameraPage() {
                   text: `Vision AI: High confidence match - ${label}` 
                 } 
               });
+
+              // Vision Automation
+              if (label.includes("Snehal") && det.score > 0.6) {
+                const light = stateRef.current.devices.find(d => d.type === "light");
+                if (light && !light.on) {
+                  dispatch({ type: "UPDATE_DEVICE", id: light.id, patch: { on: true } });
+                  toast.success(`Vision AI: Recognized Snehal! Turning on ${light.name}.`);
+                }
+              }
+
               lastLogTime = now;
             }
+          }
+          
+          if (detectionsListRef.current) {
+            detectionsListRef.current.innerHTML = currentDetectionsHtml;
           }
         }
       }
       
-      setTimeout(() => {
-        animationFrameId = requestAnimationFrame(detectFrame);
-      }, 100);
+      // Throttle the detection loop by 100ms to free up the CPU thread for UI typing
+      await new Promise(r => setTimeout(r, 100));
+      animationFrameId = requestAnimationFrame(detectFrame);
     };
 
     detectFrame();
 
-    return () => {
+  
+  return () => {
       cancelAnimationFrame(animationFrameId);
     };
   }, [active, model, objectDetector, snehalEmbeddings, dispatch]);
@@ -260,21 +416,24 @@ function CameraPage() {
   useEffect(() => {
     if (active) startStream();
     else stopStream();
-    return () => stopStream();
+  
+
+  return () => stopStream();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [active]);
+  }, [active, facingMode]);
+
 
   return (
-    <div className="bg-black flex-1 text-white pb-6 -mx-4 px-4 sm:-mx-8 sm:px-8 flex flex-col">
+    <div className="bg-slate-50 dark:bg-black flex-1 text-slate-900 dark:text-white pb-6 -mx-4 px-4 sm:-mx-8 sm:px-8 flex flex-col">
       <div className="mx-auto max-w-4xl w-full space-y-6 pt-2">
         {!state.cameraEnabled && (
-          <div className="flex flex-col items-center gap-4 rounded-[2rem] border border-blue-500/20 bg-[#111116] p-8 text-center shadow-[0_0_20px_rgba(59,130,246,0.1)]">
+          <div className="flex flex-col items-center gap-4 rounded-[2rem] border border-blue-500/20 bg-white dark:bg-[#111116] p-8 text-center shadow-[0_0_20px_rgba(59,130,246,0.1)]">
             <ShieldCheck className="h-10 w-10 text-blue-400" />
             <p className="text-[15px] font-medium text-neutral-300">
               Camera access requires your explicit consent. Enable to view live feed and alerts.
             </p>
             <button
-              className="rounded-full bg-blue-500 hover:bg-blue-600 px-6 py-2.5 text-sm font-bold text-white shadow-[0_0_15px_rgba(59,130,246,0.4)] transition-all"
+              className="rounded-full bg-blue-500 hover:bg-blue-600 px-6 py-2.5 text-sm font-bold text-slate-900 dark:text-white shadow-[0_0_15px_rgba(59,130,246,0.4)] transition-all"
               onClick={() => {
                 dispatch({
                   type: "PATCH_CAMERA",
@@ -289,8 +448,8 @@ function CameraPage() {
         )}
 
         {/* Live feed */}
-        <div className="overflow-hidden rounded-[2rem] border border-white/5 shadow-2xl bg-[#111116]">
-          <div className="relative flex aspect-video items-center justify-center bg-black text-white">
+        <div className="overflow-hidden rounded-[2rem] border border-slate-200 dark:border-white/5 shadow-2xl bg-white dark:bg-[#111116]">
+          <div className="relative flex aspect-video items-center justify-center bg-black text-slate-900 dark:text-white">
             <video
               ref={videoRef}
               playsInline
@@ -305,50 +464,87 @@ function CameraPage() {
 
             {active && !camError && (
               <>
-                <span className="absolute left-4 top-4 flex items-center gap-2 rounded-full bg-red-500 px-3 py-1.5 text-xs font-bold text-white shadow-[0_0_10px_rgba(239,68,68,0.5)] z-10">
+                <span className="absolute left-4 top-4 flex items-center gap-2 rounded-full bg-red-500 px-3 py-1.5 text-xs font-bold text-slate-900 dark:text-white shadow-[0_0_10px_rgba(239,68,68,0.5)] z-10">
                   <Circle className="h-2 w-2 animate-pulse fill-current" /> LIVE
                 </span>
                 {state.cameraRecording && (
-                  <span className="absolute right-4 top-4 flex items-center gap-2 rounded-full bg-black/60 backdrop-blur-sm px-3 py-1.5 text-xs font-bold text-white z-10">
+                  <span className="absolute right-4 top-4 flex items-center gap-2 rounded-full bg-black/60 backdrop-blur-sm px-3 py-1.5 text-xs font-bold text-slate-900 dark:text-white z-10">
                     <Circle className="h-2 w-2 animate-pulse fill-red-500 text-red-500" /> REC
                   </span>
                 )}
-
-                {!model && active && !camError && (
-                  <span className="absolute bottom-6 left-1/2 -translate-x-1/2 bg-black/60 backdrop-blur-md border border-white/10 px-4 py-2 rounded-2xl text-[13px] font-bold text-white tracking-wide z-10 shadow-lg">
+                {!model && (
+                  <span className="absolute bottom-6 left-1/2 -translate-x-1/2 bg-black/60 backdrop-blur-md border border-slate-200 dark:border-white/10 px-4 py-2 rounded-2xl text-[13px] font-bold text-slate-900 dark:text-white tracking-wide z-10 shadow-lg">
                     Loading AI Model...
-                  </span>
-                )}
-                {starting && (
-                  <span className="absolute inset-0 flex items-center justify-center bg-black/50 backdrop-blur-sm text-[15px] font-medium z-10">
-                    Starting camera…
                   </span>
                 )}
               </>
             )}
 
-            {active && camError && (
-              <div className="flex flex-col items-center gap-4 px-6 text-center">
-                <CameraOff className="h-10 w-10 text-neutral-500" />
-                <span className="text-[15px] font-medium text-neutral-400">{camError}</span>
-                <button 
-                  className="flex items-center gap-2 rounded-full border border-white/10 bg-white/5 hover:bg-white/10 px-5 py-2 text-sm font-bold text-white transition-all"
-                  onClick={startStream}
-                >
-                  <RefreshCw className="h-4 w-4" /> Retry
-                </button>
+            {!active && (
+              <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 bg-slate-50 dark:bg-[#181820]/80 backdrop-blur-md z-20">
+                <CameraOff className="h-10 w-10 text-slate-900 dark:text-white/50" />
+                <p className="font-bold text-slate-900 dark:text-white/50">Camera Paused</p>
               </div>
             )}
-
-            {!active && (
-              <div className="flex flex-col items-center gap-3">
-                <Moon className="h-10 w-10 text-neutral-500" />
-                <span className="text-[15px] font-bold text-neutral-400">
-                  {state.cameraEnabled ? "Privacy Mode, camera off" : "Camera disabled"}
-                </span>
+            {starting && (
+              <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 bg-slate-50 dark:bg-[#181820]/80 backdrop-blur-md z-20">
+                <RefreshCw className="h-10 w-10 animate-spin text-purple-400" />
+                <p className="font-bold text-purple-400">Initializing Vision Engine...</p>
+              </div>
+            )}
+            {camError && (
+              <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-destructive/10 px-8 text-center text-destructive z-20">
+                <ShieldCheck className="h-10 w-10" />
+                <p className="text-sm font-medium">{camError}</p>
               </div>
             )}
           </div>
+          
+          {/* Action Bar below camera */}
+          <div className="flex items-center justify-between border-t border-slate-200 dark:border-white/5 bg-slate-50 dark:bg-[#181820] p-4">
+            <div className="flex items-center gap-3">
+              <div
+                className={`h-3 w-3 rounded-full shadow-[0_0_10px_currentColor] transition-colors ${
+                  active && !camError && !starting ? "bg-purple-500" : "bg-neutral-600"
+                }`}
+              />
+              <p className="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider">
+                {active && !camError && !starting ? "Vision AI Active" : "Standby"}
+              </p>
+            </div>
+            
+            <div className="flex gap-2">
+              <button
+                disabled={!active || starting}
+                onClick={() => setFacingMode(f => f === "environment" ? "user" : "environment")}
+                className="flex items-center gap-2 rounded-full bg-slate-100 dark:bg-white/5 px-4 py-2 text-xs font-bold text-slate-900 dark:text-white hover:bg-slate-200 dark:bg-white/10 transition-colors disabled:opacity-50"
+              >
+                <SwitchCamera className="h-4 w-4" />
+                FLIP
+              </button>
+              <button
+                disabled={!active || starting || !model}
+                onClick={() => setIsRegisteringFace(true)}
+                className="flex items-center gap-2 rounded-full bg-purple-500/20 px-4 py-2 text-xs font-bold text-purple-400 hover:bg-purple-500/30 transition-colors disabled:opacity-50"
+              >
+                <UserPlus className="h-4 w-4" />
+                Add User
+              </button>
+            </div>
+          </div>
+          
+          {/* Live Detections Sidebar/List */}
+          {active && !camError && !starting && (
+            <div className="border-t border-slate-200 dark:border-white/5 bg-white dark:bg-[#111116] p-4">
+              <div className="flex items-center gap-2 mb-3">
+                <ListTree className="h-4 w-4 text-purple-400" />
+                <p className="text-xs font-bold text-slate-500 dark:text-neutral-400 uppercase tracking-widest">Active Tracking</p>
+              </div>
+              <div ref={detectionsListRef} className="space-y-1 min-h-[40px]">
+                {/* Dynamically injected by requestAnimationFrame */}
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Controls Grid */}
@@ -356,69 +552,183 @@ function CameraPage() {
           <button
             onClick={() => dispatch({ type: "PATCH_CAMERA", patch: { cameraPrivacy: !state.cameraPrivacy } })}
             disabled={!state.cameraEnabled}
-            className="flex flex-col items-center justify-center gap-3 py-5 px-2 rounded-[1.5rem] bg-[#111116] border border-white/5 transition-all hover:bg-[#181820] hover:scale-[1.02] active:scale-95 disabled:cursor-not-allowed disabled:opacity-50 shadow-lg group"
+            className="flex flex-col items-center justify-center gap-3 py-5 px-2 rounded-[1.5rem] bg-white dark:bg-[#111116] border border-slate-200 dark:border-white/5 transition-all hover:bg-slate-50 dark:bg-[#181820] hover:scale-[1.02] active:scale-95 disabled:cursor-not-allowed disabled:opacity-50 shadow-lg group"
           >
-            <span className={`flex h-12 w-12 items-center justify-center rounded-full text-white transition-transform group-hover:scale-105 ${state.cameraPrivacy ? "bg-[#a855f7] shadow-[0_0_15px_rgba(168,85,247,0.4)]" : "bg-white/10"}`}>
+            <span className={`flex h-12 w-12 items-center justify-center rounded-full text-slate-900 dark:text-white transition-transform group-hover:scale-105 ${state.cameraPrivacy ? "bg-[#a855f7] shadow-[0_0_15px_rgba(168,85,247,0.4)]" : "bg-slate-200 dark:bg-white/10"}`}>
               <Moon className="h-6 w-6" />
             </span>
-            <span className="font-semibold text-white text-[13px]">Privacy</span>
+            <span className="font-semibold text-slate-900 dark:text-white text-[13px]">Privacy</span>
           </button>
           
           <button
             onClick={() => dispatch({ type: "PATCH_CAMERA", patch: { cameraMotionAlerts: !state.cameraMotionAlerts } })}
             disabled={!active}
-            className="flex flex-col items-center justify-center gap-3 py-5 px-2 rounded-[1.5rem] bg-[#111116] border border-white/5 transition-all hover:bg-[#181820] hover:scale-[1.02] active:scale-95 disabled:cursor-not-allowed disabled:opacity-50 shadow-lg group"
+            className="flex flex-col items-center justify-center gap-3 py-5 px-2 rounded-[1.5rem] bg-white dark:bg-[#111116] border border-slate-200 dark:border-white/5 transition-all hover:bg-slate-50 dark:bg-[#181820] hover:scale-[1.02] active:scale-95 disabled:cursor-not-allowed disabled:opacity-50 shadow-lg group"
           >
-            <span className={`flex h-12 w-12 items-center justify-center rounded-full text-white transition-transform group-hover:scale-105 ${state.cameraMotionAlerts ? "bg-[#a855f7] shadow-[0_0_15px_rgba(168,85,247,0.4)]" : "bg-white/10"}`}>
+            <span className={`flex h-12 w-12 items-center justify-center rounded-full text-slate-900 dark:text-white transition-transform group-hover:scale-105 ${state.cameraMotionAlerts ? "bg-[#a855f7] shadow-[0_0_15px_rgba(168,85,247,0.4)]" : "bg-slate-200 dark:bg-white/10"}`}>
               <Bell className="h-6 w-6" />
             </span>
-            <span className="font-semibold text-white text-[13px]">Alerts</span>
+            <span className="font-semibold text-slate-900 dark:text-white text-[13px]">Alerts</span>
           </button>
           
           <button
             onClick={() => dispatch({ type: "PATCH_CAMERA", patch: { cameraRecording: !state.cameraRecording } })}
             disabled={!active}
-            className="flex flex-col items-center justify-center gap-3 py-5 px-2 rounded-[1.5rem] bg-[#111116] border border-white/5 transition-all hover:bg-[#181820] hover:scale-[1.02] active:scale-95 disabled:cursor-not-allowed disabled:opacity-50 shadow-lg group"
+            className="flex flex-col items-center justify-center gap-3 py-5 px-2 rounded-[1.5rem] bg-white dark:bg-[#111116] border border-slate-200 dark:border-white/5 transition-all hover:bg-slate-50 dark:bg-[#181820] hover:scale-[1.02] active:scale-95 disabled:cursor-not-allowed disabled:opacity-50 shadow-lg group"
           >
-            <span className={`flex h-12 w-12 items-center justify-center rounded-full text-white transition-transform group-hover:scale-105 ${state.cameraRecording ? "bg-blue-500 shadow-[0_0_15px_rgba(59,130,246,0.4)]" : "bg-white/10"}`}>
+            <span className={`flex h-12 w-12 items-center justify-center rounded-full text-slate-900 dark:text-white transition-transform group-hover:scale-105 ${state.cameraRecording ? "bg-blue-500 text-white shadow-[0_0_15px_rgba(59,130,246,0.4)]" : "bg-slate-200 dark:bg-white/10"}`}>
               <Circle className="h-6 w-6" />
             </span>
-            <span className="font-semibold text-white text-[13px]">Record</span>
+            <span className="font-semibold text-slate-900 dark:text-white text-[13px]">Record</span>
           </button>
 
           <button
             onClick={toggleTalk}
             disabled={!active}
-            className="flex flex-col items-center justify-center gap-3 py-5 px-2 rounded-[1.5rem] bg-[#111116] border border-white/5 transition-all hover:bg-[#181820] hover:scale-[1.02] active:scale-95 disabled:cursor-not-allowed disabled:opacity-50 shadow-lg group col-span-2"
+            className="flex flex-col items-center justify-center gap-3 py-5 px-2 rounded-[1.5rem] bg-white dark:bg-[#111116] border border-slate-200 dark:border-white/5 transition-all hover:bg-slate-50 dark:bg-[#181820] hover:scale-[1.02] active:scale-95 disabled:cursor-not-allowed disabled:opacity-50 shadow-lg group col-span-2"
           >
-            <span className={`flex h-12 w-12 items-center justify-center rounded-full text-white transition-transform group-hover:scale-105 ${talking ? "bg-red-500 shadow-[0_0_15px_rgba(239,68,68,0.4)] animate-pulse" : "bg-white/10"}`}>
+            <span className={`flex h-12 w-12 items-center justify-center rounded-full text-slate-900 dark:text-white transition-transform group-hover:scale-105 ${talking ? "bg-red-500 shadow-[0_0_15px_rgba(239,68,68,0.4)] animate-pulse" : "bg-slate-200 dark:bg-white/10"}`}>
               <Mic className="h-6 w-6" />
             </span>
-            <span className="font-semibold text-white text-[13px]">{talking ? "Speaking..." : "Talk"}</span>
+            <span className="font-semibold text-slate-900 dark:text-white text-[13px]">{talking ? "Speaking..." : "Talk"}</span>
           </button>
 
           <button
             disabled={!active}
-            className="flex flex-col items-center justify-center gap-3 py-5 px-2 rounded-[1.5rem] bg-[#111116] border border-white/5 transition-all hover:bg-[#181820] hover:scale-[1.02] active:scale-95 disabled:cursor-not-allowed disabled:opacity-50 shadow-lg group"
+            className="flex flex-col items-center justify-center gap-3 py-5 px-2 rounded-[1.5rem] bg-white dark:bg-[#111116] border border-slate-200 dark:border-white/5 transition-all hover:bg-slate-50 dark:bg-[#181820] hover:scale-[1.02] active:scale-95 disabled:cursor-not-allowed disabled:opacity-50 shadow-lg group"
           >
-            <span className={`flex h-12 w-12 items-center justify-center rounded-full text-white transition-transform group-hover:scale-105 ${active ? "bg-teal-500 shadow-[0_0_15px_rgba(20,184,166,0.4)]" : "bg-white/10"}`}>
-              <span className="text-[11px] font-extrabold uppercase tracking-widest text-white">Auto</span>
+            <span className={`flex h-12 w-12 items-center justify-center rounded-full text-slate-900 dark:text-white transition-transform group-hover:scale-105 ${active ? "bg-teal-500 shadow-[0_0_15px_rgba(20,184,166,0.4)]" : "bg-slate-200 dark:bg-white/10"}`}>
+              <span className="text-[11px] font-extrabold uppercase tracking-widest text-slate-900 dark:text-white">Auto</span>
             </span>
-            <span className="font-semibold text-white text-[13px]">Night</span>
+            <span className="font-semibold text-slate-900 dark:text-white text-[13px]">Night</span>
           </button>
         </div>
 
-        <div className="rounded-[2rem] border border-white/5 bg-[#111116] p-7 shadow-2xl">
-          <h2 className="mb-5 text-lg font-bold text-neutral-400">Event History</h2>
+        <div className="rounded-[2rem] border border-slate-200 dark:border-white/5 bg-white dark:bg-[#111116] p-7 shadow-2xl">
+          <h2 className="mb-5 text-lg font-bold text-slate-500 dark:text-neutral-400">Event History</h2>
           <div className="space-y-4">
             {events.map((e) => (
               <div key={e.time} className="flex items-center gap-4">
-                <span className="font-mono text-sm font-bold text-neutral-500">{e.time}</span>
-                <span className="text-[15px] font-medium text-white">{e.text}</span>
+                <span className="font-mono text-sm font-bold text-slate-400 dark:text-neutral-500">{e.time}</span>
+                <span className="text-[15px] font-medium text-slate-900 dark:text-white">{e.text}</span>
               </div>
             ))}
           </div>
         </div>
+      </div>
+
+      {/* Face Registration Modal */}
+      {isRegisteringFace && (
+          <FaceManagerDialog 
+            onClose={() => setIsRegisteringFace(false)}
+            onRegister={registerNewFace}
+            scanProgress={scanProgress}
+            customFaces={customFaces}
+            onDeleteFace={deleteFace}
+            onClearDatabase={clearDatabase}
+          />
+        )}
+    </div>
+  );
+}
+
+interface FaceManagerProps {
+  onClose: () => void;
+  onRegister: (name: string) => void;
+  scanProgress: number;
+  customFaces: any[];
+  onDeleteFace: (id: string) => void;
+  onClearDatabase: () => void;
+}
+
+function FaceManagerDialog({ 
+  onClose, 
+  onRegister, 
+  scanProgress, 
+  customFaces, 
+  onDeleteFace, 
+  onClearDatabase 
+}: FaceManagerProps) {
+  const [localName, setLocalName] = useState("");
+  
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+      <div className="w-full max-w-sm rounded-[2rem] bg-white dark:bg-[#111116] p-6 shadow-2xl border border-slate-200 dark:border-white/10">
+        <div className="flex justify-between items-center mb-6">
+          <h3 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
+            <UserPlus className="h-5 w-5 text-purple-400" /> Face Management
+          </h3>
+          <button onClick={onClose} className="text-slate-500 dark:text-neutral-400 hover:text-slate-900 dark:hover:text-white transition-colors">
+            <X className="h-6 w-6" />
+          </button>
+        </div>
+        
+        <form onSubmit={(e) => { e.preventDefault(); onRegister(localName); }} className="space-y-4">
+          <div>
+            <label className="text-xs font-bold text-slate-500 dark:text-neutral-400 uppercase tracking-wider pl-1">Person's Name</label>
+            <input 
+              type="text" 
+              placeholder="e.g. Adil Sukumar"
+              value={localName}
+              onChange={(e) => setLocalName(e.target.value)}
+              className="mt-1 w-full rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 px-4 py-3 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-white/20 focus:outline-none focus:ring-2 focus:ring-purple-500/50 transition-all"
+            />
+          </div>
+
+          {scanProgress > 0 && (
+            <div className="space-y-2">
+              <div className="flex justify-between text-xs font-bold text-slate-900 dark:text-white/50">
+                <span>Scanning...</span>
+                <span>{scanProgress}%</span>
+              </div>
+              <div className="h-2 w-full overflow-hidden rounded-full bg-slate-200 dark:bg-white/10">
+                <div 
+                  className="h-full bg-purple-500 transition-all duration-300"
+                  style={{ width: `${scanProgress}%` }}
+                />
+              </div>
+            </div>
+          )}
+
+          <button
+            type="submit"
+            disabled={!localName.trim() || scanProgress > 0}
+            className="w-full rounded-xl bg-purple-600 px-4 py-3 font-bold text-white transition-colors hover:bg-purple-700 disabled:opacity-50"
+          >
+            {scanProgress > 0 ? "Scanning..." : "Start Scan"}
+          </button>
+          
+          {customFaces.length > 0 && (
+            <div className="mt-4 border-t border-slate-200 dark:border-white/10 pt-4">
+              <h4 className="text-xs font-bold text-slate-500 dark:text-neutral-400 uppercase tracking-widest mb-3">Registered Users</h4>
+              <div className="space-y-2 max-h-40 overflow-y-auto custom-scrollbar pr-2">
+                {customFaces.map((face) => (
+                  <div key={face.id} className="flex justify-between items-center bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg p-2 px-3">
+                    <div>
+                      <p className="text-sm font-bold text-slate-900 dark:text-white">{face.name}</p>
+                      <p className="text-[10px] text-slate-500 dark:text-neutral-400 font-mono">ID: #{face.id}</p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => onDeleteFace(face.id)}
+                      className="h-8 w-8 rounded-full bg-red-500/10 flex items-center justify-center text-red-500 hover:bg-red-500/20 transition-colors"
+                    >
+                      <X className="h-4 w-4" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          <button
+            type="button"
+            onClick={onClearDatabase}
+            className="w-full rounded-xl bg-red-500/20 px-4 py-3 font-bold text-red-500 transition-colors hover:bg-red-500/30 mt-4"
+          >
+            Wipe All Data
+          </button>
+        </form>
       </div>
     </div>
   );

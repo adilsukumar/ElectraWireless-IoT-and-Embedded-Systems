@@ -152,7 +152,7 @@ function MemberGroup({
       ) : (
         <div className="grid gap-2 sm:grid-cols-2">
           {members.map((m) => (
-            <div key={m.id} className="p-3 rounded-2xl bg-[#111116] border border-white/5 shadow-lg relative overflow-hidden">
+            <div key={m.id} className="p-3 rounded-2xl bg-white dark:bg-[#111116] border border-white/5 shadow-lg relative overflow-hidden">
               <div className="flex items-start justify-between gap-2">
                 <div className="min-w-0 flex-1">
                   <div className="flex flex-wrap items-center gap-2">
@@ -189,7 +189,7 @@ function MemberGroup({
                           <Trash2 className="h-3 w-3" />
                         </button>
                       </AlertDialogTrigger>
-                      <AlertDialogContent className="bg-[#111116] border border-white/10 text-white rounded-[2rem]">
+                      <AlertDialogContent className="bg-white dark:bg-[#111116] border border-white/10 text-white rounded-[2rem]">
                         <AlertDialogHeader>
                           <AlertDialogTitle className="text-xl">Remove {m.name}?</AlertDialogTitle>
                           <AlertDialogDescription className="text-neutral-400">
@@ -295,7 +295,7 @@ function MemberDialog({
           </button>
         )}
       </DialogTrigger>
-      <DialogContent className="max-h-[85vh] overflow-y-auto sm:max-w-md bg-[#111116] border border-white/10 text-white rounded-[2rem]">
+      <DialogContent className="max-h-[85vh] overflow-y-auto sm:max-w-md bg-white dark:bg-[#111116] border border-white/10 text-white rounded-[2rem]">
         <DialogHeader>
           <DialogTitle className="text-xl font-bold">{initial ? "Edit access" : "Give access"}</DialogTitle>
           <DialogDescription className="text-neutral-400 text-sm">

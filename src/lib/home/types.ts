@@ -29,6 +29,9 @@ export interface Device {
   output?: number; // wpt 0-100
   thermal?: number; // celsius
   assignedRoles?: Role[];
+  macAddress?: string;
+  brand?: string;
+  connectionType?: "direct" | "third-party";
 }
 
 export interface Room {

@@ -173,7 +173,7 @@ function Dashboard() {
           />
           <Link
             to="/devices"
-            className="flex flex-col items-center justify-center gap-3 py-5 px-2 rounded-[1.5rem] bg-[#111116] border border-white/5 transition-all hover:bg-[#181820] hover:scale-[1.02] active:scale-95 shadow-lg group"
+            className="flex flex-col items-center justify-center gap-3 py-5 px-2 rounded-[1.5rem] bg-white dark:bg-[#111116] border border-white/5 transition-all hover:bg-[#181820] hover:scale-[1.02] active:scale-95 shadow-lg group"
           >
             <span className="flex h-12 w-12 items-center justify-center rounded-full bg-blue-500 text-white shadow-[0_0_15px_rgba(59,130,246,0.4)] transition-transform group-hover:scale-105">
               <Cpu className="h-6 w-6" />
@@ -182,7 +182,7 @@ function Dashboard() {
           </Link>
           <Link
             to="/activity"
-            className="flex flex-col items-center justify-center gap-3 py-5 px-2 rounded-[1.5rem] bg-[#111116] border border-white/5 transition-all hover:bg-[#181820] hover:scale-[1.02] active:scale-95 shadow-lg group"
+            className="flex flex-col items-center justify-center gap-3 py-5 px-2 rounded-[1.5rem] bg-white dark:bg-[#111116] border border-white/5 transition-all hover:bg-[#181820] hover:scale-[1.02] active:scale-95 shadow-lg group"
           >
             <span className="flex h-12 w-12 items-center justify-center rounded-full bg-teal-500 text-white shadow-[0_0_15px_rgba(20,184,166,0.4)] transition-transform group-hover:scale-105">
               <ClipboardList className="h-6 w-6" />
@@ -191,7 +191,7 @@ function Dashboard() {
           </Link>
           <Link
             to="/remotes"
-            className="flex flex-col items-center justify-center gap-3 py-5 px-2 rounded-[1.5rem] bg-[#111116] border border-white/5 transition-all hover:bg-[#181820] hover:scale-[1.02] active:scale-95 shadow-lg group"
+            className="flex flex-col items-center justify-center gap-3 py-5 px-2 rounded-[1.5rem] bg-white dark:bg-[#111116] border border-white/5 transition-all hover:bg-[#181820] hover:scale-[1.02] active:scale-95 shadow-lg group"
           >
             <span className="flex h-12 w-12 items-center justify-center rounded-full bg-indigo-500 text-white shadow-[0_0_15px_rgba(99,102,241,0.4)] transition-transform group-hover:scale-105">
               <Tv className="h-6 w-6" />
@@ -229,7 +229,7 @@ function QuickAction({
     <button
       onClick={onClick}
       disabled={disabled}
-      className="flex flex-col items-center justify-center gap-3 py-5 px-2 rounded-[1.5rem] bg-[#111116] border border-white/5 transition-all hover:bg-[#181820] hover:scale-[1.02] active:scale-95 disabled:cursor-not-allowed disabled:opacity-50 shadow-lg group"
+      className="flex flex-col items-center justify-center gap-3 py-5 px-2 rounded-[1.5rem] bg-white dark:bg-[#111116] border border-white/5 transition-all hover:bg-[#181820] hover:scale-[1.02] active:scale-95 disabled:cursor-not-allowed disabled:opacity-50 shadow-lg group"
     >
       <span className={cn("flex h-12 w-12 items-center justify-center rounded-full text-white transition-transform group-hover:scale-105", colorClass)}>
         <Icon className="h-6 w-6" />
@@ -246,7 +246,7 @@ function EmergencyAction({ onConfirm, disabled }: { onConfirm: () => void; disab
       <AlertDialogTrigger asChild>
         <button
           disabled={disabled}
-          className="flex flex-col items-center justify-center gap-3 py-5 px-2 rounded-[1.5rem] bg-[#111116] border border-red-500/10 transition-all hover:bg-[#181820] hover:scale-[1.02] active:scale-95 disabled:cursor-not-allowed disabled:opacity-50 shadow-lg group col-span-2"
+          className="flex flex-col items-center justify-center gap-3 py-5 px-2 rounded-[1.5rem] bg-white dark:bg-[#111116] border border-red-500/10 transition-all hover:bg-[#181820] hover:scale-[1.02] active:scale-95 disabled:cursor-not-allowed disabled:opacity-50 shadow-lg group col-span-2"
         >
           <span className="flex h-12 w-12 items-center justify-center rounded-full bg-red-500 text-white shadow-[0_0_15px_rgba(239,68,68,0.4)] transition-transform group-hover:scale-105">
             <OctagonAlert className="h-6 w-6" />

@@ -4,6 +4,7 @@ import {
   Link,
   createRootRouteWithContext,
   useRouter,
+  ScrollRestoration,
 } from "@tanstack/react-router";
 import { type ReactNode } from "react";
 
@@ -83,6 +84,7 @@ function RootComponent() {
         <HomeProvider>
           <Layout>
             {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
+            <ScrollRestoration />
             <Outlet />
           </Layout>
         </HomeProvider>

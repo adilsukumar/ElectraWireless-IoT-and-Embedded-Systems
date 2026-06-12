@@ -20,10 +20,10 @@ function SettingsUsersPage() {
   const { state, dispatch } = useHome();
 
   return (
-    <div className="bg-black flex-1 text-white pb-6 -mx-4 px-4 sm:-mx-8 sm:px-8 flex flex-col">
+    <div className="bg-slate-50 dark:bg-black flex-1 text-white pb-6 -mx-4 px-4 sm:-mx-8 sm:px-8 flex flex-col">
       <div className="mx-auto max-w-4xl w-full space-y-6 pt-6">
         <div className="flex items-center gap-3">
-          <Link to="/settings" className="p-2 bg-[#111116] rounded-full hover:bg-white/10 transition-colors border border-white/5">
+          <Link to="/settings" className="p-2 bg-white dark:bg-[#111116] rounded-full hover:bg-white/10 transition-colors border border-white/5">
             <ArrowLeft className="h-4 w-4" />
           </Link>
           <h1 className="text-xl font-extrabold tracking-tight">Users & Access</h1>
@@ -32,7 +32,7 @@ function SettingsUsersPage() {
           {roles.map((r) => {
             const activeRole = state.role === r.id;
             return (
-              <div key={r.id} className={cn("p-4 rounded-2xl border shadow-lg", activeRole ? "bg-[#15151a] border-[#a855f7]/50" : "bg-[#111116] border-white/5")}>
+              <div key={r.id} className={cn("p-4 rounded-2xl border shadow-lg", activeRole ? "bg-[#15151a] border-[#a855f7]/50" : "bg-white dark:bg-[#111116] border-white/5")}>
                 <div className="mb-3 flex items-center gap-3">
                   <div className="p-2.5 bg-[#a855f7]/10 rounded-xl border border-[#a855f7]/20">
                     <r.icon className="h-5 w-5 text-[#a855f7]" />
