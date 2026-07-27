@@ -215,7 +215,7 @@ async function processSingleIntent(
   if (t.match(/\b(bye|goodbye|see ya|exit|quit)\b/)) return rep("Catch you later! I'll hold the fort down here.");
 
   // 11. GENERATIVE AI FALLBACK & FUNCTION CALLING (True LLM Integration)
-  if (text.trim().length > 2) {
+  if (t.trim().length > 2) {
     try {
       const onDevicesList = onDevices.length > 0 ? onDevices.map(d => d.name).join(", ") : "None";
       const timeStr = new Date().toLocaleTimeString();
@@ -229,7 +229,7 @@ CURRENT STATE: Time is ${timeStr} on ${dateStr}. House is drawing ${totalWatts}W
 RECENT HISTORY: ${recentHistory}
 CRITICAL INSTRUCTION: If you need to physically alter the smart home based on the user's request (e.g. turning off all lights, setting night mode), you MUST include the exact command in square brackets like this: [CMD: turn off the lights]. 
 CRITICAL INSTRUCTION 2: If your response carries a strong emotion, you may append [EMOTION: happy], [EMOTION: sad], [EMOTION: urgent], or [EMOTION: calm] at the end.
-USER ASKS: ${text}`;
+USER ASKS: ${t}`;
       
       const aiRes = await fetch(`https://text.pollinations.ai/${encodeURIComponent(prompt)}`);
       
