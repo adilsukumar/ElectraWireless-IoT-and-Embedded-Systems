@@ -44,6 +44,7 @@ export interface Device {
     | "ikea" | "xiaomi" | "aqara" | "lutron" | "bond" | "milight" | "august" | "sengled"
     | "somfy" | "ecobee" | "honeywell" | "nest" | "ring" | "eufy" | "wyze" | "dyson"
     | "samsung_tv" | "samsung_st" | "samsung_local" | "govee" | "switchbot" | "panasonic"
+    | "homekit" | "google_cast" | "sony" | "lg_thinq" | "daikin" | "mitsubishi" | "ge_smarthq" | "bosch_homeconnect"
     // --- NEW: Community-Documented Hub Protocols ---
     | "esphome"        // ESPHome native HTTP API
     | "zigbee2mqtt"    // MQTT bridge for Zigbee devices
