@@ -161,6 +161,12 @@ export const ApplianceBridge = {
            // We log the full frame so the demo is authentic
            console.log(`[Samsung TV] Would send WS frame: {"method":"ms.remote.control","params":{"Cmd":"Click","DataOfCmd":"${payload.state ? 'KEY_POWERON' : 'KEY_POWEROFF'}"}}`)
            toast.success(`Samsung TV: WebSocket KEY_${payload.state ? 'POWERON' : 'POWEROFF'} dispatched on LAN`);
+         } else if (device.ecosystem === 'samsung_local') {
+           // Samsung Appliances (AC, Washer, etc) — reverse engineered port 2878 TCP XML protocol
+           toast.info(`Connecting to Samsung Appliance via reverse-engineered TCP port 2878...`);
+           endpoint = `http://${device.ipAddress}:80/samsung_tcp_proxy`;
+           method = 'POST';
+           body = JSON.stringify({ xml: `<Request Type="DeviceControl"><Control CommandID="cmd01" DUID="${device.cloudDeviceId || 'MAC_ADDR'}"><Attr ID="AC_FUN_POWER" Value="${payload.state ? 'On' : 'Off'}"/></Control></Request>` });
         } else if (device.ecosystem === 'samsung_st') {
            // Samsung SmartThings — Official REST Cloud API with user PAT token
            // https://developer.smartthings.com/docs/api/public
@@ -363,6 +369,28 @@ export const ApplianceBridge = {
            endpoint = `http://${device.ipAddress}/relay?state=${payload.state ? '1' : '0'}`;
            method = 'GET';
            body = undefined;
+
+        } else if (device.ecosystem === 'panasonic') {
+           // Panasonic Viera TV & Comfort Cloud local HTTP/SOAP reverse-engineered API (port 55000)
+           toast.info(`Calling Panasonic local SOAP API (Port 55000)...`);
+           endpoint = `http://${device.ipAddress}:55000/nrc/control_0`;
+           method = 'POST';
+           headers = { 'Content-Type': 'text/xml; charset="utf-8"', 'SOAPACTION': '"urn:panasonic-com:service:p00NetworkControl:1#X_SendKey"' };
+           body = `<?xml version="1.0" encoding="utf-8"?>
+<s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/" s:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">
+ <s:Body>
+  <u:X_SendKey xmlns:u="urn:panasonic-com:service:p00NetworkControl:1">
+   <X_KeyEvent>${payload.state ? 'NRC_POWER-ON' : 'NRC_POWER-OFF'}</X_KeyEvent>
+  </u:X_SendKey>
+ </s:Body>
+</s:Envelope>`;
+
+        } else if (device.ecosystem === 'samsung_local') {
+           // Samsung Local API
+           toast.info(`Calling Samsung Local API...`);
+           endpoint = `http://${device.ipAddress}:8001/api/v2/commands/wificon`;
+           method = 'POST';
+           body = JSON.stringify({ command: payload.state ? 'power_on' : 'power_off' });
 
         } else if (device.ecosystem === 'fritzbox') {
            // Fritz!Box TR-064 UPnP/SOAP — https://avm.de/service/schnittstellen/

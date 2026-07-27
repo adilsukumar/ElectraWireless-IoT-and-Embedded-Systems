@@ -43,7 +43,7 @@ export interface Device {
     | "yeelight" | "lifx" | "wiz" | "broadlink" | "magichome" | "wemo" | "nanoleaf" | "meross"
     | "ikea" | "xiaomi" | "aqara" | "lutron" | "bond" | "milight" | "august" | "sengled"
     | "somfy" | "ecobee" | "honeywell" | "nest" | "ring" | "eufy" | "wyze" | "dyson"
-    | "samsung_tv" | "samsung_st" | "govee" | "switchbot"
+    | "samsung_tv" | "samsung_st" | "samsung_local" | "govee" | "switchbot" | "panasonic"
     // --- NEW: Community-Documented Hub Protocols ---
     | "esphome"        // ESPHome native HTTP API
     | "zigbee2mqtt"    // MQTT bridge for Zigbee devices
