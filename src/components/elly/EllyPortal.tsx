@@ -96,6 +96,9 @@ export function EllyPortal({ open, onClose, initialCmd }: { open: boolean; onClo
       } else if (typeof window !== "undefined" && window.speechSynthesis) {
         window.speechSynthesis.cancel();
         const u = new SpeechSynthesisUtterance(s);
+        const voices = window.speechSynthesis.getVoices();
+        const female = voices.find(v => /female|woman|zira|samantha|karen|victoria/i.test(v.name)) || voices.find(v => v.lang.startsWith("en"));
+        if (female) u.voice = female;
         u.rate = 1.02;
         u.pitch = 1.05;
         window.speechSynthesis.speak(u);

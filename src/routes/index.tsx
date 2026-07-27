@@ -54,6 +54,9 @@ function Dashboard() {
       } else if (typeof window !== "undefined" && window.speechSynthesis) {
         window.speechSynthesis.cancel();
         const u = new SpeechSynthesisUtterance(s);
+        const voices = window.speechSynthesis.getVoices();
+        const female = voices.find(v => /female|woman|zira|samantha|karen|victoria/i.test(v.name)) || voices.find(v => v.lang.startsWith("en"));
+        if (female) u.voice = female;
         u.pitch = pitch; u.rate = rate;
         u.onend = () => setIsSpeaking(false);
         u.onerror = () => setIsSpeaking(false);
