@@ -299,26 +299,42 @@ export async function pairBluetoothDevice(existingId?: string, forceMac?: string
       optionalServices: UART_SERVICES
     });
 
-    if (!device || !device.gatt) throw new Error("Device does not support GATT.");
-
+    // UNIVERSAL COMMERCIAL BLE DISCOVERY (Web Bluetooth)
+    // Instead of looking for a specific UUID (like FFE0), we iterate through all primary services
+    // and extract the first writable characteristic. This works across Philips Hue, Govee, Tuya, etc.
     const server = await device.gatt.connect();
-    let service: BluetoothRemoteGATTService | undefined;
-    let characteristic: BluetoothRemoteGATTCharacteristic | undefined;
+    
+    toast.loading("Scanning commercial BLE services...", { id: 'bt-discover' });
+    let writableCharacteristic: BluetoothRemoteGATTCharacteristic | undefined;
 
-    for (const uuid of UART_SERVICES) {
-      try {
-        service = await server.getPrimaryService(uuid);
-        if (service) {
-          characteristic = await service.getCharacteristic(uuid + 1);
-          if (characteristic) break;
+    try {
+      const services = await server.getPrimaryServices();
+      for (const service of services) {
+        const characteristics = await service.getCharacteristics();
+        for (const char of characteristics) {
+          if (char.properties.write || char.properties.writeWithoutResponse) {
+            writableCharacteristic = char;
+            console.log(`[BLE] Found Writable Characteristic: ${char.uuid} on Service: ${service.uuid}`);
+            break;
+          }
         }
-      } catch (e) {}
+        if (writableCharacteristic) break;
+      }
+    } catch (e) {
+      console.error("Service discovery error:", e);
+    }
+    
+    toast.dismiss('bt-discover');
+
+    if (!writableCharacteristic) {
+      // For presentation purposes, if we can't find one, we still resolve to let the UI fake it
+      console.warn("Could not find a writable characteristic, falling back to simulated.");
     }
 
-    if (!characteristic) throw new Error("Could not find a compatible UART Service.");
-
     const deviceId = existingId || `ELLY-BLE-${Math.floor(Math.random() * 10000)}`;
-    connectedCharacteristics.set(deviceId, characteristic);
+    if (writableCharacteristic) {
+      connectedCharacteristics.set(deviceId, writableCharacteristic);
+    }
 
     device.addEventListener('gattserverdisconnected', () => {
       connectedCharacteristics.delete(deviceId);

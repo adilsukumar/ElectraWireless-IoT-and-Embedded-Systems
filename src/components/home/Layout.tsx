@@ -55,7 +55,7 @@ export function Layout({ children }: { children: ReactNode }) {
 
 function LayoutInner({ children }: { children: ReactNode }) {
   const { theme, toggle } = useTheme();
-  const { alerts, state } = useHome();
+  const { alerts, state, switchMode } = useHome();
   const { openElly, open: isEllyOpen } = useElly();
   const { isListening } = useHeyElly({ onWakeWord: openElly, pause: isEllyOpen });
   const [bgEnabled, setBgEnabled] = useState(false);
@@ -165,6 +165,17 @@ function LayoutInner({ children }: { children: ReactNode }) {
               aria-label="Toggle Background Service"
             >
               {bgEnabled ? <Power className="h-4 w-4 text-slate-900 dark:text-white" /> : <PowerOff className="h-4 w-4" />}
+            </Button>
+            <Button
+              variant={state.appMode === "live" ? "default" : "outline"}
+              size="sm"
+              className={`h-9 px-3 rounded-full font-bold text-xs ${state.appMode === "live" ? 'bg-red-500 hover:bg-red-600 text-white shadow-[0_0_10px_rgba(239,68,68,0.5)] border-red-500' : 'text-neutral-500 border-neutral-300 dark:border-neutral-700'}`}
+              onClick={() => {
+                switchMode(state.appMode === "live" ? "demo" : "live");
+              }}
+              aria-label="Toggle App Mode"
+            >
+              {state.appMode === "live" ? "LIVE" : "DEMO"}
             </Button>
           </div>
           <div className="px-4 pb-3">

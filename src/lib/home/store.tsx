@@ -274,6 +274,8 @@ const seedMembers: Member[] = [
 
 function seedState(): HomeState {
   return {
+    appMode: "demo",
+    liveDevices: [],
     rooms,
     devices: seedDevices,
     automations: seedAutomations,
@@ -337,10 +339,18 @@ type Action =
   | { type: "UPDATE_MEMBER"; id: string; patch: Partial<Member> }
   | { type: "REMOVE_MEMBER"; id: string }
   | { type: "LOG"; entry: LogEntry }
-  | { type: "HYDRATE"; state: HomeState };
+  | { type: "HYDRATE"; state: HomeState }
+  | { type: "SWITCH_MODE"; mode: "demo" | "live" };
 
 function pushLog(state: HomeState, entry: LogEntry): HomeState {
   return { ...state, logs: [entry, ...state.logs].slice(0, 60) };
+}
+
+function syncDevices(state: HomeState, devices: Device[]): HomeState {
+  if (state.appMode === "live") {
+    return { ...state, devices, liveDevices: devices };
+  }
+  return { ...state, devices };
 }
 
 function reducer(state: HomeState, action: Action): HomeState {
@@ -350,7 +360,7 @@ function reducer(state: HomeState, action: Action): HomeState {
       if (!d) return state;
       const devices = state.devices.map((x) => (x.id === action.id ? { ...x, on: !x.on } : x));
       return pushLog(
-        { ...state, devices },
+        syncDevices(state, devices),
         log(`${d.name} turned ${!d.on ? "ON" : "OFF"}`, "manual"),
       );
     }
@@ -358,18 +368,18 @@ function reducer(state: HomeState, action: Action): HomeState {
       const devices = state.devices.map((x) =>
         x.id === action.id ? { ...x, ...action.patch } : x,
       );
-      return { ...state, devices };
+      return syncDevices(state, devices);
     }
     case "REMOVE_DEVICE": {
       const d = state.devices.find((x) => x.id === action.id);
       return pushLog(
-        { ...state, devices: state.devices.filter((x) => x.id !== action.id) },
+        syncDevices(state, state.devices.filter((x) => x.id !== action.id)),
         log(`Device "${d?.name}" deleted`, "manual")
       );
     }
     case "ADD_DEVICE": {
       return pushLog(
-        { ...state, devices: [...state.devices, action.device] },
+        syncDevices(state, [...state.devices, action.device]),
         log(`Device "${action.device.name}" added`, "manual"),
       );
     }
@@ -384,13 +394,13 @@ function reducer(state: HomeState, action: Action): HomeState {
         x.type === "sensor" || x.type === "fridge" ? x : { ...x, on: false },
       );
       return pushLog(
-        { ...state, devices },
+        syncDevices(state, devices),
         log("Turn Off All, non-critical devices powered down", "manual"),
       );
     }
     case "ALL_ON": {
       const devices = state.devices.map((x) => (x.type === "sensor" ? x : { ...x, on: true }));
-      return pushLog({ ...state, devices }, log("Turn On All, devices powered up", "manual"));
+      return pushLog(syncDevices(state, devices), log("Turn On All, devices powered up", "manual"));
     }
     case "NIGHT_MODE": {
       const devices = state.devices.map((x) => {
@@ -398,14 +408,14 @@ function reducer(state: HomeState, action: Action): HomeState {
         if (x.type === "ac") return { ...x, temperature: 24 };
         return x;
       });
-      return pushLog({ ...state, devices }, log("Night Mode activated", "manual"));
+      return pushLog(syncDevices(state, devices), log("Night Mode activated", "manual"));
     }
     case "AWAY_MODE": {
       const devices = state.devices.map((x) =>
         x.type === "sensor" || x.type === "fridge" ? x : { ...x, on: false },
       );
       return pushLog(
-        { ...state, devices, cameraEnabled: true, cameraPrivacy: false, cameraMotionAlerts: true },
+        { ...syncDevices(state, devices), cameraEnabled: true, cameraPrivacy: false, cameraMotionAlerts: true },
         log("Away Mode activated, security armed", "manual"),
       );
     }
@@ -417,12 +427,12 @@ function reducer(state: HomeState, action: Action): HomeState {
         if (x.type === "tv") return { ...x, on: false };
         return x;
       });
-      return pushLog({ ...state, devices }, log("Energy Saver Mode applied", "manual"));
+      return pushLog(syncDevices(state, devices), log("Energy Saver Mode applied", "manual"));
     }
     case "EMERGENCY": {
       const devices = state.devices.map((x) => (x.type === "fridge" ? x : { ...x, on: false }));
       return pushLog(
-        { ...state, devices },
+        syncDevices(state, devices),
         log("EMERGENCY SHUTDOWN executed, power cut to all non-critical devices", "system"),
       );
     }
@@ -490,6 +500,14 @@ function reducer(state: HomeState, action: Action): HomeState {
       return pushLog(state, action.entry);
     case "HYDRATE":
       return action.state;
+    case "SWITCH_MODE": {
+      if (action.mode === state.appMode) return state;
+      if (action.mode === "demo") {
+        return pushLog({ ...state, appMode: "demo", devices: seedDevices }, log("Switched to Demo Mode", "system"));
+      } else {
+        return pushLog({ ...state, appMode: "live", devices: state.liveDevices || [] }, log("Switched to Live Mode", "system"));
+      }
+    }
     default:
       return state;
   }
@@ -498,6 +516,7 @@ function reducer(state: HomeState, action: Action): HomeState {
 interface Ctx {
   state: HomeState;
   dispatch: React.Dispatch<Action>;
+  switchMode: (mode: "demo" | "live") => void;
   toggleDevice: (id: string) => Promise<boolean | "REDIRECT">;
   toggleActivation: (id: string) => Promise<void>;
   totalWatts: number;
@@ -739,7 +758,11 @@ export function HomeProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const value: Ctx = { state, dispatch, toggleDevice, toggleActivation, totalWatts, activeCount, alerts, canEdit, runVoiceCommand, newlyDiscoveredDevice, setNewlyDiscoveredDevice };
+  const switchMode = (mode: "demo" | "live") => {
+    dispatch({ type: "SWITCH_MODE", mode });
+  };
+
+  const value: Ctx = { state, dispatch, switchMode, toggleDevice, toggleActivation, totalWatts, activeCount, alerts, canEdit, runVoiceCommand, newlyDiscoveredDevice, setNewlyDiscoveredDevice };
   return <HomeContext.Provider value={value}>{children}</HomeContext.Provider>;
 }
 

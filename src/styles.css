@@ -98,44 +98,44 @@
 }
 
 .dark {
-  /* Dark Theme — Techno / Infinite space */
-  --background: #000000;
-  --foreground: #ffffff;
-  --card: #12121a;
-  --card-foreground: #ffffff;
-  --popover: #12121a;
-  --popover-foreground: #ffffff;
-  --primary: #8b5cf6;
+  /* Deep Space Purple — ELLY signature theme */
+  --background: #07010f;
+  --foreground: #f0ecff;
+  --card: #110820;
+  --card-foreground: #f0ecff;
+  --popover: #110820;
+  --popover-foreground: #f0ecff;
+  --primary: #a855f7;
   --primary-foreground: #ffffff;
-  --secondary: #1b1b26;
-  --secondary-foreground: #c4b5fd;
-  --muted: #16161f;
-  --muted-foreground: #9b96b3;
-  --accent: #2a2a35;
-  --accent-foreground: #c4b5fd;
+  --secondary: #1e0d35;
+  --secondary-foreground: #d8b4fe;
+  --muted: #160b28;
+  --muted-foreground: #9d8abf;
+  --accent: #2d1054;
+  --accent-foreground: #d8b4fe;
   --destructive: #f0506e;
   --destructive-foreground: #ffffff;
   --success: #34d399;
   --success-foreground: #06140f;
   --warning: #fbbf24;
   --warning-foreground: #1a1a1a;
-  --border: #2a2a35;
-  --input: #2a2a35;
-  --ring: #8b5cf6;
-  --chart-1: #8b5cf6;
-  --chart-2: #a78bfa;
-  --chart-3: #c4b5fd;
-  --chart-4: #6d4ed6;
+  --border: #2d1054;
+  --input: #2d1054;
+  --ring: #a855f7;
+  --chart-1: #a855f7;
+  --chart-2: #c084fc;
+  --chart-3: #e879f9;
+  --chart-4: #7c3aed;
   --chart-5: #fbbf24;
-  --glow: #8b5cf6;
-  --sidebar: #0a0a10;
-  --sidebar-foreground: #ffffff;
-  --sidebar-primary: #8b5cf6;
+  --glow: #a855f7;
+  --sidebar: #07010f;
+  --sidebar-foreground: #f0ecff;
+  --sidebar-primary: #a855f7;
   --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #1b1b26;
-  --sidebar-accent-foreground: #c4b5fd;
-  --sidebar-border: #2a2a35;
-  --sidebar-ring: #8b5cf6;
+  --sidebar-accent: #1e0d35;
+  --sidebar-accent-foreground: #d8b4fe;
+  --sidebar-border: #2d1054;
+  --sidebar-ring: #a855f7;
 }
 
 @layer base {

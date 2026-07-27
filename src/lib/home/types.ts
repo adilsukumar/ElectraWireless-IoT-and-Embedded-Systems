@@ -7,6 +7,11 @@ export type DeviceType =
   | "appliance"
   | "sensor"
   | "tv"
+  | "lock"
+  | "vacuum"
+  | "sprinkler"
+  | "speaker"
+  | "hub"
   | "wpt"; // wireless power transmitter
 
 export type Role = "owner" | "family" | "guest";
@@ -30,8 +35,53 @@ export interface Device {
   thermal?: number; // celsius
   assignedRoles?: Role[];
   macAddress?: string;
+  ipAddress?: string;
   brand?: string;
-  connectionType?: "direct" | "third-party";
+  ecosystem?:
+    // --- Existing 35 Ecosystems ---
+    | "tuya" | "tplink" | "shelly" | "sonoff" | "wled" | "hue" | "govee" | "switchbot"
+    | "yeelight" | "lifx" | "wiz" | "broadlink" | "magichome" | "wemo" | "nanoleaf" | "meross"
+    | "ikea" | "xiaomi" | "aqara" | "lutron" | "bond" | "milight" | "august" | "sengled"
+    | "somfy" | "ecobee" | "honeywell" | "nest" | "ring" | "eufy" | "wyze" | "dyson"
+    | "samsung_tv" | "samsung_st" | "govee" | "switchbot"
+    // --- NEW: Community-Documented Hub Protocols ---
+    | "esphome"        // ESPHome native HTTP API
+    | "zigbee2mqtt"    // MQTT bridge for Zigbee devices
+    | "zwave_js"       // Z-Wave JS WebSocket API
+    | "homeassistant" // Home Assistant local REST API
+    | "openhab"        // openHAB REST API
+    | "hubitat"        // Hubitat Maker API
+    | "domoticz"       // Domoticz JSON API
+    | "deconz"         // deCONZ/Phoscon REST + WebSocket
+    | "homematic"      // HomematicIP XML-RPC
+    | "loxone"         // Loxone Miniserver WebSocket
+    | "knx"            // KNX IP Tunneling
+    | "fibaro"         // Fibaro HC REST API
+    // --- NEW: Media & Entertainment ---
+    | "kodi"           // Kodi JSON-RPC
+    | "roku"           // Roku ECP (External Control Protocol)
+    | "lg_tv"          // LG webOS WebSocket (ssap://)
+    | "vizio"          // Vizio SmartCast local API
+    | "sonos"          // Sonos UPnP SOAP
+    | "denon"          // Denon/Marantz AVR HTTP
+    | "yamaha"         // Yamaha MusicCast HTTP
+    // --- NEW: Locks, Robots, Garden ---
+    | "nuki"           // Nuki Smart Lock local HTTP
+    | "roomba"         // iRobot Roomba local MQTT
+    | "roborock"       // Roborock Miio (community)
+    | "opensprinkler"  // OpenSprinkler REST
+    | "mystrom"        // myStrom Switch HTTP
+    | "fritzbox"       // Fritz!Box TR-064 UPnP SOAP
+    | "fronius"        // Fronius Solar Inverter REST
+    | "pihole"         // Pi-hole REST API
+    // --- NEW: Matter / Thread (CSA Universal Standard) ---
+    | "matter"         // Matter over WiFi/Thread (CHIP protocol, port 5540)
+    | "thread"         // Thread Border Router (OpenThread, port 8080)
+    | "tasmota"        // Tasmota open firmware HTTP API
+    | "generic";
+  cloudDeviceId?: string;  // For SmartThings / cloud-managed device IDs
+  cloudToken?: string;     // For authorized cloud API integrations (PAT etc.)
+  connectionType?: "direct" | "third-party" | "ble" | "wifi";
 }
 
 export interface Room {
@@ -77,6 +127,8 @@ export interface FallbackTier {
 }
 
 export interface HomeState {
+  appMode: "demo" | "live";
+  liveDevices: Device[];
   rooms: Room[];
   devices: Device[];
   automations: Automation[];
