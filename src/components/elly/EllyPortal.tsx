@@ -127,7 +127,7 @@ export function EllyPortal({ open, onClose, initialCmd }: { open: boolean; onClo
     try {
       // Small artificial delay to feel like it's thinking
       await new Promise(resolve => setTimeout(resolve, 600));
-      const res = handleLocalChat(value, state, dispatch, runVoiceCommand);
+      const res = await handleLocalChat(value, state, dispatch, runVoiceCommand);
       
       const reply = res.reply || "Done.";
       setMessages((m) => [...m, { id: uid(), role: "assistant", content: reply }]);

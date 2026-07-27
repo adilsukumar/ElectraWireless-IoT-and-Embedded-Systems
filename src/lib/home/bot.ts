@@ -120,10 +120,10 @@ async function processSingleIntent(
   }
 
   // 3. SENTIMENT (WITH DYNAMIC EMOTION!)
-  if (t.match(/\b(i am|i'm|feeling)\s+(tired|exhausted|sleepy|beat)\b/)) return rep("I'm sorry you're feeling drained. Should I dim the lights for you?", undefined, 'calm');
-  if (t.match(/\b(i am|i'm|feeling)\s+(sad|depressed|down|unhappy)\b/)) return rep("I'm really sorry to hear that. I'm here for you if you need me to adjust the room.", undefined, 'sad');
-  if (t.match(/\b(i am|i'm|feeling)\s+(happy|great|excited|awesome|good)\b/)) return rep("That's so wonderful to hear! I love good energy in the house.", undefined, 'happy');
-  if (t.match(/\b(i am|i'm|feeling)\s+(sick|ill|unwell|fever)\b/)) return rep("Oh no, please take care of yourself. I'll keep the house quiet.", undefined, 'sad');
+  if (t.match(/\b(i am|im|i'm|feeling)\s+(tired|exhausted|sleepy|beat)\b/)) return rep("I'm sorry you're feeling drained. Should I dim the lights for you?", undefined, 'calm');
+  if (t.match(/\b(i am|im|i'm|feeling)\s+(sad|depressed|down|unhappy)\b/)) return rep("I'm really sorry to hear that. I'm here for you if you need me to adjust the room.", undefined, 'sad');
+  if (t.match(/\b(i am|im|i'm|feeling)\s+(happy|great|excited|awesome|good)\b/)) return rep("That's so wonderful to hear! I love good energy in the house.", undefined, 'happy');
+  if (t.match(/\b(i am|im|i'm|feeling)\s+(sick|ill|unwell|fever)\b/)) return rep("Oh no, please take care of yourself. I'll keep the house quiet.", undefined, 'sad');
 
   // 4. SMART HOME COMMANDS
   const acted = runVoiceCommand(t, { silent: true });
