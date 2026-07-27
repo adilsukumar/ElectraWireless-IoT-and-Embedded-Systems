@@ -1,4 +1,4 @@
-﻿import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState, useEffect, useRef } from "react";
 import {
   Power, Moon, ShieldCheck, Zap, OctagonAlert,
@@ -70,14 +70,34 @@ function Dashboard() {
     setIsThinking(true);
     setTranscript(`"${text}"`);
     try {
-      const res = await handleLocalChat(text, state, dispatch, runVoiceCommand) as any;
+      const response = await fetch("/api/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ 
+          messages: [{ role: "user", content: text }], 
+          homeSummary: `${state.devices.filter(d => d.on).length} devices on. Role: ${state.role}.` 
+        })
+      });
+      if (!response.ok) throw new Error("API failed");
+      const data = await response.json();
+      
       setIsThinking(false);
-      setTranscript(res.reply);
-      speak(res.reply, res.emotion);
-      if (res.navigateTo) navigate({ to: res.navigateTo });
+      const reply = data.reply || "Done.";
+      setTranscript(reply);
+      speak(reply);
+      if (data.command) runVoiceCommand(data.command, { silent: true });
     } catch {
-      setIsThinking(false);
-      setTranscript("Error processing request");
+      // Fallback
+      try {
+        const res = await handleLocalChat(text, state, dispatch, runVoiceCommand) as any;
+        setIsThinking(false);
+        setTranscript(res.reply);
+        speak(res.reply, res.emotion);
+        if (res.navigateTo) navigate({ to: res.navigateTo });
+      } catch {
+        setIsThinking(false);
+        setTranscript("Error processing request");
+      }
     }
   };
 

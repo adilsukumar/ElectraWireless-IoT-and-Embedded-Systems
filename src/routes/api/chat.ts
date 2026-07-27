@@ -34,11 +34,11 @@ export const Route = createFileRoute("/api/chat")({
           return new Response("Messages are required", { status: 400 });
         }
 
-        const key = process.env.OPENAI_API_KEY || "ollama";
+        const key = process.env.OPENAI_API_KEY || "pollinations";
 
-        const baseURL = process.env.OPENAI_BASE_URL || "http://localhost:11434/v1";
+        const baseURL = process.env.OPENAI_BASE_URL || "https://text.pollinations.ai/openai";
         const provider = createOpenAIProvider(key, baseURL);
-        const model = provider("llama3.2");
+        const model = provider(process.env.OPENAI_API_KEY ? "gpt-4o-mini" : "openai");
 
         const system = [
           "You are ELLY, a friendly, intelligent AI assistant inside the ElectraWireless smart home app.",

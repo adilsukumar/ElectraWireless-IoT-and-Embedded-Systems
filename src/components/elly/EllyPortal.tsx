@@ -127,15 +127,39 @@ export function EllyPortal({ open, onClose, initialCmd }: { open: boolean; onClo
     try {
       // Small artificial delay to feel like it's thinking
       await new Promise(resolve => setTimeout(resolve, 600));
-      const res = await handleLocalChat(value, state, dispatch, runVoiceCommand);
+
+      const response = await fetch("/api/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ 
+          messages: history, 
+          homeSummary: `${activeCount} devices on, total load ${(totalWatts / 1000).toFixed(2)} kW. Active: ${onDevices || "none"}. Role: ${state.role}.` 
+        })
+      });
+
+      if (!response.ok) throw new Error("API failed");
+
+      const data = await response.json();
+      const reply = data.reply || "Done.";
       
-      const reply = res.reply || "Done.";
+      if (data.command) {
+        runVoiceCommand(data.command, { silent: true });
+      }
+
       setMessages((m) => [...m, { id: uid(), role: "assistant", content: reply }]);
       speak(reply);
-    } catch {
-      const msg = "Sorry, I had trouble processing that.";
-      setMessages((m) => [...m, { id: uid(), role: "assistant", content: msg }]);
-      speak(msg);
+    } catch (e) {
+      // Fallback to local regex bot if API fails
+      try {
+        const res = await handleLocalChat(value, state, dispatch, runVoiceCommand);
+        const reply = res.reply || "I couldn't process that locally.";
+        setMessages((m) => [...m, { id: uid(), role: "assistant", content: reply }]);
+        speak(reply);
+      } catch {
+        const msg = "Sorry, I had trouble processing that.";
+        setMessages((m) => [...m, { id: uid(), role: "assistant", content: msg }]);
+        speak(msg);
+      }
     } finally {
       setThinking(false);
     }
