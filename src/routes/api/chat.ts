@@ -46,6 +46,7 @@ export const Route = createFileRoute("/api/chat")({
           "On top of conversation, you can also control the home. When the user clearly asks to change a device or mode, fill the command field with a short control phrase; otherwise leave it null and just reply.",
           "You can control individual devices, rooms, lights, fans, plugs, the TV, and the AC, as well as turn everything on or off, and activate night, away, or energy saver modes.",
           "Keep replies concise but complete. Never use the em dash character. Use commas, periods, or short sentences instead.",
+          "CRITICAL: You MUST respond with ONLY a valid JSON object containing exactly two keys: 'reply' (your conversational response) and 'command' (the control phrase or null). Do NOT wrap the JSON in markdown code blocks, do not include any prefix or suffix text. Just the raw JSON object.",
           body.homeSummary ? `Current home state: ${body.homeSummary}` : "",
         ]
           .filter(Boolean)
@@ -56,16 +57,24 @@ export const Route = createFileRoute("/api/chat")({
           .join("\n");
 
         try {
-          const { output } = await generateText({
+          const { text } = await generateText({
             model,
-            output: Output.object({ schema: Result }),
             system,
-            prompt: `${convo}\n\nReply as ELLY.`,
+            prompt: `${convo}\n\nReply as ELLY. Output ONLY raw JSON.`,
           });
+          
+          let parsed;
+          try {
+            parsed = JSON.parse(text.trim());
+          } catch(e) {
+            const match = text.match(/\{[\s\S]*\}/);
+            parsed = match ? JSON.parse(match[0]) : { reply: text, command: null };
+          }
+
           const clean = (s: string) => s.replace(/\s*\u2014\s*/g, ", ").replace(/\u2014/g, " ");
           return Response.json({
-            reply: clean(output.reply),
-            command: output.command ? clean(output.command) : null,
+            reply: clean(parsed.reply || "Done."),
+            command: parsed.command ? clean(parsed.command) : null,
           });
         } catch (err) {
           const message = err instanceof Error ? err.message : "Unknown error";
