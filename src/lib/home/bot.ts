@@ -8,62 +8,49 @@ export async function handleLocalChat(
   dispatch: any, 
   runVoiceCommand: (t: string, opts?: { silent?: boolean }) => boolean
 ) {
-  const t = text.trim();
+  const t = text.toLowerCase().trim();
   if (!t) return { reply: "Yes?", emotion: "calm" };
 
-  conversationHistory.push({ role: "user", text: t, intent: "generative" });
+  conversationHistory.push({ role: "user", text: t, intent: "offline" });
   if (conversationHistory.length > 20) conversationHistory.shift();
 
-  try {
-    const onDevices = state.devices.filter(d => d.on);
-    const totalWatts = onDevices.reduce((acc, d) => acc + d.watts, 0);
-    const onDevicesList = onDevices.length > 0 ? onDevices.map(d => d.name).join(", ") : "None";
-    const timeStr = new Date().toLocaleTimeString();
-    const dateStr = new Date().toLocaleDateString();
-    
-    const recentHistory = conversationHistory.slice(-4).map(h => `${h.role.toUpperCase()}: ${h.text}`).join(" | ");
+  const rep = (msg: string, emotion: string = 'normal') => {
+    conversationHistory.push({ role: "elly", text: msg, intent: "offline" });
+    return { reply: msg, emotion };
+  };
 
-    const prompt = `You are ELLY, a highly advanced, futuristic smart home AI assistant created by ElectraWireless. 
-Keep your answer brief, concise, and conversational. Do not use emojis.
-CURRENT STATE: Time is ${timeStr} on ${dateStr}. House is drawing ${totalWatts}W. Active devices: ${onDevicesList}.
-RECENT HISTORY: ${recentHistory}
-CRITICAL INSTRUCTION: If you need to physically alter the smart home based on the user's request (e.g. turning off all lights, setting night mode, setting ac to 20), you MUST include the exact command in square brackets like this: [CMD: turn off the lights]. You can output multiple commands if needed: [CMD: turn off the lights][CMD: play music].
-CRITICAL INSTRUCTION 2: If your response carries a strong emotion, you may append [EMOTION: happy], [EMOTION: sad], [EMOTION: urgent], or [EMOTION: calm] at the end.
-USER ASKS: ${t}`;
-    
-    const aiRes = await fetch(`https://text.pollinations.ai/${encodeURIComponent(prompt)}`);
-    
-    if (aiRes.ok) {
-      let answer = await aiRes.text();
-      if (answer && answer.length > 0) {
-        let parsedEmotion: any = 'normal';
-        const emoMatch = answer.match(/\[EMOTION:\s*(.*?)\]/i);
-        if (emoMatch && emoMatch[1]) {
-          parsedEmotion = emoMatch[1].trim().toLowerCase();
-          answer = answer.replace(/\[EMOTION:\s*(.*?)\]/ig, '');
-        }
-
-        // Process all CMD blocks
-        let cmdMatches;
-        const cmdRegex = /\[CMD:\s*(.*?)\]/ig;
-        while ((cmdMatches = cmdRegex.exec(answer)) !== null) {
-          if (cmdMatches[1]) {
-            runVoiceCommand(cmdMatches[1].trim(), { silent: true });
-          }
-        }
-        answer = answer.replace(/\[CMD:\s*(.*?)\]/ig, '');
-
-        const cleanAnswer = answer.replace(/[*#_]/g, '').trim();
-        conversationHistory.push({ role: "elly", text: cleanAnswer, intent: "generative" });
-        return { reply: cleanAnswer, emotion: parsedEmotion };
-      }
-    }
-  } catch (e) {
-    console.error("Pollinations AI failed:", e);
+  // Basic commands
+  const acted = runVoiceCommand(t, { silent: true });
+  if (acted) {
+    if (t.match(/\b(night|sleep)\b/)) return rep("Night mode is on, get some rest.", 'calm');
+    if (t.match(/\b(away|leaving)\b/)) return rep("The house is secured.");
+    if (t.match(/\b(eco|saver)\b/)) return rep("Power saving activated.");
+    if (t.match(/\b(emergency|red alert)\b/)) return rep("Emergency mode active!", 'urgent');
+    if (t.match(/\b(off)\b/)) return rep("Powered down.");
+    if (t.match(/\b(on)\b/)) return rep("Powered up.");
+    if (t.match(/\b(ac|air con)\b/)) return rep("Climate control adjusted.");
+    if (t.match(/\b(light|lights|lamp)\b/)) return rep("Lights updated.");
+    if (t.match(/\b(fan)\b/)) return rep("Fan adjusted.");
+    if (t.match(/\b(tv|television)\b/)) return rep("TV toggled.");
+    if (t.match(/\b(plug|socket)\b/)) return rep("Plug toggled.");
+    return rep("I've executed that command.");
   }
 
-  // Fallback
-  const finalMsg = "I'm having a bit of trouble connecting to my neural net right now.";
-  conversationHistory.push({ role: "elly", text: finalMsg, intent: "error" });
-  return { reply: finalMsg, emotion: 'sad' };
+  // Basic status
+  if (t.match(/\b(status|how is the house)\b/)) {
+    const onDevices = state.devices.filter(d => d.on);
+    return rep(`There are ${onDevices.length} devices running right now.`);
+  }
+
+  if (t.match(/\b(time)\b/)) {
+    return rep(`It is currently ${new Date().toLocaleTimeString([], { hour: '2-digit', minute:'2-digit' })}`);
+  }
+
+  // Specific fallback for emotions the user mentioned
+  if (t.match(/\b(sad|depressed|down)\b/)) {
+    return rep("I'm sorry you're feeling down. I am currently running offline, so I can't generate a thoughtful response right now.", 'sad');
+  }
+
+  // Catch-all explaining the API key requirement
+  return rep("I'm running in offline mode because the OPENAI_API_KEY is missing from the environment. Add an OpenAI key to enable my full generative neural net! You can still use basic commands like 'turn on the lights'.", 'sad');
 }
