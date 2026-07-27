@@ -18,6 +18,7 @@ import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as SelectDeviceRouteImport } from './routes/select-device'
 import { Route as RoomsRouteImport } from './routes/rooms'
 import { Route as RemotesRouteImport } from './routes/remotes'
+import { Route as MapRouteImport } from './routes/map'
 import { Route as FridgeRemoteRouteImport } from './routes/fridge-remote'
 import { Route as EnergyRouteImport } from './routes/energy'
 import { Route as DevicesRouteImport } from './routes/devices'
@@ -78,6 +79,11 @@ const RoomsRoute = RoomsRouteImport.update({
 const RemotesRoute = RemotesRouteImport.update({
   id: '/remotes',
   path: '/remotes',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MapRoute = MapRouteImport.update({
+  id: '/map',
+  path: '/map',
   getParentRoute: () => rootRouteImport,
 } as any)
 const FridgeRemoteRoute = FridgeRemoteRouteImport.update({
@@ -175,6 +181,7 @@ export interface FileRoutesByFullPath {
   '/devices': typeof DevicesRoute
   '/energy': typeof EnergyRoute
   '/fridge-remote': typeof FridgeRemoteRoute
+  '/map': typeof MapRoute
   '/remotes': typeof RemotesRoute
   '/rooms': typeof RoomsRoute
   '/select-device': typeof SelectDeviceRoute
@@ -202,6 +209,7 @@ export interface FileRoutesByTo {
   '/devices': typeof DevicesRoute
   '/energy': typeof EnergyRoute
   '/fridge-remote': typeof FridgeRemoteRoute
+  '/map': typeof MapRoute
   '/remotes': typeof RemotesRoute
   '/rooms': typeof RoomsRoute
   '/select-device': typeof SelectDeviceRoute
@@ -230,6 +238,7 @@ export interface FileRoutesById {
   '/devices': typeof DevicesRoute
   '/energy': typeof EnergyRoute
   '/fridge-remote': typeof FridgeRemoteRoute
+  '/map': typeof MapRoute
   '/remotes': typeof RemotesRoute
   '/rooms': typeof RoomsRoute
   '/select-device': typeof SelectDeviceRoute
@@ -259,6 +268,7 @@ export interface FileRouteTypes {
     | '/devices'
     | '/energy'
     | '/fridge-remote'
+    | '/map'
     | '/remotes'
     | '/rooms'
     | '/select-device'
@@ -286,6 +296,7 @@ export interface FileRouteTypes {
     | '/devices'
     | '/energy'
     | '/fridge-remote'
+    | '/map'
     | '/remotes'
     | '/rooms'
     | '/select-device'
@@ -313,6 +324,7 @@ export interface FileRouteTypes {
     | '/devices'
     | '/energy'
     | '/fridge-remote'
+    | '/map'
     | '/remotes'
     | '/rooms'
     | '/select-device'
@@ -341,6 +353,7 @@ export interface RootRouteChildren {
   DevicesRoute: typeof DevicesRoute
   EnergyRoute: typeof EnergyRoute
   FridgeRemoteRoute: typeof FridgeRemoteRoute
+  MapRoute: typeof MapRoute
   RemotesRoute: typeof RemotesRoute
   RoomsRoute: typeof RoomsRoute
   SelectDeviceRoute: typeof SelectDeviceRoute
@@ -418,6 +431,13 @@ declare module '@tanstack/react-router' {
       path: '/remotes'
       fullPath: '/remotes'
       preLoaderRoute: typeof RemotesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/map': {
+      id: '/map'
+      path: '/map'
+      fullPath: '/map'
+      preLoaderRoute: typeof MapRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/fridge-remote': {
@@ -549,6 +569,7 @@ const rootRouteChildren: RootRouteChildren = {
   DevicesRoute: DevicesRoute,
   EnergyRoute: EnergyRoute,
   FridgeRemoteRoute: FridgeRemoteRoute,
+  MapRoute: MapRoute,
   RemotesRoute: RemotesRoute,
   RoomsRoute: RoomsRoute,
   SelectDeviceRoute: SelectDeviceRoute,

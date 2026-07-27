@@ -43,6 +43,7 @@ const nav = [
 ] as const;
 
 import { autoConnectBluetooth } from "@/lib/home/bluetooth";
+import { DevicePairingDialog } from "@/components/home/DevicePairingDialog";
 
 export function Layout({ children }: { children: ReactNode }) {
   return (
@@ -226,6 +227,7 @@ function LayoutInner({ children }: { children: ReactNode }) {
           richColors={true}
           style={{ position: "absolute" }}
         />
+        <DevicePairingDialog />
       </div>
     </div>
   );

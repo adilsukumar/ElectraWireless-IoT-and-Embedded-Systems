@@ -7,6 +7,7 @@ import { useHome } from "@/lib/home/store";
 import { handleLocalChat } from "@/lib/home/bot";
 import { EllyLogo } from "./EllyLogo";
 import { TextToSpeech } from "@capacitor-community/text-to-speech";
+import { SpeechRecognition } from "@capacitor-community/speech-recognition";
 
 const chips = [
   "Turn off all lights",
@@ -140,47 +141,72 @@ export function EllyPortal({ open, onClose, initialCmd }: { open: boolean; onClo
     }
   };
 
-  const stopListening = () => {
-    setListening(false);
+  const startListening = async () => {
+    setHeard("");
+    setListening(true);
     try {
-      recognitionRef.current?.stop();
-    } catch {
-      /* ignore */
+      if (typeof window !== "undefined" && (window as any).cordova) {
+        const hasPermission = await SpeechRecognition.checkPermissions();
+        if (hasPermission.speechRecognition !== 'granted') {
+          await SpeechRecognition.requestPermissions();
+        }
+        
+        const result = await SpeechRecognition.start({
+          language: 'en-US',
+          maxResults: 1,
+          prompt: 'Listening...',
+          partialResults: true,
+          popup: true,
+        });
+        
+        setListening(false);
+        if (result.matches && result.matches.length > 0) {
+          const transcript = result.matches[0];
+          setHeard(transcript);
+          sendMessage(transcript);
+        }
+      } else {
+        // Fallback for web preview
+        const w = window as any;
+        const Ctor = w.SpeechRecognition || w.webkitSpeechRecognition;
+        if (!Ctor) return;
+        const rec = new Ctor();
+        rec.lang = "en-US";
+        rec.continuous = false;
+        rec.interimResults = true;
+        rec.onresult = (e: any) => {
+          const transcript = Array.from({ length: e.results.length })
+            .map((_, i) => e.results[i][0].transcript)
+            .join(" ");
+          setHeard(transcript);
+        };
+        rec.onend = () => {
+          setListening(false);
+          setHeard((current) => {
+            if (current.trim()) sendMessage(current.trim());
+            return "";
+          });
+        };
+        rec.onerror = () => setListening(false);
+        recognitionRef.current = rec;
+        rec.start();
+      }
+    } catch (e) {
+      setListening(false);
     }
   };
 
-  const startListening = () => {
-    setHeard("");
-    const w = window as unknown as {
-      SpeechRecognition?: new () => SpeechRecognitionLike;
-      webkitSpeechRecognition?: new () => SpeechRecognitionLike;
-    };
-    const Ctor = w.SpeechRecognition || w.webkitSpeechRecognition;
-    if (!Ctor) {
-      setListening(true);
-      return;
+  const stopListening = () => {
+    setListening(false);
+    try {
+      if (typeof window !== "undefined" && (window as any).cordova) {
+        SpeechRecognition.stop();
+      } else {
+        recognitionRef.current?.stop();
+      }
+    } catch {
+      /* ignore */
     }
-    const rec = new Ctor();
-    rec.lang = "en-US";
-    rec.continuous = false;
-    rec.interimResults = true;
-    rec.onresult = (e) => {
-      const transcript = Array.from({ length: e.results.length })
-        .map((_, i) => e.results[i][0].transcript)
-        .join(" ");
-      setHeard(transcript);
-    };
-    rec.onend = () => {
-      setListening(false);
-      setHeard((current) => {
-        if (current.trim()) sendMessage(current.trim());
-        return "";
-      });
-    };
-    rec.onerror = () => setListening(false);
-    recognitionRef.current = rec;
-    setListening(true);
-    rec.start();
   };
 
   const toggleMic = () => {

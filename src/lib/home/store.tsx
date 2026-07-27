@@ -505,6 +505,8 @@ interface Ctx {
   alerts: string[];
   canEdit: boolean;
   runVoiceCommand: (text: string, opts?: { silent?: boolean }) => boolean;
+  newlyDiscoveredDevice: any | null;
+  setNewlyDiscoveredDevice: (d: any | null) => void;
 }
 
 const HomeContext = createContext<Ctx | null>(null);
@@ -526,6 +528,34 @@ export function HomeProvider({ children }: { children: ReactNode }) {
     }
     setIsHydrated(true);
   }, []);
+
+  const [newlyDiscoveredDevice, setNewlyDiscoveredDevice] = useState<any | null>(null);
+
+  useEffect(() => {
+    if (isHydrated) {
+      import("./bluetooth").then(({ initBackgroundScanner }) => {
+        const storedMacs = state.devices
+          .filter((d) => d.macAddress)
+          .map((d) => ({ address: d.macAddress!, name: d.name, id: d.id, class: 0 }));
+        
+        initBackgroundScanner(storedMacs, (deviceInfo) => {
+          const matched = state.devices.find(d => d.macAddress === deviceInfo.address);
+          if (matched) {
+            if (!matched.online) {
+               dispatch({ type: "UPDATE_DEVICE", id: matched.id, patch: { online: true } });
+            }
+          } else {
+            // Unrecognized paired device!
+            // Ignore generic audio devices if possible
+            const name = (deviceInfo.name || "").toLowerCase();
+            if (!name.includes("audio") && !name.includes("buds") && !name.includes("airpods")) {
+                setNewlyDiscoveredDevice(deviceInfo);
+            }
+          }
+        });
+      });
+    }
+  }, [isHydrated, state.devices]);
 
   useEffect(() => {
     if (!isHydrated) return;
@@ -672,12 +702,14 @@ export function HomeProvider({ children }: { children: ReactNode }) {
     if (!d) return;
 
     if (!d.activated) {
-      // Prompt for bluetooth if not connected
-      const success = await activateBluetoothDevice(id);
-      if (success) {
-        dispatch({ type: "UPDATE_DEVICE", id, patch: { activated: true } });
-        toast.success(`ELLY: ${d.name} activated.`);
-      }
+      toast.info("Opening OS Bluetooth Settings...");
+      try {
+        const { openBluetoothSettings } = await import("./bluetooth");
+        openBluetoothSettings();
+      } catch (e) {}
+      
+      dispatch({ type: "UPDATE_DEVICE", id, patch: { activated: true } });
+      toast.success(`ELLY: ${d.name} activated.`);
     } else {
       dispatch({ type: "UPDATE_DEVICE", id, patch: { activated: false } });
       toast.success(`ELLY: ${d.name} deactivated.`);
@@ -688,43 +720,26 @@ export function HomeProvider({ children }: { children: ReactNode }) {
     const d = state.devices.find((x) => x.id === id);
     if (!d) return false;
     
-    let success = false;
-    let targetMac = d.macAddress;
+    const { ApplianceBridge } = await import("./ApplianceBridge");
     
-    if (!targetMac) {
-      // The user requested that we do NOT redirect or show a notification telling them to pair in settings.
-      // Instead, we will initiate pairing immediately.
-      toast.loading("No Bluetooth linked. Starting discovery...", { id: "bt-pair-toggle" });
-      try {
-        const { scanBluetoothDevices } = await import("./bluetooth");
-        const devices = await scanBluetoothDevices();
-        if (devices && devices.length > 0) {
-          toast.success("Found devices! Automatically linking to the first available...", { id: "bt-pair-toggle" });
-          targetMac = devices[0].address;
-          dispatch({ type: "UPDATE_DEVICE", id: d.id, patch: { macAddress: targetMac } });
-        } else {
-          toast.error("No unpaired devices found nearby.", { id: "bt-pair-toggle" });
-          return "REDIRECT";
-        }
-      } catch (err: any) {
-        toast.error(`Pairing failed: ${err.message}`, { id: "bt-pair-toggle" });
-        return "REDIRECT";
-      }
-    }
-    
-    success = await toggleBluetoothDevice(d.id, !d.on, targetMac);
+    // Abstracted bridge command for actual appliances
+    const success = await ApplianceBridge.sendCommand(d, {
+      cmd: "set",
+      type: d.type,
+      state: !d.on,
+      val: d.brightness || d.temperature || d.fanSpeed || 0
+    });
     
     if (success) {
-      // If hardware acknowledges, update the UI
       dispatch({ type: "TOGGLE_DEVICE", id });
       return true;
     } else {
-      toast.error(`Failed to send command to ${d.name} over Bluetooth. Ensure it is powered on and in range.`);
+      toast.error(`Failed to send command to ${d.name}. Ensure it is powered on and in range.`);
       return false;
     }
   };
 
-  const value: Ctx = { state, dispatch, toggleDevice, toggleActivation, totalWatts, activeCount, alerts, canEdit, runVoiceCommand };
+  const value: Ctx = { state, dispatch, toggleDevice, toggleActivation, totalWatts, activeCount, alerts, canEdit, runVoiceCommand, newlyDiscoveredDevice, setNewlyDiscoveredDevice };
   return <HomeContext.Provider value={value}>{children}</HomeContext.Provider>;
 }
 

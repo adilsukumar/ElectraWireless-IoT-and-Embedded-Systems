@@ -1,7 +1,11 @@
-import { useEffect, useState, useRef } from 'react';
-import { toast } from 'sonner';
+import re
+import os
 
-import { useEffect, useState, useRef } from 'react';
+path = "src/hooks/useHeyElly.ts"
+with open(path, "r", encoding="utf-8") as f:
+    content = f.read()
+
+new_hook = """import { useEffect, useState, useRef } from 'react';
 import { toast } from 'sonner';
 import { SpeechRecognition } from '@capacitor-community/speech-recognition';
 
@@ -82,55 +86,15 @@ export function useHeyElly({ onWakeWord, pause }: { onWakeWord?: (cmd?: string) 
 
   return { isListening };
 }
+"""
 
+# Replace the useHeyElly function
+new_content = re.sub(
+    r"export function useHeyElly.*?return \{ isListening \};\n\}",
+    new_hook,
+    content,
+    flags=re.DOTALL
+)
 
-export async function enableBackgroundListening() {
-  if (typeof window !== 'undefined' && 'Notification' in window) {
-    if (Notification.permission !== 'granted') {
-      try {
-        const perm = await Notification.requestPermission();
-        if (perm !== 'granted') {
-          toast.error("Notification permission required for background service.");
-          return;
-        }
-      } catch (e) {
-        return;
-      }
-    }
-  }
-  
-  const bgMode = (window as any).cordova?.plugins?.backgroundMode;
-  if (bgMode) {
-    try {
-      bgMode.setDefaults({
-          title: 'Elly AI Background Service',
-          text: 'Listening for "Hey Elly"... (Tap to open app)',
-          icon: 'ic_launcher',
-          color: 'A855F7',
-          resume: true,
-          hidden: false,
-          bigText: true
-      });
-      // Small delay to ensure permissions are fully propagated in native layer
-      setTimeout(() => {
-        bgMode.enable();
-        bgMode.disableWebViewOptimizations();
-        bgMode.disableBatteryOptimizations();
-        toast.success("Foreground Service Started! You can now close the app.");
-      }, 500);
-    } catch (err) {
-      console.error(err);
-      toast.error("Failed to start service. Check permissions.");
-    }
-  } else {
-    toast.error("Background plugin not loaded. Ensure you are on a real Android phone.");
-  }
-}
-
-export function disableBackgroundListening() {
-  const bgMode = (window as any).cordova?.plugins?.backgroundMode;
-  if (bgMode) {
-    bgMode.disable();
-    toast("Background Service Stopped.");
-  }
-}
+with open(path, "w", encoding="utf-8") as f:
+    f.write(new_content)

@@ -1,57 +1,118 @@
-import os
 import re
 
-def patch_camera():
-    path = "D:/17_ElectraWireless_Elly_IoT/src/routes/camera.tsx"
-    with open(path, "r", encoding="utf-8") as f:
-        code = f.read()
+path = "src/routes/camera.tsx"
+with open(path, "r", encoding="utf-8") as f:
+    content = f.read()
 
-    # Lower face similarity threshold
-    code = code.replace('if (highestSim > 0.85 && bestMatch) {', 'if (highestSim > 0.55 && bestMatch) {')
-    code = code.replace('Increased threshold to 0.85 to stop false positives', 'Lowered threshold to 0.55 to prevent Unknown Person error')
+# 1. Remove the GLOBAL SCENE logic
+content = re.sub(
+    r"try \{\s*// Debounce the global scene prediction.*?catch\(e\) \{\}.*?if \(prediction\) \{.*?\}",
+    "",
+    content,
+    flags=re.DOTALL
+)
 
-    # Debounce Global Scene prediction
-    old_global_scene = """          try {
-            const globalPredictions = await model.classify(video);
-            if (globalPredictions && globalPredictions.length > 0) {
-              const topLabel = globalPredictions[0].className.split(',')[0].toUpperCase();
-              const topScore = Math.round(globalPredictions[0].probability * 100);
-              currentDetectionsHtml += `
-                <div class="flex justify-between items-center bg-blue-500/10 border border-blue-500/30 px-3 py-1.5 rounded-lg mb-2 shadow-[0_0_10px_rgba(59,130,246,0.1)]">
-                  <span class="text-xs font-bold text-slate-900 dark:text-white tracking-wider">GLOBAL SCENE: ${topLabel}</span>
-                  <span class="text-[10px] font-mono text-blue-500 bg-blue-500/20 px-1.5 py-0.5 rounded">${topScore}%</span>
-                </div>
-              `;
-            }
-          } catch(e) {}"""
-          
-    new_global_scene = """          try {
-            // Debounce the global scene prediction (1 call every 1.5 seconds)
-            const now = Date.now();
-            if (now - lastLogTime > 1500) {
-              const globalPredictions = await model.classify(video);
-              if (globalPredictions && globalPredictions.length > 0) {
-                const topLabel = globalPredictions[0].className.split(',')[0].toUpperCase();
-                const topScore = Math.round(globalPredictions[0].probability * 100);
-                setPrediction({ className: topLabel, probability: topScore });
-              }
-              lastLogTime = now;
-            }
-          } catch(e) {}
-          
-          if (prediction) {
-            currentDetectionsHtml += `
-              <div class="flex justify-between items-center bg-blue-500/10 border border-blue-500/30 px-3 py-1.5 rounded-lg mb-2 shadow-[0_0_10px_rgba(59,130,246,0.1)]">
-                <span class="text-xs font-bold text-slate-900 dark:text-white tracking-wider">GLOBAL SCENE: ${prediction.className}</span>
-                <span class="text-[10px] font-mono text-blue-500 bg-blue-500/20 px-1.5 py-0.5 rounded">${prediction.probability}%</span>
-              </div>
-            `;
-          }"""
+# 2. Fix dark mode class corruption
+content = content.replace("dark:bg-white dark:bg-[#111116]", "dark:bg-[#111116]")
+content = content.replace("dark:bg-[#181820]/80", "dark:bg-[#181820]/90")
 
-    code = code.replace(old_global_scene, new_global_scene)
+# 3. Simplify person detection to avoid "hand detected as person"
+# We will check if MobileNet thinks the crop is human-like.
+# If coco-ssd says person, but MobileNet strongly says something completely different (like a hand/body part not person),
+# MobileNet doesn't have "person" but it has "suit", etc. But it's better to just leave the label as what CocoSSD found, unless we have a face match!
 
-    with open(path, "w", encoding="utf-8") as f:
-        f.write(code)
+def replace_person_logic(match):
+    return """
+                  if (det.class === "person") {
+                    if (customFacesRef.current.length > 0) {
+                      const activation = model.infer(cropCanvas, true);
+                      const data = activation.dataSync() as Float32Array;
+                      activation.dispose();
 
-if __name__ == "__main__":
-    patch_camera()
+                      let bestMatch = null;
+                      let highestSim = 0;
+
+                      for (const face of customFacesRef.current) {
+                        for (const emb of face.embeddings) {
+                          let dotProduct = 0, normA = 0, normB = 0;
+                          for (let i = 0; i < data.length; i++) {
+                            dotProduct += data[i] * emb[i];
+                            normA += data[i] * data[i];
+                            normB += emb[i] * emb[i];
+                          }
+                          const sim = dotProduct / (Math.sqrt(normA) * Math.sqrt(normB));
+                          if (sim > highestSim) {
+                            highestSim = sim;
+                            bestMatch = face;
+                          }
+                        }
+                      }
+
+                      if (highestSim > 0.65 && bestMatch) {
+                        label = `${bestMatch.name} (${Math.round(highestSim * 100)}%)`;
+                      } else {
+                        // Just label as person instead of unknown person to avoid confusion when it's a hand
+                        label = "Person";
+                      }
+                    } else {
+                      label = "Person";
+                    }
+                  } else {
+                    // Not a person, just use the CocoSSD label directly to avoid MobileNet hallucinating on tiny crops
+                    label = det.class.charAt(0).toUpperCase() + det.class.slice(1);
+                  }
+"""
+
+content = re.sub(
+    r"if \(\(det\.class === \"person\" \|\| isHumanClothing\)\) \{.*?} else \{[^{}]*// It's an object! Use MobileNet.*?\}",
+    replace_person_logic,
+    content,
+    flags=re.DOTALL
+)
+
+# Replace the specific block if the regex failed:
+person_block = """
+                  if (det.class === "person" || isHumanClothing) {
+                    if (customFacesRef.current.length > 0) {
+                      const activation = model.infer(cropCanvas, true);
+                      const data = activation.dataSync() as Float32Array;
+                      activation.dispose();
+
+                      let bestMatch = null;
+                      let highestSim = 0;
+
+                      for (const face of customFacesRef.current) {
+                        for (const emb of face.embeddings) {
+                          let dotProduct = 0, normA = 0, normB = 0;
+                          for (let i = 0; i < data.length; i++) {
+                            dotProduct += data[i] * emb[i];
+                            normA += data[i] * data[i];
+                            normB += emb[i] * emb[i];
+                          }
+                          const sim = dotProduct / (Math.sqrt(normA) * Math.sqrt(normB));
+                          if (sim > highestSim) {
+                            highestSim = sim;
+                            bestMatch = face;
+                          }
+                        }
+                      }
+
+                      // Lowered threshold to 0.55 to prevent Unknown Person error
+                      if (highestSim > 0.55 && bestMatch) {
+                        label = `${bestMatch.name} #Elly ID: #${bestMatch.id} (${Math.round(highestSim * 100)}%)`;
+                      } else {
+                        label = `Unknown Person (${Math.round(highestSim * 100)}%)`;
+                      }
+                    } else {
+                      label = "Unknown Person";
+                    }
+                  } else {
+                    // It's an object! Use MobileNet's 1000-class label
+                    label = mobileNetClass.charAt(0).toUpperCase() + mobileNetClass.slice(1);
+                  }
+"""
+content = content.replace(person_block, replace_person_logic(None))
+
+
+with open(path, "w", encoding="utf-8") as f:
+    f.write(content)

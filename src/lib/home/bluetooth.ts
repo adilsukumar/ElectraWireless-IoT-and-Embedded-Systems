@@ -37,6 +37,39 @@ export async function openBluetoothSettings(): Promise<void> {
   }
 }
 
+let backgroundInitialized = false;
+
+export function initBackgroundScanner(storeDevices: BluetoothDevice[], onDeviceOnline: (device: BluetoothDevice) => void) {
+  const isNative = Capacitor.isNativePlatform();
+  if (!isNative || backgroundInitialized) return;
+  
+  try {
+    const bg = (window as any).cordova?.plugins?.backgroundMode;
+    const bs = (window as any).bluetoothSerial;
+    if (!bg || !bs) return;
+
+    bg.enable();
+    bg.on('activate', () => {
+       bg.disableWebViewOptimizations();
+    });
+    
+    backgroundInitialized = true;
+    console.log("[Background] Auto-connect scanner initialized.");
+
+    // Polling interval to check for known devices
+    setInterval(() => {
+       bs.list((paired: any[]) => {
+         paired.forEach(device => {
+           // Flag online or discovered
+           onDeviceOnline(device);
+         });
+       }, () => {});
+    }, 15000);
+  } catch (e) {
+    console.warn("Background mode not available:", e);
+  }
+}
+
 export async function listPairedDevices(): Promise<BluetoothDevice[]> {
   const isNative = Capacitor.isNativePlatform();
   if (!isNative) return [];
@@ -173,26 +206,39 @@ export async function pairBluetoothDevice(existingId?: string, forceMac?: string
         if (!bs) return reject(new Error("Native Bluetooth plugin is not ready."));
 
         if (forceMac) {
-          toast(`Connecting to selected device...`);
-          bs.connect(forceMac, () => {
+          toast.loading(`Connecting to selected device...`, { id: 'bt-pair' });
+          bs.connectInsecure(forceMac, () => {
+             toast.dismiss('bt-pair');
              const deviceId = existingId || `ELLY-NATIVE-${forceMac}`;
              connectedCharacteristics.set(deviceId, "NATIVE_SPP" as any);
              resolve({ id: deviceId, name: "Bluetooth Appliance", macAddress: forceMac });
-          }, (err: any) => reject(new Error(`Native connection failed: ${err}`)));
+          }, (err: any) => {
+             toast.dismiss('bt-pair');
+             reject(new Error(`Native connection failed: ${err}`));
+          });
           return;
         }
 
         bs.list((devices: any[]) => {
+          console.log("bs.list returned devices:", JSON.stringify(devices));
+          toast.info(`Found ${devices.length} paired devices in OS.`);
+          
           // Broaden search to anything that looks like an IoT module, light, or generic BT
           let target = devices.find((d: any) => d.name && (
-            d.name.includes("HC-") || d.name.includes("HM-") || d.name.includes("BT") || 
+            d.name.includes("HC") || d.name.includes("HM") || d.name.includes("BT") || 
             d.name.includes("BLE") || d.name.includes("Light") || d.name.includes("Appliance") || 
             d.name.includes("Electra") || d.name.includes("Tuya") || d.name.includes("Smart")
           ));
           
           // Fallback to the first paired device that isn't obviously headphones/watch
           if (!target && devices.length > 0) {
-             target = devices.find((d: any) => d.name && !d.name.includes("AirPods") && !d.name.includes("Buds") && !d.name.includes("Watch") && !d.name.includes("Audio"));
+             target = devices.find((d: any) => d.name && !d.name.toLowerCase().includes("airpods") && !d.name.toLowerCase().includes("buds") && !d.name.toLowerCase().includes("watch") && !d.name.toLowerCase().includes("audio"));
+          }
+
+          // Extreme fallback: just pick the very first paired device if nothing else matches
+          if (!target && devices.length > 0) {
+              target = devices[0];
+              toast.info(`Warning: Could not identify device by name. Guessing it is ${target.name || "Unknown"}...`);
           }
           
           // If still no target, or no devices paired at all
@@ -201,12 +247,44 @@ export async function pairBluetoothDevice(existingId?: string, forceMac?: string
             return reject(new Error("No paired appliance found! Please pair it in your Android Settings first, then try again."));
           }
           
-          toast(`Connecting to ${target.name}...`);
-          bs.connect(target.address, () => {
+          toast.loading(`Connecting to ${target.name}...`, { id: 'bt-pair-auto' });
+          
+          let resolved = false;
+          const onConnectSuccess = () => {
+            if (resolved) return;
+            resolved = true;
+            toast.dismiss('bt-pair-auto');
             const deviceId = existingId || `ELLY-NATIVE-${target.address}`;
             connectedCharacteristics.set(deviceId, "NATIVE_SPP" as any);
             resolve({ id: deviceId, name: target.name, macAddress: target.address });
-          }, (err: any) => reject(new Error(`Connection failed: ${err}`)));
+          };
+          
+          const timer = setTimeout(() => {
+            if (!resolved) {
+              resolved = true;
+              toast.dismiss('bt-pair-auto');
+              reject(new Error("Connection timed out. HC-05 takes a while, or it's turned off."));
+            }
+          }, 8500);
+
+          // Try SECURE connect first, since the user explicitly paired it in Android OS Settings.
+          bs.connect(target.address, () => {
+              clearTimeout(timer);
+              onConnectSuccess();
+          }, () => {
+              // If secure fails (some clones reject it), immediately try insecure
+              bs.connectInsecure(target.address, () => {
+                  clearTimeout(timer);
+                  onConnectSuccess();
+              }, (err: any) => {
+                  if (!resolved) {
+                      resolved = true;
+                      clearTimeout(timer);
+                      toast.dismiss('bt-pair-auto');
+                      reject(new Error(`Connection failed: ${err}`));
+                  }
+              });
+          });
         }, reject);
       });
     }
@@ -297,57 +375,112 @@ export async function toggleBluetoothDevice(id: string, isOn: boolean, macAddres
   try {
     let characteristic = connectedCharacteristics.get(id);
 
-    // If native platform and not connected, auto-connect using MAC address
     const isNative = Capacitor.isNativePlatform();
-    if (isNative && characteristic !== "NATIVE_SPP" && macAddress) {
-      const bs = (window as any).bluetoothSerial;
-      if (bs) {
+    if (isNative && characteristic !== "NATIVE_SPP") {
+      if (macAddress) {
+        const bs = (window as any).bluetoothSerial;
+        if (bs) {
+          toast.loading("Connecting to module...", { id: "bt-toggle-connect" });
+          try {
+            await new Promise((resolve, reject) => {
+               let resolved = false;
+               const timer = setTimeout(() => {
+                 if (!resolved) {
+                   resolved = true;
+                   reject(new Error("Connection timeout. HC-05 takes a while, or it's turned off."));
+                 }
+               }, 8500);
+               
+               bs.isConnected(() => {
+                   if (!resolved) {
+                     resolved = true;
+                     clearTimeout(timer);
+                     resolve(true);
+                   }
+               }, () => {
+                   const onConnectSuccess = () => {
+                       if (!resolved) {
+                         resolved = true;
+                         clearTimeout(timer);
+                         resolve(true);
+                       }
+                   };
+                   bs.connect(macAddress, onConnectSuccess, () => {
+                       bs.connectInsecure(macAddress, onConnectSuccess, (err: any) => {
+                           if (!resolved) {
+                             resolved = true;
+                             clearTimeout(timer);
+                             reject(err);
+                           }
+                       });
+                   });
+               });
+            });
+            toast.dismiss("bt-toggle-connect");
+            connectedCharacteristics.set(id, "NATIVE_SPP" as any);
+            characteristic = "NATIVE_SPP" as any;
+          } catch(e) {
+            toast.dismiss("bt-toggle-connect");
+            console.error("Failed to auto-connect to MAC:", macAddress, e);
+            toast.error("Module disconnected or out of range.");
+            return false;
+          }
+        }
+      } else {
+        // No MAC address provided, but we need to connect! Let's dynamically find HC-05.
+        toast.loading("Searching for HC-05...", { id: "bt-toggle-search" });
         try {
-          await new Promise((resolve, reject) => {
-             bs.isConnected(resolve, () => {
-                 bs.connect(macAddress, resolve, reject);
-             });
-          });
-          connectedCharacteristics.set(id, "NATIVE_SPP" as any);
-          characteristic = "NATIVE_SPP" as any;
-        } catch(e) {
-          console.error("Failed to auto-connect to MAC:", macAddress, e);
+          await pairBluetoothDevice(id);
+          toast.dismiss("bt-toggle-search");
+          characteristic = connectedCharacteristics.get(id);
+        } catch (e) {
+          toast.dismiss("bt-toggle-search");
+          console.error(e);
+          toast.error("Could not find connected HC-05. Please pair in OS settings.");
+          return false;
         }
       }
     }
 
     if (!characteristic) {
-      console.warn(`No active Bluetooth connection for device ${id}. Faking toggle OFF for UI.`);
+      console.warn(`No active Bluetooth connection for device ${id}. Faking toggle for UI.`);
       return true;
     }
 
-    const payloadStr = isOn ? "1" : "0";
+    const payloadStr = isOn ? "1\\n" : "0\\n";
+    toast.loading("Sending command...", { id: "bt-send" });
     
-    // Check if this is a native Classic Bluetooth connection
     if ((characteristic as any) === "NATIVE_SPP") {
       return new Promise((resolve, reject) => {
         const bs = (window as any).bluetoothSerial;
+        const timer = setTimeout(() => reject(new Error("Write timeout")), 1500);
         bs.write(payloadStr, () => {
-          console.log(`Successfully sent ${payloadStr} to Native Classic BLE device ${id}`);
+          clearTimeout(timer);
+          toast.dismiss("bt-send");
+          console.log(`Successfully sent ${payloadStr.trim()} to Native Classic BLE device ${id}`);
           resolve(true);
-        }, reject);
+        }, (err: any) => {
+          clearTimeout(timer);
+          toast.dismiss("bt-send");
+          reject(err);
+        });
       });
     }
 
-    // Send ASCII '1' (49) for ON and '0' (48) for OFF. 
-    // This is required because HM-10 acts as a Serial passthrough to the Arduino.
-    const payload = new Uint8Array([isOn ? 49 : 48]);
+    // Web Bluetooth: Send ASCII '1' or '0' followed by newline
+    const payload = new Uint8Array([isOn ? 49 : 48, 10]);
     await characteristic.writeValueWithoutResponse(payload);
-    
+    toast.dismiss("bt-send");
     console.log(`Successfully sent ${isOn ? 'ON (1)' : 'OFF (0)'} to BLE device ${id}`);
     return true;
   } catch (error: any) {
-    console.warn(`Failed to write to BLE device ${id}. Faking toggle for UI.`, error);
+    toast.dismiss("bt-send");
+    console.warn(`Failed to write to BLE device ${id}.`, error);
     if (error.message && error.message.includes("User gesture")) {
        toast.error("Browser blocked Bluetooth: You must click a button directly to pair.");
     } else {
-       toast.error(`Bluetooth Error: ${error.message || "Unsupported browser or insecure context."}`);
+       toast.error(`Bluetooth Error: ${error.message || "Failed to communicate."}`);
     }
-    return true; // Fallback so the UI is never stuck
+    return false;
   }
 }
