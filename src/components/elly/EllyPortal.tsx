@@ -1,10 +1,10 @@
 import { useEffect, useRef, useState } from "react";
-import { Mic, CornerDownLeft, X, Volume2, VolumeX, Loader2 } from "lucide-react";
+import { Mic, CornerDownLeft, X, Volume2, VolumeX, Loader2, Cpu } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useHome } from "@/lib/home/store";
-import { handleLocalChat } from "@/lib/home/bot";
+import { handleLocalChat, initWebLLMEngine } from "@/lib/home/bot";
 import { EllyLogo } from "./EllyLogo";
 import { TextToSpeech } from "@capacitor-community/text-to-speech";
 import { SpeechRecognition } from "@capacitor-community/speech-recognition";
@@ -47,9 +47,28 @@ export function EllyPortal({ open, onClose, initialCmd }: { open: boolean; onClo
   const [thinking, setThinking] = useState(false);
   const [voiceReplies, setVoiceReplies] = useState(true);
   const [messages, setMessages] = useState<ChatMsg[]>([GREETING]);
+  const [mlcProgress, setMlcProgress] = useState("");
+  const [mlcReady, setMlcReady] = useState(false);
   const recognitionRef = useRef<SpeechRecognitionLike | null>(null);
   const scrollRef = useRef<HTMLDivElement | null>(null);
   const inputRef = useRef<HTMLInputElement | null>(null);
+
+  // Initialize WebLLM engine
+  useEffect(() => {
+    let isMounted = true;
+    initWebLLMEngine((progress: any) => {
+      if (isMounted) setMlcProgress(progress.text);
+    }).then(() => {
+      if (isMounted) {
+        setMlcReady(true);
+        setMlcProgress("");
+      }
+    }).catch(err => {
+      console.error("WebLLM initialization failed:", err);
+      if (isMounted) setMlcProgress("Failed to load local AI model.");
+    });
+    return () => { isMounted = false; };
+  }, []);
 
   // Lock body scroll while open
   useEffect(() => {
@@ -73,7 +92,7 @@ export function EllyPortal({ open, onClose, initialCmd }: { open: boolean; onClo
   // Auto-scroll on new messages
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
-  }, [messages, thinking]);
+  }, [messages, thinking, mlcProgress]);
 
   // Keep input focused
   useEffect(() => {
@@ -108,15 +127,6 @@ export function EllyPortal({ open, onClose, initialCmd }: { open: boolean; onClo
     }
   };
 
-  const homeSummary = () => {
-    const onDevices = state.devices
-      .filter((d) => d.on)
-      .map((d) => d.name)
-      .slice(0, 8)
-      .join(", ");
-    return `${activeCount} devices on, total load ${(totalWatts / 1000).toFixed(2)} kW. Active: ${onDevices || "none"}. Role: ${state.role}.`;
-  };
-
   const sendMessage = async (raw: string) => {
     const value = raw.trim();
     if (!value || thinking) return;
@@ -136,7 +146,7 @@ export function EllyPortal({ open, onClose, initialCmd }: { open: boolean; onClo
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ 
           messages: history, 
-          homeSummary: `${activeCount} devices on, total load ${(totalWatts / 1000).toFixed(2)} kW. Active: ${onDevices || "none"}. Role: ${state.role}.` 
+          homeSummary: `${activeCount} devices on, total load ${(totalWatts / 1000).toFixed(2)} kW. Active: ${state.devices.filter((d) => d.on).map((d) => d.name).slice(0, 8).join(", ") || "none"}. Role: ${state.role}.` 
         })
       });
 
@@ -320,6 +330,15 @@ export function EllyPortal({ open, onClose, initialCmd }: { open: boolean; onClo
             <span className="flex items-center gap-1.5 text-sm">
               <Loader2 className="h-3.5 w-3.5 animate-spin" /> ELLY is thinking
             </span>
+          </div>
+        )}
+        {mlcProgress && (
+          <div className="flex flex-col gap-1 rounded-xl border border-primary/20 bg-primary/5 p-3 text-xs text-primary">
+            <div className="flex items-center gap-2 font-medium">
+              <Cpu size={14} />
+              <span>Initializing In-Browser AI Engine...</span>
+            </div>
+            <span className="opacity-80 break-words">{mlcProgress}</span>
           </div>
         )}
         {listening && (
