@@ -22,6 +22,7 @@ type DiscoveredDevice = {
   type: "wifi" | "ble";
   address: string;
   ecosystem?: string;
+  isPaired?: boolean;
 };
 
 function AddDevicePage() {
@@ -50,7 +51,8 @@ function AddDevicePage() {
           id: device.id || `ELLY-BLE-${Math.random().toString(36).substring(7)}`,
           name: device.name || "Unknown BLE Device",
           type: "ble",
-          address: device.address || device.macAddress || ""
+          address: device.address || device.macAddress || "",
+          isPaired: device.isPaired
         };
         // Avoid duplicates
         setDiscoveredDevices(prev => {
@@ -216,7 +218,14 @@ function AddDevicePage() {
                           )}
                         </div>
                         <div>
-                          <p className="font-bold text-sm">{dev.name}</p>
+                          <div className="flex items-center gap-2">
+                            <p className="font-bold text-sm">{dev.name}</p>
+                            {dev.isPaired && (
+                              <span className="text-[10px] uppercase font-bold bg-green-500/20 text-green-600 dark:text-green-400 px-2 py-0.5 rounded-full">
+                                Paired
+                              </span>
+                            )}
+                          </div>
                           <p className="text-xs text-slate-500">{dev.address || "No Address"}</p>
                         </div>
                       </div>
