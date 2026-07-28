@@ -207,6 +207,27 @@ export async function autoConnectBluetooth(): Promise<BluetoothPairResult | null
 }
 
 /**
+ * Scans for UNPAIRED Bluetooth devices actively in the air (Native only).
+ * On Web, this is blocked by browser security, so it returns empty.
+ */
+export async function scanNativeBluetoothDevices(): Promise<any[]> {
+  const isNative = Capacitor.isNativePlatform();
+  if (!isNative) return []; // Web handles this via requestDevice chooser
+
+  return new Promise((resolve, reject) => {
+    const bs = (window as any).bluetoothSerial;
+    if (!bs) return resolve([]);
+    
+    bs.discoverUnpaired((devices: any[]) => {
+      resolve(devices);
+    }, (err: any) => {
+      console.warn("Failed to discover unpaired devices", err);
+      resolve([]); // Resolve empty so UI doesn't crash
+    });
+  });
+}
+
+/**
  * Triggers the browser's native Bluetooth pairing dialog.
  * Must be called in response to a user gesture (e.g., button click).
  */
