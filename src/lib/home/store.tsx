@@ -35,6 +35,8 @@ const seedDevices: Device[] = [
     watts: 12,
     brightness: 60,
     colorTemp: 3000,
+    connectionType: "wifi",
+    ipAddress: "192.168.1.100",
   },
   {
     id: "ELLY-AC-01",
@@ -47,6 +49,8 @@ const seedDevices: Device[] = [
     temperature: 24,
     fanSpeed: 2,
     mode: "Cool",
+    connectionType: "wifi",
+    ipAddress: "192.168.1.101",
   },
   {
     id: "ELLY-PL-01",
@@ -56,6 +60,8 @@ const seedDevices: Device[] = [
     on: true,
     online: true,
     watts: 95,
+    connectionType: "wifi",
+    ipAddress: "192.168.1.102",
   },
   {
     id: "ELLY-LT-03",
@@ -67,6 +73,8 @@ const seedDevices: Device[] = [
     watts: 22,
     brightness: 100,
     colorTemp: 5000,
+    connectionType: "wifi",
+    ipAddress: "192.168.1.103",
   },
   {
     id: "ELLY-FR-01",
@@ -76,6 +84,8 @@ const seedDevices: Device[] = [
     on: true,
     online: true,
     watts: 150,
+    connectionType: "wifi",
+    ipAddress: "192.168.1.104",
   },
   {
     id: "ELLY-AP-01",
@@ -85,6 +95,8 @@ const seedDevices: Device[] = [
     on: false,
     online: true,
     watts: 800,
+    connectionType: "wifi",
+    ipAddress: "192.168.1.105",
   },
   {
     id: "ELLY-SN-01",
