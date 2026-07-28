@@ -29,14 +29,11 @@ jobs:
       - name: Build Web App
         run: npm run build
 
-      - name: Sync Capacitor iOS
-        run: npx cap sync ios --verbose || true
+      - name: Setup CocoaPods Repo
+        run: pod repo update
 
-      - name: Install CocoaPods
-        run: |
-          cd ios/App
-          pod repo update
-          pod install --verbose
+      - name: Sync Capacitor iOS
+        run: npx cap sync ios --verbose
 
       - name: Build Unsigned iOS App
         run: |
