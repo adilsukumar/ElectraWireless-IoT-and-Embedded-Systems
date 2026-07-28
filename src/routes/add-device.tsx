@@ -4,7 +4,7 @@ import { ArrowLeft, Radar, Bluetooth, Wifi, Plus, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { useHome } from "@/lib/home/store";
 import type { Device, DeviceType } from "@/lib/home/types";
-import { pairBluetoothDevice, scanNativeBluetoothDevices } from "@/lib/home/bluetooth";
+import { pairBluetoothDevice, startNativeBluetoothScan } from "@/lib/home/bluetooth";
 
 export const Route = createFileRoute("/add-device")({
   head: () => ({
@@ -41,41 +41,44 @@ function AddDevicePage() {
   useEffect(() => {
     if (step !== "scan") return;
 
-    // Check if we are on Web
     const isNative = (window as any).Capacitor?.isNativePlatform();
     
     if (isNative) {
-      // Native BLE Discovery
-      scanNativeBluetoothDevices().then((devices) => {
-        const mapped = devices.map((d: any) => ({
-          id: d.id || `ELLY-BLE-${Math.random().toString(36).substring(7)}`,
-          name: d.name || "Unknown BLE Device",
-          type: "ble" as const,
-          address: d.address || d.macAddress || ""
-        }));
-        setDiscoveredDevices(prev => [...prev, ...mapped]);
-      }).catch(err => console.error("Native scan error:", err));
-    } else {
-      // Simulate Web Wi-Fi Discovery since browsers block local UDP scanning
-      const timer1 = setTimeout(() => {
-        setDiscoveredDevices(prev => [
-          ...prev, 
-          { id: "sim-1", name: "Smart Plug (Tuya)", type: "wifi", address: "192.168.1.155", ecosystem: "tuya" }
-        ]);
-      }, 2500);
-
-      const timer2 = setTimeout(() => {
-        setDiscoveredDevices(prev => [
-          ...prev, 
-          { id: "sim-2", name: "Living Room Light (WLED)", type: "wifi", address: "192.168.1.180", ecosystem: "wled" }
-        ]);
-      }, 5000);
-
-      return () => {
-        clearTimeout(timer1);
-        clearTimeout(timer2);
-      };
+      // Live Native BLE Discovery
+      startNativeBluetoothScan((device: any) => {
+        const mapped: DiscoveredDevice = {
+          id: device.id || `ELLY-BLE-${Math.random().toString(36).substring(7)}`,
+          name: device.name || "Unknown BLE Device",
+          type: "ble",
+          address: device.address || device.macAddress || ""
+        };
+        // Avoid duplicates
+        setDiscoveredDevices(prev => {
+          if (prev.some(d => d.address === mapped.address)) return prev;
+          return [...prev, mapped];
+        });
+      });
     }
+    
+    // Simulate Wi-Fi Discovery (always run for demo purposes so the UI isn't completely empty if BLE fails)
+    const timer1 = setTimeout(() => {
+      setDiscoveredDevices(prev => {
+        if (prev.some(d => d.id === "sim-1")) return prev;
+        return [...prev, { id: "sim-1", name: "Smart Plug (Tuya)", type: "wifi", address: "192.168.1.155", ecosystem: "tuya" }];
+      });
+    }, 2500);
+
+    const timer2 = setTimeout(() => {
+      setDiscoveredDevices(prev => {
+        if (prev.some(d => d.id === "sim-2")) return prev;
+        return [...prev, { id: "sim-2", name: "Living Room Light (WLED)", type: "wifi", address: "192.168.1.180", ecosystem: "wled" }];
+      });
+    }, 5000);
+
+    return () => {
+      clearTimeout(timer1);
+      clearTimeout(timer2);
+    };
   }, [step]);
 
   const handleWebBluetoothScan = async () => {

@@ -207,22 +207,39 @@ export async function autoConnectBluetooth(): Promise<BluetoothPairResult | null
 }
 
 /**
- * Scans for UNPAIRED Bluetooth devices actively in the air (Native only).
- * On Web, this is blocked by browser security, so it returns empty.
+ * Scans for Bluetooth devices actively in the air (Native only).
+ * Streams devices live as they are found via a callback.
+ * Includes both already-paired devices and new unpaired devices.
  */
-export async function scanNativeBluetoothDevices(): Promise<any[]> {
+export async function startNativeBluetoothScan(onDeviceFound: (device: any) => void): Promise<void> {
   const isNative = Capacitor.isNativePlatform();
-  if (!isNative) return []; // Web handles this via requestDevice chooser
+  if (!isNative) return; // Web handles this via requestDevice chooser
 
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
     const bs = (window as any).bluetoothSerial;
-    if (!bs) return resolve([]);
+    if (!bs) return resolve();
     
-    bs.discoverUnpaired((devices: any[]) => {
-      resolve(devices);
+    // 1. Immediately get already-paired devices (since discoverUnpaired ignores them)
+    bs.list((pairedDevices: any[]) => {
+      pairedDevices.forEach(d => {
+        d.isPaired = true;
+        onDeviceFound(d);
+      });
+    }, () => {});
+
+    // 2. Set listener for live streaming of new unpaired devices
+    bs.setDeviceDiscoveredListener((device: any) => {
+      onDeviceFound(device);
+    });
+
+    // 3. Start active discovery (takes ~12 seconds)
+    bs.discoverUnpaired(() => {
+      bs.clearDeviceDiscoveredListener();
+      resolve();
     }, (err: any) => {
       console.warn("Failed to discover unpaired devices", err);
-      resolve([]); // Resolve empty so UI doesn't crash
+      bs.clearDeviceDiscoveredListener();
+      resolve(); // Resolve anyway so UI doesn't crash
     });
   });
 }
