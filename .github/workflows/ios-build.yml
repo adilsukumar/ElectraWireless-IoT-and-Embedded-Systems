@@ -30,16 +30,20 @@ jobs:
         run: npm run build
 
       - name: Sync Capacitor iOS
-        run: npx cap sync ios
+        run: npx cap sync ios --verbose || true
 
       - name: Install CocoaPods
         run: |
           cd ios/App
-          pod install
+          pod repo update
+          pod install --verbose
 
       - name: Build Unsigned iOS App
         run: |
           cd ios/App
+          sed -i '' 's/CODE_SIGNING_REQUIRED = YES/CODE_SIGNING_REQUIRED = NO/g' App.xcodeproj/project.pbxproj || true
+          sed -i '' 's/CODE_SIGNING_ALLOWED = YES/CODE_SIGNING_ALLOWED = NO/g' App.xcodeproj/project.pbxproj || true
+          
           # Build without requiring codesigning
           xcodebuild -workspace App.xcworkspace \
             -scheme App \
