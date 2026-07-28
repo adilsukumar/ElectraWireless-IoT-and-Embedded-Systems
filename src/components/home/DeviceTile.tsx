@@ -101,19 +101,16 @@ export function DeviceTile({ device }: { device: Device }) {
           </span>
         )}
         {device.type !== "sensor" && (
-          <div onClickCapture={async (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            const res = await toggleDevice(device.id);
-            if (res === "REDIRECT") {
-              router.navigate({ to: "/device/$deviceId", params: { deviceId: device.id } });
-            }
-          }}>
-            <Switch
-              checked={device.on}
-              disabled={!canEdit}
-            />
-          </div>
+          <Switch
+            checked={device.on}
+            disabled={!canEdit}
+            onCheckedChange={async () => {
+              const res = await toggleDevice(device.id);
+              if (res === "REDIRECT") {
+                router.navigate({ to: "/device/$deviceId", params: { deviceId: device.id } });
+              }
+            }}
+          />
         )}
       </div>
     </motion.div>

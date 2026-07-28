@@ -96,10 +96,11 @@ function DevicePage() {
           </div>
 
           {device.type !== "sensor" && (
-            <div onClickCapture={() => toggleActivation(device.id)} className="ml-4">
+            <div className="ml-4">
               <Switch
                 checked={device.activated ?? false}
                 disabled={!canEdit}
+                onCheckedChange={() => toggleActivation(device.id)}
                 className="data-[state=checked]:bg-[#a855f7] data-[state=checked]:shadow-[0_0_15px_rgba(168,85,247,0.5)] scale-125"
               />
             </div>
