@@ -25,6 +25,39 @@ export function useHeyElly({ onWakeWord, pause }: { onWakeWord?: (cmd?: string) 
           await SpeechRecognition.requestPermissions();
         }
 
+        const w = window as any;
+        const WebSpeech = w.SpeechRecognition || w.webkitSpeechRecognition;
+
+        if (WebSpeech && (!w.cordova || typeof w.cordova === 'undefined')) {
+          // Web fallback
+          const rec = new WebSpeech();
+          rec.lang = 'en-US';
+          rec.continuous = true;
+          rec.interimResults = false;
+          
+          rec.onresult = (e: any) => {
+            if (isPausedRef.current) return;
+            const transcript = e.results[e.results.length - 1][0].transcript.toLowerCase().trim();
+            console.log("Heard on web:", transcript);
+            if (transcript) {
+              if (onWakeWordRef.current) onWakeWordRef.current(transcript);
+            }
+          };
+
+          rec.onend = () => {
+            if (active && !isPausedRef.current) {
+              setTimeout(() => rec.start(), 1000);
+            } else {
+              setIsListening(false);
+            }
+          };
+
+          setIsListening(true);
+          rec.start();
+          
+          return;
+        }
+
         const available = await SpeechRecognition.available();
         if (!available.available) {
           console.warn("Native Speech Recognition not available.");
@@ -50,13 +83,11 @@ export function useHeyElly({ onWakeWord, pause }: { onWakeWord?: (cmd?: string) 
             });
             
             if (result.matches && result.matches.length > 0) {
-              const transcript = result.matches[0].toLowerCase();
+              const transcript = result.matches[0].toLowerCase().trim();
               console.log("Heard natively:", transcript);
               
-              if (transcript.includes("hey elly") || transcript.includes("hi elly")) {
-                let cmd = transcript.replace("hey elly", "").replace("hi elly", "").trim();
-                toast.success("ELLY: I am awake!");
-                if (onWakeWordRef.current) onWakeWordRef.current(cmd || undefined);
+              if (transcript) {
+                if (onWakeWordRef.current) onWakeWordRef.current(transcript);
               }
             }
           } catch (e) {
