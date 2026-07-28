@@ -41,11 +41,12 @@ jobs:
           sed -i '' 's/CODE_SIGNING_REQUIRED = YES/CODE_SIGNING_REQUIRED = NO/g' App.xcodeproj/project.pbxproj || true
           sed -i '' 's/CODE_SIGNING_ALLOWED = YES/CODE_SIGNING_ALLOWED = NO/g' App.xcodeproj/project.pbxproj || true
           
-          # Build without requiring codesigning
+          # Build without requiring codesigning and specify output directory
           xcodebuild -workspace App.xcworkspace \
             -scheme App \
             -configuration Release \
             -sdk iphoneos \
+            CONFIGURATION_BUILD_DIR="$(pwd)/build/Release-iphoneos" \
             CODE_SIGN_IDENTITY="" \
             CODE_SIGNING_REQUIRED=NO \
             CODE_SIGNING_ALLOWED=NO \
