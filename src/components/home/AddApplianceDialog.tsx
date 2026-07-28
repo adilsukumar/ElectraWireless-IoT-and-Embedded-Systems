@@ -96,8 +96,7 @@ export function AddApplianceDialog({ defaultRoomId }: { defaultRoomId?: string }
       const all = [...paired, ...devices];
       const unique = Array.from(new Map(all.map(item => [item.address, item])).values());
       setScannedDevices(unique);
-      setScannedDevices(devices);
-      if (devices.length === 0) toast("No paired devices found. Pair in settings first.");
+      if (unique.length === 0) toast("No devices found. Pair in OS settings or ensure they are nearby.");
     } catch(e) {
       toast.error("Failed to load paired devices.");
     }

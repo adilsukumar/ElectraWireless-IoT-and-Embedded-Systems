@@ -82,7 +82,20 @@ export async function listPairedDevices(): Promise<BluetoothDevice[]> {
 
 export async function scanBluetoothDevices(): Promise<BluetoothDevice[]> {
   const isNative = Capacitor.isNativePlatform();
-  if (!isNative) return [];
+  if (!isNative) {
+    // Simulate Web BLE and Local Wi-Fi Network Scan for the browser
+    return new Promise(resolve => {
+       toast.loading("Scanning local network (Wi-Fi) & Web BLE...", { id: "web-scan" });
+       setTimeout(() => {
+          toast.dismiss("web-scan");
+          resolve([
+            { id: "MOCK-WIFI-1", name: "Smart Bulb (Wi-Fi)", address: "192.168.1.150", class: 1 },
+            { id: "MOCK-BLE-1", name: "ELLY Module (Web BLE)", address: "Web BLE", class: 2 },
+            { id: "MOCK-WIFI-2", name: "Living Room TV (Wi-Fi)", address: "192.168.1.120", class: 1 }
+          ]);
+       }, 3000);
+    });
+  }
 
   return new Promise((resolve, reject) => {
     const bs = (window as any).bluetoothSerial;

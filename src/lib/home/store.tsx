@@ -721,14 +721,25 @@ export function HomeProvider({ children }: { children: ReactNode }) {
     if (!d) return;
 
     if (!d.activated) {
-      toast.info("Opening OS Bluetooth Settings...");
-      try {
-        const { openBluetoothSettings } = await import("./bluetooth");
-        openBluetoothSettings();
-      } catch (e) {}
-      
-      dispatch({ type: "UPDATE_DEVICE", id, patch: { activated: true } });
-      toast.success(`ELLY: ${d.name} activated.`);
+      if (d.connectionType === "wifi") {
+        toast.loading(`Searching for ${d.name} via Wi-Fi...`, { id: `wifi-${d.id}` });
+        setTimeout(() => {
+          toast.dismiss(`wifi-${d.id}`);
+          dispatch({ type: "UPDATE_DEVICE", id, patch: { activated: true } });
+          toast.success(`ELLY: ${d.name} activated on Wi-Fi.`);
+        }, 1500);
+      } else {
+        try {
+          const { activateBluetoothDevice } = await import("./bluetooth");
+          const success = await activateBluetoothDevice(d.id);
+          if (success) {
+            dispatch({ type: "UPDATE_DEVICE", id, patch: { activated: true } });
+            toast.success(`ELLY: ${d.name} activated via Bluetooth.`);
+          }
+        } catch (e) {
+          console.error("Activation failed:", e);
+        }
+      }
     } else {
       dispatch({ type: "UPDATE_DEVICE", id, patch: { activated: false } });
       toast.success(`ELLY: ${d.name} deactivated.`);
