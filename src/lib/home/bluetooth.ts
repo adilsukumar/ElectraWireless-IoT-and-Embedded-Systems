@@ -378,7 +378,7 @@ export async function activateBluetoothDevice(id: string): Promise<boolean> {
       
       if (!characteristic) {
         console.warn("Pairing was cancelled or failed.");
-        toast.error("ELLY: Bluetooth pairing cancelled.");
+        toast.info("Bluetooth pairing cancelled.");
         return false;
       }
     }
@@ -386,7 +386,7 @@ export async function activateBluetoothDevice(id: string): Promise<boolean> {
   } catch (error: any) {
     console.error(`Failed to activate BLE device ${id}:`, error);
     if (error.name === "NotFoundError" || error.message.includes("cancelled")) {
-      toast.error("ELLY: Bluetooth pairing cancelled.");
+      toast.info("Bluetooth pairing cancelled.");
     } else if (error.message && error.message.includes("User gesture")) {
        toast.error("ELLY: Browser blocked Bluetooth: You must click a button directly to pair.");
     } else {

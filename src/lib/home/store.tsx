@@ -716,18 +716,21 @@ export function HomeProvider({ children }: { children: ReactNode }) {
     return false;
   };
 
-  const toggleActivation = async (id: string) => {
+  const toggleActivation = async (id: string): Promise<boolean> => {
     const d = state.devices.find((x) => x.id === id);
-    if (!d) return;
+    if (!d) return false;
 
     if (!d.activated) {
       if (d.connectionType === "wifi") {
         toast.loading(`Searching for ${d.name} via Wi-Fi...`, { id: `wifi-${d.id}` });
-        setTimeout(() => {
-          toast.dismiss(`wifi-${d.id}`);
-          dispatch({ type: "UPDATE_DEVICE", id, patch: { activated: true } });
-          toast.success(`ELLY: ${d.name} activated on Wi-Fi.`);
-        }, 1500);
+        return new Promise((resolve) => {
+          setTimeout(() => {
+            toast.dismiss(`wifi-${d.id}`);
+            dispatch({ type: "UPDATE_DEVICE", id, patch: { activated: true } });
+            toast.success(`ELLY: ${d.name} activated on Wi-Fi.`);
+            resolve(true);
+          }, 1500);
+        });
       } else {
         try {
           const { activateBluetoothDevice } = await import("./bluetooth");
@@ -735,14 +738,17 @@ export function HomeProvider({ children }: { children: ReactNode }) {
           if (success) {
             dispatch({ type: "UPDATE_DEVICE", id, patch: { activated: true } });
             toast.success(`ELLY: ${d.name} activated via Bluetooth.`);
+            return true;
           }
         } catch (e) {
           console.error("Activation failed:", e);
         }
+        return false;
       }
     } else {
       dispatch({ type: "UPDATE_DEVICE", id, patch: { activated: false } });
       toast.success(`ELLY: ${d.name} deactivated.`);
+      return true;
     }
   };
 
@@ -752,9 +758,11 @@ export function HomeProvider({ children }: { children: ReactNode }) {
     
     // Check if the device is activated before trying to turn it on
     if (!d.activated && !d.on) {
-      toast.error(`Please connect ${d.name} first!`);
-      toggleActivation(id);
-      return false;
+      toast.info(`Connecting to ${d.name}...`);
+      const success = await toggleActivation(id);
+      if (!success) {
+        return false;
+      }
     }
 
     const { ApplianceBridge } = await import("./ApplianceBridge");
