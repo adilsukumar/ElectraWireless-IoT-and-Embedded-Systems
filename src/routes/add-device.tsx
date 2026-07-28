@@ -23,6 +23,7 @@ function AddDevicePage() {
   const [name, setName] = useState("");
   const [roomId, setRoomId] = useState(state.rooms[0]?.id || "");
   const [type, setType] = useState<DeviceType>("light");
+  const [networkAddress, setNetworkAddress] = useState("");
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -30,6 +31,8 @@ function AddDevicePage() {
       toast.error("Please enter a device name.");
       return;
     }
+
+    const isIP = networkAddress.includes(".");
 
     const newDevice: Device = {
       id: `ELLY-${type.toUpperCase().substring(0, 2)}-${Math.floor(Math.random() * 1000)}`,
@@ -39,6 +42,8 @@ function AddDevicePage() {
       on: false,
       online: true,
       watts: type === "light" ? 10 : type === "ac" ? 1000 : type === "tv" ? 120 : 50,
+      connectionType: networkAddress ? (isIP ? "wifi" : "ble") : "wifi", // Default to wifi for manual testing if left blank
+      ...(isIP ? { ipAddress: networkAddress } : { macAddress: networkAddress }),
     };
 
     dispatch({ type: "ADD_DEVICE", device: newDevice });
@@ -106,6 +111,20 @@ function AddDevicePage() {
               <option value="tv" className="bg-white dark:bg-[#111116]">Television</option>
               <option value="sensor" className="bg-white dark:bg-[#111116]">Sensor</option>
             </select>
+          </div>
+
+          <div className="space-y-2">
+            <label className="text-sm font-bold text-slate-900 dark:text-white">Network Address (Optional)</label>
+            <input
+              type="text"
+              value={networkAddress}
+              onChange={(e) => setNetworkAddress(e.target.value)}
+              className="w-full rounded-xl border border-blue-200 dark:border-white/10 bg-white/50 dark:bg-[#111116]/50 px-4 py-3 text-sm focus:border-purple-500 focus:outline-none transition-colors"
+              placeholder="e.g., 192.168.1.50 (for Wi-Fi) or empty"
+            />
+            <p className="text-xs text-slate-500 dark:text-neutral-400 mt-1">
+              Enter an IP address for Wi-Fi devices. Leave blank for a simulated Wi-Fi device.
+            </p>
           </div>
 
           <button type="submit" className="w-full rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 transition-colors shadow-[0_0_15px_rgba(147,51,234,0.3)]">
