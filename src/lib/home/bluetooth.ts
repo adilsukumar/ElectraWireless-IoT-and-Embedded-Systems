@@ -385,7 +385,9 @@ export async function activateBluetoothDevice(id: string): Promise<boolean> {
     return true;
   } catch (error: any) {
     console.error(`Failed to activate BLE device ${id}:`, error);
-    if (error.name === "NotFoundError" || error.message.includes("cancelled")) {
+    if (error.message && error.message.includes("adapter not available")) {
+      toast.error("ELLY: No Bluetooth hardware found on this device.");
+    } else if (error.name === "NotFoundError" || error.message.includes("cancelled")) {
       toast.info("Bluetooth pairing cancelled.");
     } else if (error.message && error.message.includes("User gesture")) {
        toast.error("ELLY: Browser blocked Bluetooth: You must click a button directly to pair.");

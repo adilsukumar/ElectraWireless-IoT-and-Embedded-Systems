@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useMemo, useReducer, type ReactNode } from "react";
 import { toast } from "sonner";
+import { log } from "./logger";
 import { toggleBluetoothDevice, activateBluetoothDevice, pairBluetoothDevice } from "./bluetooth";
 import type { Automation, Device, FallbackTier, HomeState, LogEntry, Member, Role } from "./types";
 
@@ -733,7 +734,6 @@ export function HomeProvider({ children }: { children: ReactNode }) {
         });
       } else {
         try {
-          const { activateBluetoothDevice } = await import("./bluetooth");
           const success = await activateBluetoothDevice(d.id);
           if (success) {
             dispatch({ type: "UPDATE_DEVICE", id, patch: { activated: true } });
