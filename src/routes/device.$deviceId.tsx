@@ -78,13 +78,13 @@ function DevicePage() {
         <div className="flex items-center gap-4">
           <button
             onClick={() => router.history.back()}
-            className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl border border-white/5 bg-white dark:bg-[#111116] transition-colors hover:bg-[#181820]"
+            className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl border border-purple-200 dark:border-purple-500/25 bg-white/40 dark:bg-purple-950/30 backdrop-blur-md transition-colors hover:bg-[#181820]"
             aria-label="Back"
           >
             <ArrowLeft className="h-6 w-6 text-slate-900 dark:text-white" />
           </button>
           
-          <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl border border-white/5 bg-white dark:bg-[#111116]">
+          <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl border border-purple-200 dark:border-purple-500/25 bg-white/40 dark:bg-purple-950/30 backdrop-blur-md">
             <Icon className="h-6 w-6 text-neutral-300" />
           </div>
           
@@ -109,7 +109,7 @@ function DevicePage() {
         <div className="grid gap-6">
           <div className="space-y-6">
             {/* Controls */}
-            <div className="space-y-5 rounded-[2rem] border border-white/5 bg-white dark:bg-[#111116] p-7 shadow-2xl">
+            <div className="space-y-5 rounded-[2rem] border border-purple-200 dark:border-purple-500/25 bg-white/40 dark:bg-purple-950/30 backdrop-blur-md p-7 shadow-2xl">
               <h2 className="text-lg font-bold text-neutral-400">Controls</h2>
 
               {device.type === "light" && (
@@ -304,7 +304,7 @@ function DevicePage() {
                         {device.thermal ?? 0}°C
                       </p>
                     </div>
-                    <div className="rounded-2xl border border-white/5 bg-white dark:bg-[#111116]/5 p-4">
+                    <div className="rounded-2xl border border-purple-200 dark:border-purple-500/25 bg-white/40 dark:bg-purple-950/30 backdrop-blur-md p-4">
                       <div className="flex items-center gap-2 text-sm font-medium text-neutral-400 mb-2">
                         <Gauge className="h-4 w-4" /> Connected
                       </div>
@@ -324,7 +324,7 @@ function DevicePage() {
             </div>
 
             {/* Energy graph */}
-            <div className="rounded-[2rem] border border-white/5 bg-white dark:bg-[#111116] p-7 shadow-2xl">
+            <div className="rounded-[2rem] border border-purple-200 dark:border-purple-500/25 bg-white/40 dark:bg-purple-950/30 backdrop-blur-md p-7 shadow-2xl">
               <h2 className="mb-6 text-lg font-bold text-neutral-400">Energy, last 24h</h2>
               <div className="-ml-2 -mr-4">
                 <EnergyAreaChart data={makeSeries(device.watts || 10)} height={200} />
@@ -334,7 +334,7 @@ function DevicePage() {
 
           {/* Side info */}
           <div className="space-y-6">
-            <div className="rounded-[2rem] border border-white/5 bg-white dark:bg-[#111116] p-7 shadow-2xl space-y-5">
+            <div className="rounded-[2rem] border border-purple-200 dark:border-purple-500/25 bg-white/40 dark:bg-purple-950/30 backdrop-blur-md p-7 shadow-2xl space-y-5">
                             
                 <div className="space-y-4 pb-4 border-b border-white/10">
                   <div className="flex items-center justify-between">
@@ -441,7 +441,7 @@ function DevicePage() {
               </div>
             </div>
 
-            <div className="rounded-[2rem] border border-white/5 bg-white dark:bg-[#111116] p-7 shadow-2xl space-y-5">
+            <div className="rounded-[2rem] border border-purple-200 dark:border-purple-500/25 bg-white/40 dark:bg-purple-950/30 backdrop-blur-md p-7 shadow-2xl space-y-5">
               <h2 className="text-lg font-bold text-neutral-400">Linked Automations</h2>
               {linked.length === 0 ? (
                 <p className="text-[15px] font-medium text-neutral-500">None enabled.</p>
@@ -459,7 +459,7 @@ function DevicePage() {
               )}
             </div>
 
-            <div className="rounded-[2rem] border border-white/5 bg-white dark:bg-[#111116] p-7 shadow-2xl space-y-5">
+            <div className="rounded-[2rem] border border-purple-200 dark:border-purple-500/25 bg-white/40 dark:bg-purple-950/30 backdrop-blur-md p-7 shadow-2xl space-y-5">
               <h2 className="text-lg font-bold text-neutral-400">Assigned Users</h2>
               <div className="flex flex-wrap gap-3">
                 <span className="rounded-full bg-[#a855f7] px-6 py-2 text-sm font-bold text-slate-900 dark:text-white shadow-[0_0_12px_rgba(168,85,247,0.4)]">

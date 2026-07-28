@@ -30,11 +30,12 @@ function ActionsPage() {
   const { dispatch, canEdit } = useHome();
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-extrabold">Quick Actions</h1>
-        <p className="text-sm text-muted-foreground">Trigger whole-home scenes instantly.</p>
-      </div>
+    <div className="bg-slate-50 dark:bg-black min-h-screen text-slate-900 dark:text-white pb-24 -mx-4 px-4 sm:-mx-8 sm:px-8">
+      <div className="mx-auto max-w-4xl space-y-6 pt-6">
+        <div>
+          <h1 className="text-xl font-extrabold tracking-tight">Quick Actions</h1>
+          <p className="text-sm font-medium text-slate-500 dark:text-neutral-400">Trigger whole-home scenes instantly.</p>
+        </div>
 
       <div className="grid grid-cols-2 gap-4">
         <QuickAction
@@ -84,6 +85,7 @@ function ActionsPage() {
           }}
         />
       </div>
+      </div>
     </div>
   );
 }
@@ -103,9 +105,9 @@ function QuickAction({
     <button
       onClick={onClick}
       disabled={disabled}
-      className="flex flex-col items-center gap-3 rounded-3xl border border-border bg-card py-6 text-sm font-medium text-foreground transition-colors hover:bg-muted active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50"
+      className="flex flex-col items-center gap-3 rounded-[2rem] border border-purple-200 dark:border-purple-500/25 bg-white/40 dark:bg-purple-950/30 backdrop-blur-md py-6 text-sm font-bold text-slate-900 dark:text-white transition-all hover:bg-white/60 dark:hover:bg-purple-900/40 hover:scale-[1.02] active:scale-95 disabled:cursor-not-allowed disabled:opacity-50 shadow-sm group"
     >
-      <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-primary text-primary-foreground">
+      <span className="flex h-12 w-12 items-center justify-center rounded-full bg-slate-200 dark:bg-[#111116]/10 text-slate-900 dark:text-white transition-transform group-hover:scale-110">
         <Icon className="h-6 w-6" />
       </span>
       {label}
@@ -120,9 +122,9 @@ function EmergencyAction({ onConfirm, disabled }: { onConfirm: () => void; disab
       <AlertDialogTrigger asChild>
         <button
           disabled={disabled}
-          className="flex w-full flex-col items-center gap-3 rounded-3xl bg-destructive/10 py-6 text-sm font-medium text-destructive transition-colors hover:bg-destructive/20 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50"
+          className="flex w-full flex-col items-center gap-3 rounded-[2rem] bg-red-500/10 border border-red-500/20 py-6 text-sm font-bold text-red-500 transition-all hover:bg-red-500/20 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50 shadow-[0_0_15px_rgba(239,68,68,0.1)] group"
         >
-          <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-destructive text-destructive-foreground">
+          <span className="flex h-12 w-12 items-center justify-center rounded-full bg-red-500/20 text-red-500 transition-transform group-hover:scale-110 shadow-[0_0_15px_rgba(239,68,68,0.3)]">
             <OctagonAlert className="h-6 w-6" />
           </span>
           Emergency Shutdown

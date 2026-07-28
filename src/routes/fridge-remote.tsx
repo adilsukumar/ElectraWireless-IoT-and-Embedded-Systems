@@ -16,18 +16,19 @@ function FridgeRemotePage() {
   const [fridgeMode, setFridgeMode] = useState("Normal");
 
   return (
-    <div className="mx-auto max-w-5xl space-y-6 pb-20">
-      <div className="flex items-center gap-3">
-        <Link to="/remotes" className="p-2 -ml-2 rounded-full hover:bg-white dark:bg-[#111116]/10 transition-colors">
-          <ArrowLeft className="w-5 h-5" />
-        </Link>
-        <div>
-          <h1 className="text-2xl font-extrabold font-display">Smart Fridge</h1>
-          <p className="text-sm text-muted-foreground">Temperature, Ice Maker, Settings</p>
+    <div className="bg-slate-50 dark:bg-black min-h-screen text-slate-900 dark:text-white pb-24 -mx-4 px-4 sm:-mx-8 sm:px-8">
+      <div className="mx-auto max-w-4xl space-y-6 pt-6">
+        <div className="flex items-center gap-3">
+          <Link to="/remotes" className="p-2 -ml-2 rounded-full bg-white/40 dark:bg-[#111116] hover:bg-white/60 dark:bg-[#111116]/10 transition-colors border border-blue-200 dark:border-white/5">
+            <ArrowLeft className="w-5 h-5" />
+          </Link>
+          <div>
+            <h1 className="text-xl font-extrabold tracking-tight">Smart Fridge</h1>
+            <p className="text-sm font-medium text-slate-500 dark:text-neutral-400">Temperature, Ice Maker, Settings</p>
+          </div>
         </div>
-      </div>
 
-      <div className="pt-4 flex flex-col gap-8 bg-neutral-900/40 rounded-3xl p-6 shadow-lg border border-white/5 backdrop-blur-md mx-auto max-w-sm">
+        <div className="pt-4 flex flex-col gap-8 rounded-[2rem] border border-purple-200 dark:border-purple-500/25 bg-white/40 dark:bg-purple-950/30 backdrop-blur-md p-6 mx-auto max-w-sm shadow-sm">
         
         <div className="grid grid-cols-2 gap-6">
           <div className="space-y-4">
@@ -71,5 +72,6 @@ function FridgeRemotePage() {
 
       </div>
     </div>
+  </div>
   );
 }
