@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { TrendingUp, TriangleAlert, Check, Activity, Cpu, Zap } from "lucide-react";
-import { Card } from "@/components/ui/card";
+import { SciFiCard } from "@/components/ui/sci-fi-card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { EnergyAreaChart, EnergyBarChart } from "@/components/home/EnergyChart";
@@ -21,18 +21,16 @@ function StatCard({
   accent?: boolean;
 }) {
   return (
-    <div
-      className={cn(
-        "relative overflow-hidden rounded-2xl border p-4",
-        accent ? "bg-primary text-primary-foreground border-primary" : "bg-card border-border",
-      )}
+    <SciFiCard
+      color={accent ? "emerald" : "purple"}
+      className="p-4"
     >
-      <span className={cn("techno-glow mb-6 inline-flex", accent ? "" : "")}>
-        <Icon className={cn("h-5 w-5", accent ? "opacity-90" : "text-primary")} />
+      <span className={cn("mb-6 inline-flex", accent ? "text-emerald-500" : "text-purple-500")}>
+        <Icon className={cn("h-5 w-5")} />
       </span>
-      <p className="font-display text-2xl font-extrabold tracking-tight">{value}</p>
-      <p className={cn("text-xs", accent ? "opacity-80" : "text-muted-foreground")}>{label}</p>
-    </div>
+      <p className="font-display text-2xl font-extrabold tracking-tight dark:text-white text-slate-900">{value}</p>
+      <p className={cn("text-xs", accent ? "text-emerald-600 dark:text-emerald-400" : "text-purple-600 dark:text-purple-300/70")}>{label}</p>
+    </SciFiCard>
   );
 }
 
@@ -136,9 +134,9 @@ function EnergyPage() {
         ))}
       </div>
 
-      <Card className="p-5">
+      <SciFiCard color="violet" className="p-5">
         <div className="mb-4 flex items-center justify-between">
-          <h2 className="font-bold">Consumption</h2>
+          <h2 className="font-bold text-slate-900 dark:text-white">Consumption</h2>
           <Tabs value={range} onValueChange={(v) => setRange(v as keyof typeof ranges)}>
             <TabsList>
               <TabsTrigger value="daily">Daily</TabsTrigger>
@@ -148,45 +146,45 @@ function EnergyPage() {
           </Tabs>
         </div>
         <EnergyAreaChart data={ranges[range]} height={240} />
-      </Card>
+      </SciFiCard>
 
-      <Card className="border-warning/50 bg-warning/10 p-4">
+      <SciFiCard color="orange" className="p-4">
         <div className="flex items-center gap-3">
-          <TriangleAlert className="h-5 w-5 text-warning" />
-          <p className="text-sm">
-            <span className="font-semibold">Abnormal spike detected</span> around 2–4 PM, 38% above
+          <TriangleAlert className="h-5 w-5 text-orange-500" />
+          <p className="text-sm text-slate-800 dark:text-orange-200">
+            <span className="font-semibold text-orange-600 dark:text-orange-400">Abnormal spike detected</span> around 2–4 PM, 38% above
             your daily average.
           </p>
         </div>
-      </Card>
+      </SciFiCard>
 
       <div className="grid gap-4">
-        <Card className="p-5">
-          <h2 className="mb-3 flex items-center gap-2 font-bold">
+        <SciFiCard color="purple" className="p-5">
+          <h2 className="mb-3 flex items-center gap-2 font-bold text-slate-900 dark:text-white">
             <TrendingUp className="h-4 w-4" /> Top consumers
           </h2>
           <EnergyBarChart data={ranking} />
-        </Card>
+        </SciFiCard>
 
-        <Card className="space-y-3 p-5">
-          <h2 className="font-bold">Suggested optimizations</h2>
+        <SciFiCard color="fuchsia" className="space-y-3 p-5">
+          <h2 className="font-bold text-slate-900 dark:text-white">Suggested optimizations</h2>
           {optimizations.filter((o) => !appliedIds.includes(o.id)).length === 0 && (
-            <p className="text-sm text-muted-foreground">All optimizations applied. Nice work.</p>
+            <p className="text-sm text-fuchsia-600 dark:text-fuchsia-300">All optimizations applied. Nice work.</p>
           )}
           {optimizations
             .filter((o) => !appliedIds.includes(o.id))
             .map((o) => (
               <div
                 key={o.id}
-                className="flex items-center justify-between gap-3 rounded-xl border border-border p-3 text-sm"
+                className="flex items-center justify-between gap-3 rounded-xl border border-fuchsia-200 dark:border-fuchsia-500/20 bg-white/40 dark:bg-fuchsia-950/20 p-3 text-sm text-slate-800 dark:text-fuchsia-200 shadow-sm"
               >
                 <span>{o.text}</span>
-                <Button size="sm" variant="outline" onClick={() => applyOptimization(o)}>
+                <Button size="sm" variant="outline" onClick={() => applyOptimization(o)} className="dark:border-fuchsia-500/30 dark:hover:bg-fuchsia-900/50">
                   <Check className="mr-1 h-3.5 w-3.5" /> Apply
                 </Button>
               </div>
             ))}
-        </Card>
+        </SciFiCard>
       </div>
     </div>
   );

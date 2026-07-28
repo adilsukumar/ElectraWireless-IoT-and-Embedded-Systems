@@ -4,6 +4,7 @@ import { toast } from "sonner";
 import { useHome } from "@/lib/home/store";
 import { cn } from "@/lib/utils";
 import type { FallbackStatus } from "@/lib/home/types";
+import { SciFiCard } from "@/components/ui/sci-fi-card";
 
 export const Route = createFileRoute("/settings-network")({
   component: SettingsNetworkPage,
@@ -25,7 +26,7 @@ function SettingsNetworkPage() {
       <div className="mx-auto max-w-4xl w-full space-y-6 pt-6">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <Link to="/settings" className="p-2 bg-white dark:bg-[#111116] rounded-full hover:bg-white dark:bg-[#111116]/10 transition-colors border border-white/5">
+            <Link to="/settings" className="p-2 bg-white/40 dark:bg-[#111116] rounded-full hover:bg-white/60 dark:bg-[#111116]/10 transition-colors border border-blue-200 dark:border-white/5">
               <ArrowLeft className="h-4 w-4" />
             </Link>
             <h1 className="text-xl font-extrabold tracking-tight">Network & Fallback</h1>
@@ -33,10 +34,10 @@ function SettingsNetworkPage() {
         </div>
 
         <div className="flex gap-2 pt-1">
-          <button className="flex-1 py-3 font-bold rounded-xl bg-white dark:bg-[#111116]/5 border border-white/10 hover:bg-white dark:bg-[#111116]/10 transition-all text-xs" onClick={() => { dispatch({ type: "FAILOVER", key: "ble" }); toast("Simulating Wi-Fi outage → BLE"); }}>
+          <button className="flex-1 py-3 font-bold rounded-xl bg-white/40 dark:bg-[#111116]/5 border border-blue-200 dark:border-white/10 hover:bg-white/60 dark:hover:bg-[#111116]/10 transition-all text-xs text-slate-800 dark:text-white" onClick={() => { dispatch({ type: "FAILOVER", key: "ble" }); toast("Simulating Wi-Fi outage → BLE"); }}>
             Simulate Outage
           </button>
-          <button className="flex-1 py-3 font-bold flex items-center justify-center gap-1.5 bg-blue-500 hover:bg-blue-600 rounded-xl shadow-[0_0_15px_rgba(59,130,246,0.3)] transition-all text-xs" onClick={() => { dispatch({ type: "RESTORE_NETWORK" }); toast.success("Network restored"); }}>
+          <button className="flex-1 py-3 font-bold flex items-center justify-center gap-1.5 bg-blue-500 hover:bg-blue-600 rounded-xl shadow-[0_0_15px_rgba(59,130,246,0.3)] text-white transition-all text-xs" onClick={() => { dispatch({ type: "RESTORE_NETWORK" }); toast.success("Network restored"); }}>
             <RotateCcw className="h-3.5 w-3.5" /> Restore Primary
           </button>
         </div>
@@ -45,30 +46,30 @@ function SettingsNetworkPage() {
           {state.fallback.map((f) => {
             const Icon = fallbackIcon[f.key] || Wifi;
             return (
-              <div key={f.key} className="p-4 rounded-2xl bg-white dark:bg-[#111116] border border-white/5 shadow-lg">
+              <SciFiCard key={f.key} color={f.status === "active" ? "emerald" : "blue"} glow={f.status === "active"} className="p-4">
                 <div className="flex items-start gap-4">
-                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#1c1c24] border border-white/5 text-neutral-300">
-                    <Icon className="h-5 w-5 text-blue-400" />
+                  <div className={cn("flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border text-neutral-300", f.status === "active" ? "bg-emerald-500/10 border-emerald-500/20" : "bg-white/40 dark:bg-[#1c1c24] border-blue-200 dark:border-white/5")}>
+                    <Icon className={cn("h-5 w-5", f.status === "active" ? "text-emerald-500" : "text-blue-500 dark:text-blue-400")} />
                   </div>
                   <div className="min-w-0 flex-1">
                     <div className="flex flex-wrap items-center gap-2 mb-1.5">
-                      <p className="font-bold text-sm">{f.path}</p>
-                      <span className="px-2 py-0.5 bg-white dark:bg-[#111116]/10 rounded-full text-[9px] font-bold uppercase tracking-wider text-neutral-400">{f.label}</span>
+                      <p className="font-bold text-slate-900 dark:text-white text-sm">{f.path}</p>
+                      <span className="px-2 py-0.5 bg-slate-100 dark:bg-[#111116]/10 rounded-full text-[9px] font-bold uppercase tracking-wider text-slate-500 dark:text-neutral-400">{f.label}</span>
                     </div>
-                    <p className="text-xs text-neutral-400 leading-relaxed font-medium">{f.scenario}</p>
+                    <p className="text-xs text-slate-600 dark:text-neutral-400 leading-relaxed font-medium">{f.scenario}</p>
                   </div>
                 </div>
-                <div className="mt-4 flex items-center justify-between border-t border-white/5 pt-3.5">
+                <div className="mt-4 flex items-center justify-between border-t border-slate-200 dark:border-white/5 pt-3.5">
                   <span className={cn("px-3 py-1 text-[10px] font-bold uppercase tracking-wider rounded-full border", statusStyles[f.status])}>
                     {f.status}
                   </span>
                   {f.status !== "active" && (
-                    <button className="text-xs font-bold text-blue-400 hover:text-blue-300 transition-colors" onClick={() => { dispatch({ type: "FAILOVER", key: f.key }); toast(`Routing via ${f.path}`); }}>
+                    <button className="text-xs font-bold text-blue-500 hover:text-blue-600 dark:text-blue-400 dark:hover:text-blue-300 transition-colors" onClick={() => { dispatch({ type: "FAILOVER", key: f.key }); toast(`Routing via ${f.path}`); }}>
                       Route via this tier →
                     </button>
                   )}
                 </div>
-              </div>
+              </SciFiCard>
             );
           })}
         </div>

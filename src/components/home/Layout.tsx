@@ -84,16 +84,14 @@ function LayoutInner({ children }: { children: ReactNode }) {
   return (
     <div className="relative flex h-[100dvh] w-full justify-center overflow-hidden bg-secondary/50">
       {/* Ambient static blobs (subtle, no blur filter to avoid per-frame repaint cost) */}
-      <div aria-hidden className="pointer-events-none absolute -left-12 -top-12 h-32 w-32 rounded-full bg-primary/[0.08] dark:bg-primary/[0.12]" />
-      <div aria-hidden className="pointer-events-none absolute top-20 right-10 h-40 w-40 rounded-full bg-chart-2/[0.08] dark:bg-chart-2/[0.12]" />
-      <div aria-hidden className="pointer-events-none absolute top-1/3 left-10 h-24 w-24 rounded-full bg-chart-3/[0.08] dark:bg-chart-3/[0.12]" />
-      <div aria-hidden className="pointer-events-none absolute top-1/2 right-24 h-48 w-48 rounded-full bg-primary/[0.06] dark:bg-primary/[0.10]" />
-      <div aria-hidden className="pointer-events-none absolute bottom-1/3 left-20 h-36 w-36 rounded-full bg-chart-4/[0.08] dark:bg-chart-4/[0.12]" />
-      <div aria-hidden className="pointer-events-none absolute bottom-20 right-12 h-28 w-28 rounded-full bg-chart-5/[0.08] dark:bg-chart-5/[0.12]" />
-      <div aria-hidden className="pointer-events-none absolute -bottom-10 left-1/3 h-40 w-40 rounded-full bg-chart-2/[0.08] dark:bg-chart-2/[0.12]" />
-      <div aria-hidden className="pointer-events-none absolute -bottom-8 -right-8 h-32 w-32 rounded-full bg-primary/[0.08] dark:bg-primary/[0.12]" />
-      <div aria-hidden className="pointer-events-none absolute top-1/4 -right-16 h-56 w-56 rounded-full bg-chart-1/[0.05] dark:bg-chart-1/[0.08]" />
-      <div aria-hidden className="pointer-events-none absolute top-3/4 -left-16 h-48 w-48 rounded-full bg-chart-3/[0.05] dark:bg-chart-3/[0.08]" />
+      <div aria-hidden className="pointer-events-none absolute -left-12 -top-12 h-64 w-64 rounded-full bg-purple-500/10 dark:bg-purple-600/15" />
+      <div aria-hidden className="pointer-events-none absolute top-20 right-10 h-72 w-72 rounded-full bg-violet-500/10 dark:bg-violet-500/15" />
+      <div aria-hidden className="pointer-events-none absolute top-1/3 left-10 h-48 w-48 rounded-full bg-fuchsia-500/5 dark:bg-fuchsia-600/10" />
+      <div aria-hidden className="pointer-events-none absolute top-1/2 right-24 h-56 w-56 rounded-full bg-purple-400/10 dark:bg-purple-500/10" />
+      <div aria-hidden className="pointer-events-none absolute bottom-1/3 left-20 h-64 w-64 rounded-full bg-violet-400/10 dark:bg-violet-600/10" />
+      <div aria-hidden className="pointer-events-none absolute bottom-20 right-12 h-40 w-40 rounded-full bg-emerald-400/5 dark:bg-emerald-500/10" />
+      <div aria-hidden className="pointer-events-none absolute -bottom-10 left-1/3 h-52 w-52 rounded-full bg-purple-500/10 dark:bg-purple-600/10" />
+      <div aria-hidden className="pointer-events-none absolute top-3/4 -left-16 h-60 w-60 rounded-full bg-fuchsia-400/5 dark:bg-fuchsia-500/10" />
 
       {/* Phone-sized app column */}
       <div className="relative z-10 flex h-full w-full max-w-md flex-col overflow-hidden bg-background shadow-lg shadow-primary/5 ring-1 ring-border/60">

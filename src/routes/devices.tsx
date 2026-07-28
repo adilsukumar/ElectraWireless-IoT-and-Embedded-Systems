@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ChevronLeft, Cpu, DoorOpen, Info, Plus, FolderPlus } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { ChevronLeft, Cpu, DoorOpen, Info, Plus, FolderPlus, ArrowLeft } from "lucide-react";
+import { SciFiCard } from "@/components/ui/sci-fi-card";
 
 export const Route = createFileRoute("/devices")({
   component: DevicesPage,
@@ -8,62 +8,49 @@ export const Route = createFileRoute("/devices")({
 
 function DevicesPage() {
   return (
-    <div className="space-y-6">
-      <div className="flex items-center gap-3">
-        <Button variant="ghost" size="icon" asChild className="h-9 w-9 rounded-full">
-          <Link to="/">
-            <ChevronLeft className="h-5 w-5" />
+    <div className="bg-slate-50 dark:bg-black min-h-screen text-slate-900 dark:text-white pb-24 -mx-4 px-4 sm:-mx-8 sm:px-8">
+      <div className="mx-auto max-w-4xl space-y-6 pt-6">
+        <div className="flex items-center gap-3">
+          <Link to="/" className="p-2 bg-white/40 dark:bg-[#111116] rounded-full hover:bg-white/60 dark:bg-[#111116]/10 transition-colors border border-blue-200 dark:border-white/5">
+            <ArrowLeft className="h-4 w-4" />
           </Link>
-        </Button>
-        <h1 className="font-display text-2xl font-extrabold text-primary">Devices</h1>
-      </div>
+          <h1 className="text-xl font-extrabold tracking-tight">Devices & Rooms</h1>
+        </div>
 
-      <div className="grid grid-cols-2 gap-3">
-        <Link
-          to="/all-devices"
-          className="flex flex-col items-center justify-center gap-3 rounded-2xl border-2 border-dashed border-primary/40 bg-card p-4 text-center text-sm font-semibold text-primary transition-colors hover:bg-primary/10"
-        >
-          <span className="flex h-12 w-12 items-center justify-center rounded-full bg-primary text-primary-foreground">
-            <Cpu className="h-6 w-6" />
-          </span>
-          All Devices
-        </Link>
-        <Link
-          to="/rooms"
-          className="flex flex-col items-center justify-center gap-3 rounded-2xl border-2 border-dashed border-primary/40 bg-card p-4 text-center text-sm font-semibold text-primary transition-colors hover:bg-primary/10"
-        >
-          <span className="flex h-12 w-12 items-center justify-center rounded-full bg-primary text-primary-foreground">
-            <DoorOpen className="h-6 w-6" />
-          </span>
-          Room
-        </Link>
-        <Link
-          to="/select-device"
-          className="flex flex-col items-center justify-center gap-3 rounded-2xl border-2 border-dashed border-primary/40 bg-card p-4 text-center text-sm font-semibold text-primary transition-colors hover:bg-primary/10"
-        >
-          <span className="flex h-12 w-12 items-center justify-center rounded-full bg-primary text-primary-foreground">
-            <Info className="h-6 w-6" />
-          </span>
-          Device Detail
-        </Link>
-        <Link
-          to="/add-device"
-          className="flex flex-col items-center justify-center gap-3 rounded-2xl border-2 border-dashed border-primary/40 bg-card p-4 text-center text-sm font-semibold text-primary transition-colors hover:bg-primary/10"
-        >
-          <span className="flex h-12 w-12 items-center justify-center rounded-full bg-primary text-primary-foreground">
-            <Plus className="h-6 w-6" />
-          </span>
-          Add Device
-        </Link>
-        <Link
-          to="/add-room"
-          className="flex flex-col items-center justify-center gap-3 rounded-2xl border-2 border-dashed border-primary/40 bg-card p-4 text-center text-sm font-semibold text-primary transition-colors hover:bg-primary/10"
-        >
-          <span className="flex h-12 w-12 items-center justify-center rounded-full bg-primary text-primary-foreground">
-            <FolderPlus className="h-6 w-6" />
-          </span>
-          Add Room
-        </Link>
+        <div className="grid grid-cols-2 gap-3 mt-4">
+          <Link to="/all-devices" className="block">
+            <SciFiCard color="blue" className="flex flex-col items-center justify-center gap-3 p-6 text-center transition-all hover:scale-105 h-full">
+              <span className="flex h-12 w-12 items-center justify-center rounded-full bg-blue-500/10 border border-blue-500/20 shadow-[0_0_15px_rgba(59,130,246,0.15)] text-blue-600 dark:text-blue-400">
+                <Cpu className="h-6 w-6" />
+              </span>
+              <span className="text-sm font-bold text-slate-900 dark:text-white">All Devices</span>
+            </SciFiCard>
+          </Link>
+          <Link to="/rooms" className="block">
+            <SciFiCard color="purple" className="flex flex-col items-center justify-center gap-3 p-6 text-center transition-all hover:scale-105 h-full">
+              <span className="flex h-12 w-12 items-center justify-center rounded-full bg-purple-500/10 border border-purple-500/20 shadow-[0_0_15px_rgba(168,85,247,0.15)] text-purple-600 dark:text-purple-400">
+                <DoorOpen className="h-6 w-6" />
+              </span>
+              <span className="text-sm font-bold text-slate-900 dark:text-white">Rooms</span>
+            </SciFiCard>
+          </Link>
+          <Link to="/add-device" className="block">
+            <SciFiCard color="emerald" className="flex flex-col items-center justify-center gap-3 p-6 text-center transition-all hover:scale-105 h-full">
+              <span className="flex h-12 w-12 items-center justify-center rounded-full bg-emerald-500/10 border border-emerald-500/20 shadow-[0_0_15px_rgba(16,185,129,0.15)] text-emerald-600 dark:text-emerald-500">
+                <Plus className="h-6 w-6" />
+              </span>
+              <span className="text-sm font-bold text-slate-900 dark:text-white">Add Device</span>
+            </SciFiCard>
+          </Link>
+          <Link to="/add-room" className="block">
+            <SciFiCard color="orange" className="flex flex-col items-center justify-center gap-3 p-6 text-center transition-all hover:scale-105 h-full">
+              <span className="flex h-12 w-12 items-center justify-center rounded-full bg-orange-500/10 border border-orange-500/20 shadow-[0_0_15px_rgba(249,115,22,0.15)] text-orange-600 dark:text-orange-500">
+                <FolderPlus className="h-6 w-6" />
+              </span>
+              <span className="text-sm font-bold text-slate-900 dark:text-white">Add Room</span>
+            </SciFiCard>
+          </Link>
+        </div>
       </div>
     </div>
   );

@@ -15,7 +15,7 @@ function MapPage() {
   const [zoomedRoomId, setZoomedRoomId] = useState<string | null>(null);
 
   // Contiguous real estate flat layout with dimensions and furniture types
-  const roomsLayout = {
+  const roomsLayout: Record<string, { top: string, left: string, width: string, height: string, area: string, dimW: string, dimH: string, doors: { top?: string, left?: string, bottom?: string, right?: string, type: string, label?: string }[], furn: string }> = {
     "living-room": { top: "10%", left: "10%", width: "50%", height: "45%", area: "450 sq.ft.", dimW: "24' 0\"", dimH: "20' 6\"", 
       doors: [
         { top: "100%", left: "70%", type: "bottom" }, // Door to Bedroom
@@ -99,28 +99,28 @@ function MapPage() {
   };
 
   return (
-    <div className="flex flex-col h-full bg-[#050505] text-[#b4b4b4] pb-20 font-mono">
+    <div className="flex flex-col h-full bg-slate-50 dark:bg-[#050505] text-slate-500 dark:text-[#b4b4b4] pb-20 font-mono transition-colors">
       <div className="flex items-center gap-4 p-6 pt-10 font-sans">
-        <Link to="/" className="flex h-12 w-12 items-center justify-center rounded-full bg-white/5 shadow-sm border border-white/10 hover:bg-white/10 transition-colors">
-          <ArrowLeft className="h-6 w-6 text-white" />
+        <Link to="/" className="flex h-12 w-12 items-center justify-center rounded-full bg-slate-200 dark:bg-white/5 shadow-sm border border-slate-300 dark:border-white/10 hover:bg-slate-300 dark:hover:bg-white/10 transition-colors">
+          <ArrowLeft className="h-6 w-6 text-slate-900 dark:text-white" />
         </Link>
         <div className="flex-1">
-          <h1 className="text-2xl font-extrabold tracking-tight text-white">Property Plan</h1>
+          <h1 className="text-2xl font-extrabold tracking-tight text-slate-900 dark:text-white">Property Plan</h1>
           <p className="text-xs text-neutral-400 font-medium uppercase tracking-widest mt-1">Scale 1:100 · 1160 SQ.FT</p>
         </div>
       </div>
 
       <div className="px-6 pb-6 flex gap-3 font-sans">
-        <div className="flex flex-1 rounded-full bg-white/5 p-1.5 border border-white/10 backdrop-blur-md">
+        <div className="flex flex-1 rounded-full bg-white dark:bg-white/5 p-1.5 border border-slate-200 dark:border-white/10 shadow-sm backdrop-blur-md">
           <button 
             onClick={() => setViewMode("control")}
-            className={cn("flex-1 flex items-center justify-center gap-2 py-2.5 rounded-full text-[10px] sm:text-xs uppercase tracking-wider font-bold transition-all", viewMode === "control" ? "bg-white text-black shadow-lg" : "text-neutral-400 hover:text-white")}
+            className={cn("flex-1 flex items-center justify-center gap-2 py-2.5 rounded-full text-[10px] sm:text-xs uppercase tracking-wider font-bold transition-all", viewMode === "control" ? "bg-purple-500 dark:bg-white text-white dark:text-black shadow-lg" : "text-slate-500 dark:text-neutral-400 hover:text-slate-900 dark:hover:text-white")}
           >
             <MapIcon className="h-4 w-4" /> Layout
           </button>
           <button 
             onClick={() => setViewMode("network")}
-            className={cn("flex-1 flex items-center justify-center gap-2 py-2.5 rounded-full text-[10px] sm:text-xs uppercase tracking-wider font-bold transition-all", viewMode === "network" ? "bg-teal-500 text-black shadow-[0_0_20px_rgba(20,184,166,0.4)]" : "text-neutral-400 hover:text-white")}
+            className={cn("flex-1 flex items-center justify-center gap-2 py-2.5 rounded-full text-[10px] sm:text-xs uppercase tracking-wider font-bold transition-all", viewMode === "network" ? "bg-teal-500 text-white dark:text-black shadow-[0_0_20px_rgba(20,184,166,0.4)]" : "text-slate-500 dark:text-neutral-400 hover:text-slate-900 dark:hover:text-white")}
           >
             <Wifi className="h-4 w-4" /> Topology
           </button>
@@ -128,7 +128,7 @@ function MapPage() {
         {zoomedRoomId && (
           <button 
             onClick={() => setZoomedRoomId(null)}
-            className="px-5 rounded-full bg-[#181820] text-white font-bold text-xs uppercase tracking-wider border border-white/20 hover:bg-white/10 transition-colors"
+            className="px-5 rounded-full bg-slate-200 dark:bg-[#181820] text-slate-900 dark:text-white font-bold text-xs uppercase tracking-wider border border-slate-300 dark:border-white/20 hover:bg-slate-300 dark:hover:bg-white/10 transition-colors"
           >
             Reset
           </button>

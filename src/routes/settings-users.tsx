@@ -5,6 +5,7 @@ import { useHome } from "@/lib/home/store";
 import { cn } from "@/lib/utils";
 import type { Role } from "@/lib/home/types";
 import { MembersManager } from "@/components/home/MembersManager";
+import { SciFiCard } from "@/components/ui/sci-fi-card";
 
 export const Route = createFileRoute("/settings-users")({
   component: SettingsUsersPage,
@@ -32,21 +33,21 @@ function SettingsUsersPage() {
           {roles.map((r) => {
             const activeRole = state.role === r.id;
             return (
-              <div key={r.id} className={cn("p-4 rounded-2xl border shadow-lg", activeRole ? "bg-[#15151a] border-[#a855f7]/50" : "bg-white dark:bg-[#111116] border-white/5")}>
+              <SciFiCard key={r.id} color="purple" glow={activeRole} className={cn("p-4", activeRole ? "border-purple-400/50 shadow-[0_0_15px_rgba(168,85,247,0.2)]" : "")}>
                 <div className="mb-3 flex items-center gap-3">
-                  <div className="p-2.5 bg-[#a855f7]/10 rounded-xl border border-[#a855f7]/20">
-                    <r.icon className="h-5 w-5 text-[#a855f7]" />
+                  <div className="p-2.5 bg-purple-500/10 rounded-xl border border-purple-500/20">
+                    <r.icon className="h-5 w-5 text-purple-600 dark:text-purple-400" />
                   </div>
-                  <p className="font-bold text-sm">{r.label}</p>
-                  {activeRole && <span className="ml-auto px-3 py-1 bg-[#a855f7] text-slate-900 dark:text-white text-[10px] font-bold rounded-full shadow-[0_0_10px_rgba(168,85,247,0.4)] tracking-wide uppercase">Active</span>}
+                  <p className="font-bold text-slate-900 dark:text-white text-sm">{r.label}</p>
+                  {activeRole && <span className="ml-auto px-3 py-1 bg-purple-100 dark:bg-purple-500/20 text-purple-700 dark:text-purple-300 text-[10px] font-bold rounded-full tracking-wide uppercase">Active</span>}
                 </div>
-                <ul className="mb-4 space-y-2 text-xs text-neutral-400 font-medium px-2">
+                <ul className="mb-4 space-y-2 text-xs text-slate-600 dark:text-neutral-400 font-medium px-2">
                   {r.perms.map((p) => (
                     <li key={p} className="flex items-center gap-2">• {p}</li>
                   ))}
                 </ul>
                 <button
-                  className={cn("w-full py-2.5 rounded-xl font-bold text-xs transition-all", activeRole ? "bg-white dark:bg-[#111116]/5 text-neutral-400" : "bg-[#a855f7] text-slate-900 dark:text-white hover:bg-[#b065f8] shadow-[0_0_15px_rgba(168,85,247,0.3)]")}
+                  className={cn("w-full py-2.5 rounded-xl font-bold text-xs transition-all border", activeRole ? "bg-slate-100 dark:bg-[#111116]/30 text-slate-400 dark:text-neutral-500 border-transparent" : "bg-purple-500 text-white hover:bg-purple-600 border-purple-400 shadow-[0_0_15px_rgba(168,85,247,0.3)]")}
                   disabled={activeRole}
                   onClick={() => {
                     dispatch({ type: "SET_ROLE", role: r.id });
@@ -55,7 +56,7 @@ function SettingsUsersPage() {
                 >
                   {activeRole ? "Current role" : `Switch to ${r.label}`}
                 </button>
-              </div>
+              </SciFiCard>
             );
           })}
         </div>

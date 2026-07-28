@@ -156,39 +156,39 @@ function Dashboard() {
 
       {/* Status Cards Row */}
       <div className="relative z-10 grid grid-cols-2 gap-3">
-        <div className="rounded-2xl border border-purple-500/25 bg-purple-950/30 backdrop-blur-md p-4 relative overflow-hidden">
-          <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-purple-400/60 to-transparent" />
-          <p className="text-purple-400 font-mono text-[10px] tracking-[0.2em] uppercase mb-1">System Time</p>
-          <p className="text-2xl font-light text-white tabular-nums leading-tight">
+        <div className="rounded-2xl border border-purple-200 dark:border-purple-500/25 bg-white/40 dark:bg-purple-950/30 backdrop-blur-md p-4 relative overflow-hidden shadow-sm">
+          <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-purple-500/30 dark:via-purple-400/60 to-transparent" />
+          <p className="text-purple-700 dark:text-purple-400 font-mono text-[10px] tracking-[0.2em] uppercase mb-1">System Time</p>
+          <p className="text-2xl font-light text-slate-900 dark:text-white tabular-nums leading-tight">
             {time.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
           </p>
-          <p className="text-[11px] text-purple-300/70 mt-0.5 leading-snug">
+          <p className="text-[11px] text-purple-600/70 dark:text-purple-300/70 mt-0.5 leading-snug">
             {time.toLocaleDateString([], { weekday: "short", month: "short", day: "numeric" })}
           </p>
         </div>
-        <div className="rounded-2xl border border-violet-500/25 bg-violet-950/30 backdrop-blur-md p-4 relative overflow-hidden">
-          <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-violet-400/60 to-transparent" />
-          <p className="text-violet-400 font-mono text-[10px] tracking-[0.2em] uppercase mb-1">Grid Load</p>
-          <p className="text-2xl font-light text-white leading-tight">
-            {(totalWatts / 1000).toFixed(2)}<span className="text-sm text-violet-300/60 ml-1">kW</span>
+        <div className="rounded-2xl border border-violet-200 dark:border-violet-500/25 bg-white/40 dark:bg-violet-950/30 backdrop-blur-md p-4 relative overflow-hidden shadow-sm">
+          <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-violet-500/30 dark:via-violet-400/60 to-transparent" />
+          <p className="text-violet-700 dark:text-violet-400 font-mono text-[10px] tracking-[0.2em] uppercase mb-1">Grid Load</p>
+          <p className="text-2xl font-light text-slate-900 dark:text-white leading-tight">
+            {(totalWatts / 1000).toFixed(2)}<span className="text-sm text-violet-600/60 dark:text-violet-300/60 ml-1">kW</span>
           </p>
-          <p className="text-[11px] text-violet-300/70 mt-0.5">{onDevices} of {totalDevices} on</p>
+          <p className="text-[11px] text-violet-600/70 dark:text-violet-300/70 mt-0.5">{onDevices} of {totalDevices} on</p>
         </div>
       </div>
 
       {/* Status Pill Row */}
       <div className="relative z-10 flex gap-2">
-        <div className="flex-1 flex items-center gap-2 rounded-xl border border-emerald-500/20 bg-emerald-950/20 px-3 py-2">
-          <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shrink-0" />
-          <span className="text-[11px] font-medium text-emerald-300 truncate">Online</span>
+        <div className="flex-1 flex items-center gap-2 rounded-xl border border-emerald-200 dark:border-emerald-500/20 bg-white/40 dark:bg-emerald-950/20 px-3 py-2 shadow-sm">
+          <span className="w-2 h-2 rounded-full bg-emerald-500 dark:bg-emerald-400 animate-pulse shrink-0" />
+          <span className="text-[11px] font-medium text-emerald-700 dark:text-emerald-300 truncate">Online</span>
         </div>
-        <div className="flex-1 flex items-center gap-2 rounded-xl border border-purple-500/20 bg-purple-950/20 px-3 py-2">
-          <Wifi className="h-3 w-3 text-purple-400 shrink-0" />
-          <span className="text-[11px] font-medium text-purple-300 truncate">{onDevices} Active</span>
+        <div className="flex-1 flex items-center gap-2 rounded-xl border border-purple-200 dark:border-purple-500/20 bg-white/40 dark:bg-purple-950/20 px-3 py-2 shadow-sm">
+          <Wifi className="h-3 w-3 text-purple-600 dark:text-purple-400 shrink-0" />
+          <span className="text-[11px] font-medium text-purple-700 dark:text-purple-300 truncate">{onDevices} Active</span>
         </div>
-        <div className="flex-1 flex items-center gap-2 rounded-xl border border-fuchsia-500/20 bg-fuchsia-950/20 px-3 py-2">
-          <Activity className="h-3 w-3 text-fuchsia-400 shrink-0" />
-          <span className="text-[11px] font-medium text-fuchsia-300 truncate">60+ Protocols</span>
+        <div className="flex-1 flex items-center gap-2 rounded-xl border border-fuchsia-200 dark:border-fuchsia-500/20 bg-white/40 dark:bg-fuchsia-950/20 px-3 py-2 shadow-sm">
+          <Activity className="h-3 w-3 text-fuchsia-600 dark:text-fuchsia-400 shrink-0" />
+          <span className="text-[11px] font-medium text-fuchsia-700 dark:text-fuchsia-300 truncate">60+ Protocols</span>
         </div>
       </div>
 
@@ -213,37 +213,37 @@ function Dashboard() {
           )} style={{ animationDuration: isListening ? "3s" : "1s" }} />
           <div className={cn(
             "absolute inset-10 rounded-full border-2 transition-all duration-500",
-            isListening ? "border-purple-300/50" :
-            isSpeaking ? "border-fuchsia-300/40 animate-ping" :
-            "border-violet-500/30"
+            isListening ? "border-purple-400/50 dark:border-purple-300/50" :
+            isSpeaking ? "border-fuchsia-400/40 dark:border-fuchsia-300/40 animate-ping" :
+            "border-violet-300/50 dark:border-violet-500/30"
           )} />
           <div className={cn(
             "relative z-10 w-32 h-32 rounded-full flex flex-col items-center justify-center transition-all duration-500 shadow-2xl",
             isListening
-              ? "bg-gradient-to-br from-purple-500 to-violet-600 shadow-[0_0_60px_rgba(168,85,247,0.9)] scale-95"
+              ? "bg-gradient-to-br from-purple-400 to-violet-500 dark:from-purple-500 dark:to-violet-600 shadow-[0_0_60px_rgba(168,85,247,0.6)] dark:shadow-[0_0_60px_rgba(168,85,247,0.9)] scale-95"
               : isSpeaking
-              ? "bg-gradient-to-br from-fuchsia-500 to-purple-600 shadow-[0_0_70px_rgba(232,121,249,0.9)] scale-110 animate-pulse"
-              : "bg-gradient-to-br from-[#1e0d35] to-[#0d0118] border border-purple-500/40 shadow-[0_0_40px_rgba(168,85,247,0.3)] group-hover:shadow-[0_0_60px_rgba(168,85,247,0.5)]"
+              ? "bg-gradient-to-br from-fuchsia-400 to-purple-500 dark:from-fuchsia-500 dark:to-purple-600 shadow-[0_0_70px_rgba(232,121,249,0.6)] dark:shadow-[0_0_70px_rgba(232,121,249,0.9)] scale-110 animate-pulse"
+              : "bg-gradient-to-br from-white to-purple-50 dark:from-[#1e0d35] dark:to-[#0d0118] border border-purple-200 dark:border-purple-500/40 shadow-[0_0_40px_rgba(168,85,247,0.15)] dark:shadow-[0_0_40px_rgba(168,85,247,0.3)] group-hover:shadow-[0_0_60px_rgba(168,85,247,0.3)] dark:group-hover:shadow-[0_0_60px_rgba(168,85,247,0.5)]"
           )}>
             {isListening ? (
               <Mic className="h-10 w-10 text-white animate-pulse" />
             ) : isThinking ? (
-              <Loader2 className="h-10 w-10 text-purple-300 animate-spin" />
+              <Loader2 className="h-10 w-10 text-purple-500 dark:text-purple-300 animate-spin" />
             ) : (
               <>
-                <span className="font-display font-black text-3xl tracking-tighter bg-gradient-to-b from-white to-purple-300 bg-clip-text text-transparent">
+                <span className="font-display font-black text-3xl tracking-tighter bg-gradient-to-b from-purple-700 to-purple-400 dark:from-white dark:to-purple-300 bg-clip-text text-transparent">
                   ELLY
                 </span>
-                <span className="text-[9px] font-mono text-purple-400/70 tracking-[0.15em] mt-0.5">AI CORE</span>
+                <span className="text-[9px] font-mono text-purple-500/80 dark:text-purple-400/70 tracking-[0.15em] mt-0.5">AI CORE</span>
               </>
             )}
           </div>
         </button>
         <p className={cn(
           "mt-3 text-center text-sm font-light max-w-[260px] transition-all duration-300 leading-relaxed",
-          isListening ? "text-purple-300 italic" :
-          isSpeaking ? "text-fuchsia-300" :
-          "text-purple-200/50"
+          isListening ? "text-purple-600 dark:text-purple-300 italic" :
+          isSpeaking ? "text-fuchsia-600 dark:text-fuchsia-300" :
+          "text-slate-500 dark:text-purple-200/50"
         )}>
           {transcript}
         </p>
@@ -252,9 +252,9 @@ function Dashboard() {
       {/* Subroutines */}
       <div className="relative z-10">
         <div className="flex items-center gap-2 mb-3">
-          <div className="h-px flex-1 bg-gradient-to-r from-purple-500/50 to-transparent" />
-          <p className="text-purple-400 font-mono text-[10px] tracking-[0.25em] uppercase px-2">Subroutines</p>
-          <div className="h-px flex-1 bg-gradient-to-l from-purple-500/50 to-transparent" />
+          <div className="h-px flex-1 bg-gradient-to-r from-purple-200 dark:from-purple-500/50 to-transparent" />
+          <p className="text-purple-600 dark:text-purple-400 font-mono text-[10px] tracking-[0.25em] uppercase px-2">Subroutines</p>
+          <div className="h-px flex-1 bg-gradient-to-l from-purple-200 dark:from-purple-500/50 to-transparent" />
         </div>
         <div className="grid grid-cols-2 gap-3">
           <EllyBtn icon={Power} label="All Off" sublabel="Power Down"
@@ -287,11 +287,11 @@ function Dashboard() {
       </div>
 
       {/* Protocol Badge Strip */}
-      <div className="relative z-10 rounded-2xl border border-purple-500/20 bg-purple-950/20 backdrop-blur-md p-4">
-        <p className="text-purple-400 font-mono text-[10px] tracking-[0.2em] uppercase mb-3">Universal Bridge · 60+ Protocols Active</p>
+      <div className="relative z-10 rounded-2xl border border-purple-200 dark:border-purple-500/20 bg-white/40 dark:bg-purple-950/20 backdrop-blur-md p-4 shadow-sm">
+        <p className="text-purple-600 dark:text-purple-400 font-mono text-[10px] tracking-[0.2em] uppercase mb-3">Universal Bridge · 60+ Protocols Active</p>
         <div className="flex flex-wrap gap-1.5">
           {["Tuya", "Shelly", "Hue", "ESPHome", "Z-Wave", "Zigbee", "Sonos", "Roku", "LG TV", "Samsung", "IKEA", "Nest", "Ring", "WLED", "Kodi", "+45 more"].map(p => (
-            <span key={p} className="text-[10px] font-mono px-2 py-0.5 rounded-full border border-purple-500/30 text-purple-300/70 bg-purple-500/5">
+            <span key={p} className="text-[10px] font-mono px-2 py-0.5 rounded-full border border-purple-200 dark:border-purple-500/30 text-purple-700 dark:text-purple-300/70 bg-purple-50 dark:bg-purple-500/5">
               {p}
             </span>
           ))}

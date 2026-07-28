@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { Plus, Sparkles, Clock, GitBranch, Radar, Zap, Footprints } from "lucide-react";
-import { Card } from "@/components/ui/card";
+import { SciFiCard } from "@/components/ui/sci-fi-card";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -63,7 +63,7 @@ function AutomationsPage() {
 
       {/* ELLY suggestion */}
       {suggestionOpen && (
-        <Card className="flex flex-col gap-3 border-accent/40 bg-accent/10 p-5 sm:flex-row sm:items-center">
+        <SciFiCard color="fuchsia" className="flex flex-col gap-3 p-5 sm:flex-row sm:items-center">
           <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-accent text-accent-foreground">
             <Sparkles className="h-5 w-5" />
           </div>
@@ -102,14 +102,14 @@ function AutomationsPage() {
               Dismiss
             </Button>
           </div>
-        </Card>
+        </SciFiCard>
       )}
 
       <div className="space-y-3">
         {state.automations.map((a) => {
           const Icon = typeIcon[a.type];
           return (
-            <Card key={a.id} className="flex items-center gap-4 p-4">
+            <SciFiCard key={a.id} color="purple" className="flex items-center gap-4 p-4">
               <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-secondary text-secondary-foreground">
                 <Icon className="h-5 w-5" />
               </div>
@@ -127,7 +127,7 @@ function AutomationsPage() {
                 disabled={!canEdit}
                 onCheckedChange={() => dispatch({ type: "TOGGLE_AUTOMATION", id: a.id })}
               />
-            </Card>
+            </SciFiCard>
           );
         })}
       </div>

@@ -6,6 +6,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { Mic, Moon, ShieldCheck, Circle, Bell, CameraOff, RefreshCw, SwitchCamera, ListTree, UserPlus, X } from "lucide-react";
 import { toast } from "sonner";
 import { useHome } from "@/lib/home/store";
+import { SciFiCard } from "@/components/ui/sci-fi-card";
 
 export const Route = createFileRoute("/camera")({
   head: () => ({
@@ -413,7 +414,7 @@ function CameraPage() {
     <div className="bg-slate-50 dark:bg-black flex-1 text-slate-900 dark:text-white pb-6 -mx-4 px-4 sm:-mx-8 sm:px-8 flex flex-col">
       <div className="mx-auto max-w-4xl w-full space-y-6 pt-2">
         {!state.cameraEnabled && (
-          <div className="flex flex-col items-center gap-4 rounded-[2rem] border border-blue-500/20 bg-white dark:bg-[#111116] p-8 text-center shadow-[0_0_20px_rgba(59,130,246,0.1)]">
+          <SciFiCard color="blue" className="flex flex-col items-center gap-4 p-8 text-center">
             <ShieldCheck className="h-10 w-10 text-blue-400" />
             <p className="text-[15px] font-medium text-neutral-300">
               Camera access requires your explicit consent. Enable to view live feed and alerts.
@@ -430,11 +431,11 @@ function CameraPage() {
             >
               Grant camera consent
             </button>
-          </div>
+          </SciFiCard>
         )}
 
         {/* Live feed */}
-        <div className="overflow-hidden rounded-[2rem] border border-slate-200 dark:border-white/5 shadow-2xl bg-white dark:bg-[#111116]">
+        <SciFiCard color={state.cameraRecording ? "fuchsia" : "blue"} className="rounded-[2rem] shadow-2xl">
           <div className="relative flex aspect-video items-center justify-center bg-black text-slate-900 dark:text-white">
             <video
               ref={videoRef}
@@ -521,24 +522,24 @@ function CameraPage() {
           
           {/* Live Detections Sidebar/List */}
           {active && !camError && !starting && (
-            <div className="border-t border-slate-200 dark:border-white/5 bg-white dark:bg-[#111116] p-4">
+            <div className="border-t border-purple-200 dark:border-purple-500/20 bg-white/40 dark:bg-purple-950/20 backdrop-blur-md p-4">
               <div className="flex items-center gap-2 mb-3">
-                <ListTree className="h-4 w-4 text-purple-400" />
-                <p className="text-xs font-bold text-slate-500 dark:text-neutral-400 uppercase tracking-widest">Active Tracking</p>
+                <ListTree className="h-4 w-4 text-purple-600 dark:text-purple-400" />
+                <p className="text-xs font-bold text-purple-600 dark:text-purple-400 uppercase tracking-widest">Active Tracking</p>
               </div>
               <div ref={detectionsListRef} className="space-y-1 min-h-[40px]">
                 {/* Dynamically injected by requestAnimationFrame */}
               </div>
             </div>
           )}
-        </div>
+        </SciFiCard>
 
         {/* Controls Grid */}
         <div className="grid grid-cols-3 gap-3">
           <button
             onClick={() => dispatch({ type: "PATCH_CAMERA", patch: { cameraPrivacy: !state.cameraPrivacy } })}
             disabled={!state.cameraEnabled}
-            className="flex flex-col items-center justify-center gap-3 py-5 px-2 rounded-[1.5rem] bg-white dark:bg-[#111116] border border-slate-200 dark:border-white/5 transition-all hover:bg-slate-50 dark:bg-[#181820] hover:scale-[1.02] active:scale-95 disabled:cursor-not-allowed disabled:opacity-50 shadow-lg group"
+            className="flex flex-col items-center justify-center gap-3 py-5 px-2 rounded-[1.5rem] border border-purple-200 dark:border-purple-500/25 bg-white/40 dark:bg-purple-950/30 backdrop-blur-md transition-all hover:bg-white/60 dark:hover:bg-purple-900/40 hover:scale-[1.02] active:scale-95 disabled:cursor-not-allowed disabled:opacity-50 shadow-sm group"
           >
             <span className={`flex h-12 w-12 items-center justify-center rounded-full text-slate-900 dark:text-white transition-transform group-hover:scale-105 ${state.cameraPrivacy ? "bg-[#a855f7] shadow-[0_0_15px_rgba(168,85,247,0.4)]" : "bg-slate-200 dark:bg-[#111116]/10"}`}>
               <Moon className="h-6 w-6" />
@@ -549,7 +550,7 @@ function CameraPage() {
           <button
             onClick={() => dispatch({ type: "PATCH_CAMERA", patch: { cameraMotionAlerts: !state.cameraMotionAlerts } })}
             disabled={!active}
-            className="flex flex-col items-center justify-center gap-3 py-5 px-2 rounded-[1.5rem] bg-white dark:bg-[#111116] border border-slate-200 dark:border-white/5 transition-all hover:bg-slate-50 dark:bg-[#181820] hover:scale-[1.02] active:scale-95 disabled:cursor-not-allowed disabled:opacity-50 shadow-lg group"
+            className="flex flex-col items-center justify-center gap-3 py-5 px-2 rounded-[1.5rem] border border-purple-200 dark:border-purple-500/25 bg-white/40 dark:bg-purple-950/30 backdrop-blur-md transition-all hover:bg-white/60 dark:hover:bg-purple-900/40 hover:scale-[1.02] active:scale-95 disabled:cursor-not-allowed disabled:opacity-50 shadow-sm group"
           >
             <span className={`flex h-12 w-12 items-center justify-center rounded-full text-slate-900 dark:text-white transition-transform group-hover:scale-105 ${state.cameraMotionAlerts ? "bg-[#a855f7] shadow-[0_0_15px_rgba(168,85,247,0.4)]" : "bg-slate-200 dark:bg-[#111116]/10"}`}>
               <Bell className="h-6 w-6" />
@@ -560,7 +561,7 @@ function CameraPage() {
           <button
             onClick={() => dispatch({ type: "PATCH_CAMERA", patch: { cameraRecording: !state.cameraRecording } })}
             disabled={!active}
-            className="flex flex-col items-center justify-center gap-3 py-5 px-2 rounded-[1.5rem] bg-white dark:bg-[#111116] border border-slate-200 dark:border-white/5 transition-all hover:bg-slate-50 dark:bg-[#181820] hover:scale-[1.02] active:scale-95 disabled:cursor-not-allowed disabled:opacity-50 shadow-lg group"
+            className="flex flex-col items-center justify-center gap-3 py-5 px-2 rounded-[1.5rem] border border-purple-200 dark:border-purple-500/25 bg-white/40 dark:bg-purple-950/30 backdrop-blur-md transition-all hover:bg-white/60 dark:hover:bg-purple-900/40 hover:scale-[1.02] active:scale-95 disabled:cursor-not-allowed disabled:opacity-50 shadow-sm group"
           >
             <span className={`flex h-12 w-12 items-center justify-center rounded-full text-slate-900 dark:text-white transition-transform group-hover:scale-105 ${state.cameraRecording ? "bg-blue-500 text-white shadow-[0_0_15px_rgba(59,130,246,0.4)]" : "bg-slate-200 dark:bg-[#111116]/10"}`}>
               <Circle className="h-6 w-6" />
@@ -571,7 +572,7 @@ function CameraPage() {
           <button
             onClick={toggleTalk}
             disabled={!active}
-            className="flex flex-col items-center justify-center gap-3 py-5 px-2 rounded-[1.5rem] bg-white dark:bg-[#111116] border border-slate-200 dark:border-white/5 transition-all hover:bg-slate-50 dark:bg-[#181820] hover:scale-[1.02] active:scale-95 disabled:cursor-not-allowed disabled:opacity-50 shadow-lg group col-span-2"
+            className="flex flex-col items-center justify-center gap-3 py-5 px-2 rounded-[1.5rem] border border-purple-200 dark:border-purple-500/25 bg-white/40 dark:bg-purple-950/30 backdrop-blur-md transition-all hover:bg-white/60 dark:hover:bg-purple-900/40 hover:scale-[1.02] active:scale-95 disabled:cursor-not-allowed disabled:opacity-50 shadow-sm group col-span-2"
           >
             <span className={`flex h-12 w-12 items-center justify-center rounded-full text-slate-900 dark:text-white transition-transform group-hover:scale-105 ${talking ? "bg-red-500 shadow-[0_0_15px_rgba(239,68,68,0.4)] animate-pulse" : "bg-slate-200 dark:bg-[#111116]/10"}`}>
               <Mic className="h-6 w-6" />
@@ -581,7 +582,7 @@ function CameraPage() {
 
           <button
             disabled={!active}
-            className="flex flex-col items-center justify-center gap-3 py-5 px-2 rounded-[1.5rem] bg-white dark:bg-[#111116] border border-slate-200 dark:border-white/5 transition-all hover:bg-slate-50 dark:bg-[#181820] hover:scale-[1.02] active:scale-95 disabled:cursor-not-allowed disabled:opacity-50 shadow-lg group"
+            className="flex flex-col items-center justify-center gap-3 py-5 px-2 rounded-[1.5rem] border border-purple-200 dark:border-purple-500/25 bg-white/40 dark:bg-purple-950/30 backdrop-blur-md transition-all hover:bg-white/60 dark:hover:bg-purple-900/40 hover:scale-[1.02] active:scale-95 disabled:cursor-not-allowed disabled:opacity-50 shadow-sm group"
           >
             <span className={`flex h-12 w-12 items-center justify-center rounded-full text-slate-900 dark:text-white transition-transform group-hover:scale-105 ${active ? "bg-teal-500 shadow-[0_0_15px_rgba(20,184,166,0.4)]" : "bg-slate-200 dark:bg-[#111116]/10"}`}>
               <span className="text-[11px] font-extrabold uppercase tracking-widest text-slate-900 dark:text-white">Auto</span>
@@ -590,8 +591,8 @@ function CameraPage() {
           </button>
         </div>
 
-        <div className="rounded-[2rem] border border-slate-200 dark:border-white/5 bg-white dark:bg-[#111116] p-7 shadow-2xl">
-          <h2 className="mb-5 text-lg font-bold text-slate-500 dark:text-neutral-400">Event History</h2>
+        <SciFiCard color="violet" className="p-7">
+          <h2 className="mb-5 text-lg font-bold text-slate-900 dark:text-white">Event History</h2>
           <div className="space-y-4">
             {events.map((e) => (
               <div key={e.time} className="flex items-center gap-4">
@@ -600,7 +601,7 @@ function CameraPage() {
               </div>
             ))}
           </div>
-        </div>
+        </SciFiCard>
       </div>
 
       {/* Face Registration Modal */}
