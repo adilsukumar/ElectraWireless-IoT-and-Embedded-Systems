@@ -750,6 +750,13 @@ export function HomeProvider({ children }: { children: ReactNode }) {
     const d = state.devices.find((x) => x.id === id);
     if (!d) return false;
     
+    // Check if the device is activated before trying to turn it on
+    if (!d.activated && !d.on) {
+      toast.error(`Please connect ${d.name} first!`);
+      toggleActivation(id);
+      return false;
+    }
+
     const { ApplianceBridge } = await import("./ApplianceBridge");
     
     // Abstracted bridge command for actual appliances
