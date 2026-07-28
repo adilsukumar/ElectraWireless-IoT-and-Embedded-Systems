@@ -20,9 +20,21 @@ export function useHeyElly({ onWakeWord, pause }: { onWakeWord?: (cmd?: string) 
     
     const initSpeech = async () => {
       try {
-        const hasPermission = await SpeechRecognition.checkPermissions();
+        // Delay startup permission request to prevent Android Activity lifecycle crashes
+        await new Promise(r => setTimeout(r, 2000));
+        
+        let hasPermission = await SpeechRecognition.checkPermissions();
         if (hasPermission.speechRecognition !== 'granted') {
-          await SpeechRecognition.requestPermissions();
+          try {
+            hasPermission = await SpeechRecognition.requestPermissions();
+          } catch (err) {
+            console.warn("Permission request failed or rejected", err);
+          }
+        }
+
+        if (hasPermission.speechRecognition !== 'granted') {
+           console.warn("Speech recognition permission not granted. Background listening disabled.");
+           return;
         }
 
         const w = window as any;
@@ -119,13 +131,14 @@ export async function enableBackgroundListening() {
   if (typeof window !== 'undefined' && 'Notification' in window) {
     if (Notification.permission !== 'granted') {
       try {
+        // Capacitor might crash on raw Notification API on older Androids if not handled well, but this is web fallback
         const perm = await Notification.requestPermission();
         if (perm !== 'granted') {
           toast.error("Notification permission required for background service.");
           return;
         }
       } catch (e) {
-        return;
+        console.warn("Web Notification API failed, probably in Native context:", e);
       }
     }
   }

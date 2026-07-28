@@ -183,9 +183,18 @@ export function EllyPortal({ open, onClose, initialCmd }: { open: boolean; onClo
     setListening(true);
     try {
       if (typeof window !== "undefined" && (window as any).cordova) {
-        const hasPermission = await SpeechRecognition.checkPermissions();
+        let hasPermission = await SpeechRecognition.checkPermissions();
         if (hasPermission.speechRecognition !== 'granted') {
-          await SpeechRecognition.requestPermissions();
+          try {
+            hasPermission = await SpeechRecognition.requestPermissions();
+          } catch (e) {
+            console.warn("Permission request error in Portal:", e);
+          }
+        }
+        
+        if (hasPermission.speechRecognition !== 'granted') {
+          setListening(false);
+          return;
         }
         
         const result = await SpeechRecognition.start({
