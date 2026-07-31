@@ -511,8 +511,27 @@ function reducer(state: HomeState, action: Action): HomeState {
     }
     case "LOG":
       return pushLog(state, action.entry);
-    case "HYDRATE":
+    case "HYDRATE": {
+      // Fix corrupt historical data (deduplicate and force Wi-Fi for TVs)
+      const uniqueDevices = new Map<string, Device>();
+      action.state.devices.forEach(d => {
+        // Fix connectionType for all TVs
+        if (d.type === "tv" && d.connectionType === "ble") {
+          d.connectionType = "wifi";
+        }
+        
+        // Deduplicate based on MAC Address (prevent 5x Samsung TVs)
+        if (d.macAddress) {
+          if (!uniqueDevices.has(d.macAddress)) {
+            uniqueDevices.set(d.macAddress, d);
+          }
+        } else {
+          uniqueDevices.set(d.id, d);
+        }
+      });
+      action.state.devices = Array.from(uniqueDevices.values());
       return action.state;
+    }
     case "SWITCH_MODE": {
       if (action.mode === state.appMode) return state;
       if (action.mode === "demo") {
