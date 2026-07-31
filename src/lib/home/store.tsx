@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useMemo, useReducer, type ReactNode } from "react";
 import { toast } from "sonner";
-import { log } from "./logger";
+
 import { toggleBluetoothDevice, activateBluetoothDevice, pairBluetoothDevice } from "./bluetooth";
 import type { Automation, Device, FallbackTier, HomeState, LogEntry, Member, Role } from "./types";
 

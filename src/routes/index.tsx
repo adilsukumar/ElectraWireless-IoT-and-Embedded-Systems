@@ -73,7 +73,8 @@ function Dashboard() {
     setIsThinking(true);
     setTranscript(`"${text}"`);
     try {
-      const response = await fetch("/api/chat", {
+      const apiUrl = (import.meta.env.VITE_API_URL || "") + "/api/chat";
+      const response = await fetch(apiUrl, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ 
@@ -156,94 +157,78 @@ function Dashboard() {
 
       {/* Status Cards Row */}
       <div className="relative z-10 grid grid-cols-2 gap-3">
-        <div className="rounded-2xl border border-purple-200 dark:border-purple-500/25 bg-white/40 dark:bg-purple-950/30 backdrop-blur-md p-4 relative overflow-hidden shadow-sm">
-          <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-purple-500/30 dark:via-purple-400/60 to-transparent" />
-          <p className="text-purple-700 dark:text-purple-400 font-mono text-[10px] tracking-[0.2em] uppercase mb-1">System Time</p>
-          <p className="text-2xl font-light text-slate-900 dark:text-white tabular-nums leading-tight">
+        <div className="glass-card rounded-3xl p-5 relative overflow-hidden shadow-sm flex flex-col justify-center">
+          <p className="text-muted-foreground font-mono text-[10px] tracking-[0.2em] uppercase mb-2">System Time</p>
+          <p className="text-3xl font-extrabold text-foreground tabular-nums leading-none tracking-tight">
             {time.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
           </p>
-          <p className="text-[11px] text-purple-600/70 dark:text-purple-300/70 mt-0.5 leading-snug">
-            {time.toLocaleDateString([], { weekday: "short", month: "short", day: "numeric" })}
+          <p className="text-[11px] text-muted-foreground mt-2 font-medium">
+            {time.toLocaleDateString([], { weekday: "long", month: "long", day: "numeric" })}
           </p>
         </div>
-        <div className="rounded-2xl border border-violet-200 dark:border-violet-500/25 bg-white/40 dark:bg-violet-950/30 backdrop-blur-md p-4 relative overflow-hidden shadow-sm">
-          <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-violet-500/30 dark:via-violet-400/60 to-transparent" />
-          <p className="text-violet-700 dark:text-violet-400 font-mono text-[10px] tracking-[0.2em] uppercase mb-1">Grid Load</p>
-          <p className="text-2xl font-light text-slate-900 dark:text-white leading-tight">
-            {(totalWatts / 1000).toFixed(2)}<span className="text-sm text-violet-600/60 dark:text-violet-300/60 ml-1">kW</span>
+        <div className="glass-card rounded-3xl p-5 relative overflow-hidden shadow-sm flex flex-col justify-center">
+          <p className="text-muted-foreground font-mono text-[10px] tracking-[0.2em] uppercase mb-2">Grid Load</p>
+          <p className="text-3xl font-extrabold text-foreground leading-none tracking-tight">
+            {(totalWatts / 1000).toFixed(2)}<span className="text-base text-muted-foreground font-medium ml-1">kW</span>
           </p>
-          <p className="text-[11px] text-violet-600/70 dark:text-violet-300/70 mt-0.5">{onDevices} of {totalDevices} on</p>
+          <p className="text-[11px] text-muted-foreground mt-2 font-medium">{onDevices} of {totalDevices} on</p>
+          <svg className="absolute bottom-0 left-0 w-full h-12 text-primary opacity-20 pointer-events-none" viewBox="0 0 100 30" preserveAspectRatio="none">
+            <path d="M0,30 Q20,10 40,20 T80,10 T100,25 L100,30 L0,30 Z" fill="currentColor" />
+          </svg>
         </div>
       </div>
 
       {/* Status Pill Row */}
       <div className="relative z-10 flex gap-2">
-        <div className="flex-1 flex items-center gap-2 rounded-xl border border-emerald-200 dark:border-emerald-500/20 bg-white/40 dark:bg-emerald-950/20 px-3 py-2 shadow-sm">
+        <div className="flex-1 flex items-center gap-2 rounded-xl glass-card px-3 py-2 shadow-sm">
           <span className="w-2 h-2 rounded-full bg-emerald-500 dark:bg-emerald-400 animate-pulse shrink-0" />
           <span className="text-[11px] font-medium text-emerald-700 dark:text-emerald-300 truncate">Online</span>
         </div>
-        <div className="flex-1 flex items-center gap-2 rounded-xl border border-purple-200 dark:border-purple-500/20 bg-white/40 dark:bg-purple-950/20 px-3 py-2 shadow-sm">
-          <Wifi className="h-3 w-3 text-purple-600 dark:text-purple-400 shrink-0" />
-          <span className="text-[11px] font-medium text-purple-700 dark:text-purple-300 truncate">{onDevices} Active</span>
+        <div className="flex-1 flex items-center gap-2 rounded-xl glass-card px-3 py-2 shadow-sm">
+          <Wifi className="h-3 w-3 text-primary shrink-0" />
+          <span className="text-[11px] font-medium text-primary truncate">{onDevices} Active</span>
         </div>
-        <div className="flex-1 flex items-center gap-2 rounded-xl border border-fuchsia-200 dark:border-fuchsia-500/20 bg-white/40 dark:bg-fuchsia-950/20 px-3 py-2 shadow-sm">
-          <Activity className="h-3 w-3 text-fuchsia-600 dark:text-fuchsia-400 shrink-0" />
-          <span className="text-[11px] font-medium text-fuchsia-700 dark:text-fuchsia-300 truncate">60+ Protocols</span>
+        <div className="flex-1 flex items-center gap-2 rounded-xl glass-card px-3 py-2 shadow-sm">
+          <Activity className="h-3 w-3 text-secondary-foreground shrink-0" />
+          <span className="text-[11px] font-medium text-secondary-foreground truncate">60+ Protocols</span>
         </div>
       </div>
 
       {/* ELLY AI Core Orb */}
-      <div className="relative z-10 flex flex-col items-center py-2">
+      <div className="relative z-10 flex flex-col items-center py-6">
         <button
           onClick={toggleMic}
-          className="relative flex items-center justify-center w-52 h-52 outline-none group"
+          className="relative flex items-center justify-center w-48 h-48 outline-none group"
           aria-label="Tap to speak to ELLY"
         >
           <div className={cn(
-            "absolute inset-0 rounded-full transition-all duration-700",
-            isListening ? "bg-purple-500/25 scale-125 animate-ping" :
-            isSpeaking ? "bg-fuchsia-500/20 scale-150 animate-pulse" :
-            "bg-purple-500/5 group-hover:bg-purple-500/10 group-hover:scale-110"
+            "absolute inset-0 rounded-full transition-all duration-700 blur-[20px]",
+            isListening ? "bg-primary/40 scale-125 animate-ping" :
+            isSpeaking ? "bg-chart-3/30 scale-150 animate-pulse" :
+            "bg-primary/20 group-hover:bg-primary/30 group-hover:scale-110"
           )} />
           <div className={cn(
-            "absolute inset-6 rounded-full border transition-all duration-500",
-            isListening ? "border-purple-400/70 scale-110 animate-spin" :
-            isSpeaking ? "border-fuchsia-400/50 scale-110 border-dashed animate-pulse" :
-            "border-purple-500/20 group-hover:border-purple-400/40"
-          )} style={{ animationDuration: isListening ? "3s" : "1s" }} />
-          <div className={cn(
-            "absolute inset-10 rounded-full border-2 transition-all duration-500",
-            isListening ? "border-purple-400/50 dark:border-purple-300/50" :
-            isSpeaking ? "border-fuchsia-400/40 dark:border-fuchsia-300/40 animate-ping" :
-            "border-violet-300/50 dark:border-violet-500/30"
-          )} />
-          <div className={cn(
-            "relative z-10 w-32 h-32 rounded-full flex flex-col items-center justify-center transition-all duration-500 shadow-2xl",
+            "relative z-10 w-32 h-32 rounded-full flex flex-col items-center justify-center transition-all duration-700 shadow-2xl",
             isListening
-              ? "bg-gradient-to-br from-purple-400 to-violet-500 dark:from-purple-500 dark:to-violet-600 shadow-[0_0_60px_rgba(168,85,247,0.6)] dark:shadow-[0_0_60px_rgba(168,85,247,0.9)] scale-95"
+              ? "bg-gradient-to-br from-primary to-chart-3 shadow-[0_0_80px_rgba(var(--primary),0.8)] scale-95"
               : isSpeaking
-              ? "bg-gradient-to-br from-fuchsia-400 to-purple-500 dark:from-fuchsia-500 dark:to-purple-600 shadow-[0_0_70px_rgba(232,121,249,0.6)] dark:shadow-[0_0_70px_rgba(232,121,249,0.9)] scale-110 animate-pulse"
-              : "bg-gradient-to-br from-white to-purple-50 dark:from-[#1e0d35] dark:to-[#0d0118] border border-purple-200 dark:border-purple-500/40 shadow-[0_0_40px_rgba(168,85,247,0.15)] dark:shadow-[0_0_40px_rgba(168,85,247,0.3)] group-hover:shadow-[0_0_60px_rgba(168,85,247,0.3)] dark:group-hover:shadow-[0_0_60px_rgba(168,85,247,0.5)]"
+              ? "bg-gradient-to-br from-chart-3 to-primary shadow-[0_0_90px_rgba(var(--chart-3),0.8)] scale-110 animate-pulse"
+              : "bg-gradient-to-br from-primary via-chart-3 to-primary bg-[length:200%_200%] animate-[gradient_4s_ease_infinite] shadow-[0_0_60px_rgba(var(--primary),0.4)] group-hover:shadow-[0_0_80px_rgba(var(--primary),0.6)]"
           )}>
             {isListening ? (
               <Mic className="h-10 w-10 text-white animate-pulse" />
             ) : isThinking ? (
-              <Loader2 className="h-10 w-10 text-purple-500 dark:text-purple-300 animate-spin" />
+              <Loader2 className="h-10 w-10 text-white animate-spin" />
             ) : (
-              <>
-                <span className="font-display font-black text-3xl tracking-tighter bg-gradient-to-b from-purple-700 to-purple-400 dark:from-white dark:to-purple-300 bg-clip-text text-transparent">
-                  ELLY
-                </span>
-                <span className="text-[9px] font-mono text-purple-500/80 dark:text-purple-400/70 tracking-[0.15em] mt-0.5">AI CORE</span>
-              </>
+              <div className="w-16 h-16 rounded-full bg-white/20 backdrop-blur-sm border border-white/30 flex items-center justify-center shadow-inner">
+                <div className="w-8 h-8 rounded-full bg-white/80 mix-blend-overlay animate-pulse" />
+              </div>
             )}
           </div>
         </button>
         <p className={cn(
-          "mt-3 text-center text-sm font-light max-w-[260px] transition-all duration-300 leading-relaxed",
-          isListening ? "text-purple-600 dark:text-purple-300 italic" :
-          isSpeaking ? "text-fuchsia-600 dark:text-fuchsia-300" :
-          "text-slate-500 dark:text-purple-200/50"
+          "mt-6 text-center text-sm font-medium transition-all duration-300",
+          isListening || isSpeaking ? "text-primary" : "text-muted-foreground"
         )}>
           {transcript}
         </p>
@@ -252,9 +237,9 @@ function Dashboard() {
       {/* Subroutines */}
       <div className="relative z-10">
         <div className="flex items-center gap-2 mb-3">
-          <div className="h-px flex-1 bg-gradient-to-r from-purple-200 dark:from-purple-500/50 to-transparent" />
-          <p className="text-purple-600 dark:text-purple-400 font-mono text-[10px] tracking-[0.25em] uppercase px-2">Subroutines</p>
-          <div className="h-px flex-1 bg-gradient-to-l from-purple-200 dark:from-purple-500/50 to-transparent" />
+          <div className="h-px flex-1 bg-gradient-to-r from-primary/20 dark:from-primary/50 to-transparent" />
+          <p className="text-primary font-mono text-[10px] tracking-[0.25em] uppercase px-2">Subroutines</p>
+          <div className="h-px flex-1 bg-gradient-to-l from-primary/20 dark:from-primary/50 to-transparent" />
         </div>
         <div className="grid grid-cols-2 gap-3">
           <EllyBtn icon={Power} label="All Off" sublabel="Power Down"
@@ -269,29 +254,29 @@ function Dashboard() {
           <EllyBtn icon={Zap} label="Party Mode" sublabel="Ambience"
             onClick={() => { toast.success("Party mode initiated! 🎉"); }}
             disabled={!canEdit} color="fuchsia" />
-        </div>
-        <div className="flex flex-col gap-3 mt-3">
-          <Link to="/devices">
-            <EllyBtn icon={Cpu} label="Device Matrix" sublabel={`${totalDevices} devices registered`}
-              onClick={() => {}} disabled={false} color="blue" wide />
+          <Link to="/devices" className="block w-full">
+            <EllyBtn icon={Cpu} label="Device Matrix" sublabel={`${totalDevices} devices`}
+              onClick={() => {}} disabled={false} color="blue" />
           </Link>
-          <Link to="/map">
+          <Link to="/map" className="block w-full">
             <EllyBtn icon={DoorOpen} label="Spatial Layout" sublabel="Floor plan view"
-              onClick={() => {}} disabled={false} color="orange" wide />
+              onClick={() => {}} disabled={false} color="orange" />
           </Link>
-          <EmergencyAction
-            disabled={!canEdit}
-            onConfirm={() => { dispatch({ type: "EMERGENCY" }); toast.error("EMERGENCY LOCKDOWN INITIATED"); }}
-          />
+          <div className="col-span-2 sm:col-span-1">
+            <EmergencyAction
+              disabled={!canEdit}
+              onConfirm={() => { dispatch({ type: "EMERGENCY" }); toast.error("EMERGENCY LOCKDOWN INITIATED"); }}
+            />
+          </div>
         </div>
       </div>
 
       {/* Protocol Badge Strip */}
-      <div className="relative z-10 rounded-2xl border border-purple-200 dark:border-purple-500/20 bg-white/40 dark:bg-purple-950/20 backdrop-blur-md p-4 shadow-sm">
-        <p className="text-purple-600 dark:text-purple-400 font-mono text-[10px] tracking-[0.2em] uppercase mb-3">Universal Bridge · 60+ Protocols Active</p>
+      <div className="relative z-10 rounded-2xl glass-card p-4 shadow-sm">
+        <p className="text-primary font-mono text-[10px] tracking-[0.2em] uppercase mb-3">Universal Bridge · 60+ Protocols Active</p>
         <div className="flex flex-wrap gap-1.5">
           {["Tuya", "Shelly", "Hue", "ESPHome", "Z-Wave", "Zigbee", "Sonos", "Roku", "LG TV", "Samsung", "IKEA", "Nest", "Ring", "WLED", "Kodi", "+45 more"].map(p => (
-            <span key={p} className="text-[10px] font-mono px-2 py-0.5 rounded-full border border-purple-200 dark:border-purple-500/30 text-purple-700 dark:text-purple-300/70 bg-purple-50 dark:bg-purple-500/5">
+            <span key={p} className="text-[10px] font-mono px-2 py-0.5 rounded-full border border-primary/20 text-primary bg-primary/5">
               {p}
             </span>
           ))}
@@ -306,22 +291,22 @@ function EllyBtn({ icon: Icon, label, sublabel, onClick, disabled, color, wide }
   disabled?: boolean; color: string; wide?: boolean;
 }) {
   const colorMap: Record<string, string> = {
-    purple:  "border-purple-500/30 hover:border-purple-400/60 hover:shadow-[0_0_25px_rgba(168,85,247,0.3)] text-purple-400",
-    violet:  "border-violet-500/30 hover:border-violet-400/60 hover:shadow-[0_0_25px_rgba(139,92,246,0.3)] text-violet-400",
-    fuchsia: "border-fuchsia-500/30 hover:border-fuchsia-400/60 hover:shadow-[0_0_25px_rgba(232,121,249,0.3)] text-fuchsia-400",
-    emerald: "border-emerald-500/30 hover:border-emerald-400/60 hover:shadow-[0_0_25px_rgba(16,185,129,0.3)] text-emerald-400",
-    blue:    "border-blue-500/30 hover:border-blue-400/60 hover:shadow-[0_0_25px_rgba(59,130,246,0.3)] text-blue-400",
-    orange:  "border-orange-500/30 hover:border-orange-400/60 hover:shadow-[0_0_25px_rgba(249,115,22,0.3)] text-orange-400",
-    red:     "border-red-500/30 hover:border-red-400/60 hover:shadow-[0_0_25px_rgba(239,68,68,0.3)] text-red-400 bg-red-950/20",
+    purple:  "border-primary/20 hover:border-primary/50 hover:shadow-[0_0_25px_rgba(var(--primary),0.2)] text-primary",
+    violet:  "border-chart-2/20 hover:border-chart-2/50 hover:shadow-[0_0_25px_rgba(var(--chart-2),0.2)] text-chart-2",
+    fuchsia: "border-chart-3/20 hover:border-chart-3/50 hover:shadow-[0_0_25px_rgba(var(--chart-3),0.2)] text-chart-3",
+    emerald: "border-success/20 hover:border-success/50 hover:shadow-[0_0_25px_rgba(var(--success),0.2)] text-success",
+    blue:    "border-chart-4/20 hover:border-chart-4/50 hover:shadow-[0_0_25px_rgba(var(--chart-4),0.2)] text-chart-4",
+    orange:  "border-chart-5/20 hover:border-chart-5/50 hover:shadow-[0_0_25px_rgba(var(--chart-5),0.2)] text-chart-5",
+    red:     "border-destructive/30 hover:border-destructive/60 hover:shadow-[0_0_25px_rgba(var(--destructive),0.3)] text-destructive bg-destructive/10",
   };
   return (
     <button
       onClick={onClick}
       disabled={disabled}
       className={cn(
-        "relative group rounded-2xl border bg-[#0d0118]/60 backdrop-blur-md transition-all duration-300 disabled:opacity-40 disabled:cursor-not-allowed",
+        "relative group rounded-2xl border glass-card transition-all duration-300 disabled:opacity-40 disabled:cursor-not-allowed",
         colorMap[color] || colorMap.purple,
-        wide ? "w-full flex items-center gap-4 px-5 py-4" : "flex flex-col items-center justify-center gap-2 p-5 h-28"
+        wide ? "w-full flex items-center gap-4 px-5 py-4" : "w-full flex flex-col items-center justify-center gap-2 p-5 h-28"
       )}
     >
       <div className={cn(
@@ -331,8 +316,8 @@ function EllyBtn({ icon: Icon, label, sublabel, onClick, disabled, color, wide }
         <Icon className="h-6 w-6" />
       </div>
       <div className={cn("text-left", !wide && "text-center")}>
-        <p className="font-bold text-xs tracking-wide text-white/90 uppercase">{label}</p>
-        {sublabel && <p className="text-[10px] text-white/40 mt-0.5">{sublabel}</p>}
+        <p className="font-bold text-xs tracking-wide text-foreground uppercase">{label}</p>
+        {sublabel && <p className="text-[10px] text-muted-foreground mt-0.5">{sublabel}</p>}
       </div>
     </button>
   );
@@ -342,23 +327,23 @@ function EmergencyAction({ onConfirm, disabled }: { onConfirm: () => void; disab
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
-        <div>
-          <EllyBtn icon={OctagonAlert} label="Emergency Lockdown" sublabel="Override all systems" disabled={disabled} color="red" wide />
+        <div className="w-full">
+          <EllyBtn icon={OctagonAlert} label="Lockdown" sublabel="Override systems" disabled={disabled} color="red" />
         </div>
       </AlertDialogTrigger>
-      <AlertDialogContent className="bg-[#0d0118] border border-red-500/40 text-white max-w-sm">
+      <AlertDialogContent className="glass-card border border-destructive/40 text-foreground max-w-sm">
         <AlertDialogHeader>
-          <AlertDialogTitle className="flex items-center gap-2 text-red-400">
+          <AlertDialogTitle className="flex items-center gap-2 text-destructive">
             <OctagonAlert className="h-5 w-5" /> OVERRIDE PROTOCOL
           </AlertDialogTitle>
-          <AlertDialogDescription className="text-purple-200/60">
+          <AlertDialogDescription className="text-muted-foreground">
             Execute immediate shutdown of all non-critical power systems? This will isolate the grid and trigger all emergency routines.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel className="bg-white/5 border-white/10 hover:bg-white/10 text-white rounded-xl">Abort</AlertDialogCancel>
+          <AlertDialogCancel className="bg-secondary text-secondary-foreground rounded-xl">Abort</AlertDialogCancel>
           <AlertDialogAction
-            className="bg-red-500/20 text-red-400 border border-red-500/50 hover:bg-red-500 hover:text-white transition-all shadow-[0_0_20px_rgba(239,68,68,0.4)] rounded-xl"
+            className="bg-destructive/20 text-destructive border border-destructive/50 hover:bg-destructive hover:text-white transition-all shadow-[0_0_20px_rgba(239,68,68,0.4)] rounded-xl"
             onClick={onConfirm}
           >
             Execute Lockdown

@@ -141,7 +141,8 @@ export function EllyPortal({ open, onClose, initialCmd }: { open: boolean; onClo
       // Small artificial delay to feel like it's thinking
       await new Promise(resolve => setTimeout(resolve, 600));
 
-      const response = await fetch("/api/chat", {
+      const apiUrl = (import.meta.env.VITE_API_URL || "") + "/api/chat";
+      const response = await fetch(apiUrl, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ 
@@ -183,7 +184,13 @@ export function EllyPortal({ open, onClose, initialCmd }: { open: boolean; onClo
     setListening(true);
     try {
       if (typeof window !== "undefined" && (window as any).cordova) {
-        let hasPermission = await SpeechRecognition.checkPermissions();
+        let hasPermission = { speechRecognition: 'prompt' };
+        try {
+          hasPermission = await SpeechRecognition.checkPermissions();
+        } catch (e) {
+          console.warn("Permission check error in Portal:", e);
+        }
+
         if (hasPermission.speechRecognition !== 'granted') {
           try {
             hasPermission = await SpeechRecognition.requestPermissions();

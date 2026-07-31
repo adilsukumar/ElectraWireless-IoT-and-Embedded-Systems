@@ -20,19 +20,19 @@ function AllDevicesPage() {
   const activeCount = state.devices.filter((d) => d.on).length;
 
   return (
-    <div className="bg-slate-50 dark:bg-black min-h-screen text-slate-900 dark:text-white pb-24 -mx-4 px-4 sm:-mx-8 sm:px-8">
+    <div className="bg-slate-50 dark:bg-black min-h-screen text-foreground pb-24 -mx-4 px-4 sm:-mx-8 sm:px-8">
       <div className="mx-auto max-w-4xl space-y-6 pt-6">
         <div className="flex items-center gap-3">
           <button
             onClick={() => router.history.back()}
-            className="p-2 bg-white/40 dark:bg-[#111116] rounded-full hover:bg-white/60 dark:bg-[#111116]/10 transition-colors border border-blue-200 dark:border-white/5"
+            className="p-2 bg-white/40 dark:bg-card rounded-full hover:bg-white/60 dark:bg-secondary/20 transition-colors border border-blue-200 dark:border-border/20"
             aria-label="Back"
           >
             <ArrowLeft className="h-4 w-4" />
           </button>
           <div>
             <h1 className="text-xl font-extrabold tracking-tight">All Devices</h1>
-            <p className="text-sm font-medium text-slate-500 dark:text-neutral-400">
+            <p className="text-sm font-medium text-muted-foreground">
               {activeCount} of {state.devices.length} active
             </p>
           </div>

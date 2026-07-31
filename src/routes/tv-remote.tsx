@@ -13,24 +13,24 @@ function TvRemotePage() {
   const handleAction = (msg: string) => toast.success(msg);
 
   return (
-    <div className="bg-slate-50 dark:bg-black min-h-screen text-slate-900 dark:text-white pb-24 -mx-4 px-4 sm:-mx-8 sm:px-8">
+    <div className="bg-slate-50 dark:bg-black min-h-screen text-foreground pb-24 -mx-4 px-4 sm:-mx-8 sm:px-8">
       <div className="mx-auto max-w-4xl space-y-6 pt-6">
         <div className="flex items-center gap-3">
-          <Link to="/remotes" className="p-2 -ml-2 rounded-full bg-white/40 dark:bg-[#111116] hover:bg-white/60 dark:bg-[#111116]/10 transition-colors border border-blue-200 dark:border-white/5">
+          <Link to="/remotes" className="p-2 -ml-2 rounded-full bg-white/40 dark:bg-card hover:bg-white/60 dark:bg-secondary/20 transition-colors border border-blue-200 dark:border-border/20">
             <ArrowLeft className="w-5 h-5" />
           </Link>
           <div>
             <h1 className="text-xl font-extrabold tracking-tight">Living Room TV</h1>
-            <p className="text-sm font-medium text-slate-500 dark:text-neutral-400">Samsung Smart TV</p>
+            <p className="text-sm font-medium text-muted-foreground">Samsung Smart TV</p>
           </div>
         </div>
 
-        <div className="pt-4 flex flex-col items-center gap-8 rounded-[2rem] border border-purple-200 dark:border-purple-500/25 bg-white/40 dark:bg-purple-950/30 backdrop-blur-md p-6 mx-auto max-w-sm shadow-sm">
+        <div className="pt-4 flex flex-col items-center gap-8 rounded-[2rem] border border-purple-200 dark:border-purple-500/25 glass-card p-6 mx-auto max-w-sm shadow-sm">
         {/* Power & Source */}
         <div className="flex justify-between w-full max-w-[280px]">
           <button 
             onClick={() => { setTvOn(!tvOn); toast.success(`TV turned ${!tvOn ? 'ON' : 'OFF'}`); }}
-            className={cn("w-14 h-14 rounded-full flex items-center justify-center transition-all active:scale-95 shadow-md", tvOn ? "bg-red-500 text-slate-900 dark:text-white shadow-[0_0_15px_rgba(239,68,68,0.5)]" : "bg-neutral-800 text-neutral-400")}
+            className={cn("w-14 h-14 rounded-full flex items-center justify-center transition-all active:scale-95 shadow-md", tvOn ? "bg-red-500 text-foreground shadow-[0_0_15px_rgba(239,68,68,0.5)]" : "bg-neutral-800 text-neutral-400")}
           >
             <Power className="w-6 h-6" />
           </button>
@@ -40,26 +40,26 @@ function TvRemotePage() {
         </div>
 
         {/* D-Pad */}
-        <div className="relative w-56 h-56 bg-neutral-800/50 rounded-full flex items-center justify-center p-2 shadow-inner border border-white/5">
-          <button onClick={() => handleAction('Up')} className="absolute top-2 w-16 h-12 flex items-center justify-center rounded-2xl hover:bg-white dark:bg-[#111116]/10 active:bg-white dark:bg-[#111116]/20 transition text-neutral-300"><ChevronUp className="w-8 h-8" /></button>
-          <button onClick={() => handleAction('Down')} className="absolute bottom-2 w-16 h-12 flex items-center justify-center rounded-2xl hover:bg-white dark:bg-[#111116]/10 active:bg-white dark:bg-[#111116]/20 transition text-neutral-300"><ChevronDown className="w-8 h-8" /></button>
-          <button onClick={() => handleAction('Left')} className="absolute left-2 w-12 h-16 flex items-center justify-center rounded-2xl hover:bg-white dark:bg-[#111116]/10 active:bg-white dark:bg-[#111116]/20 transition text-neutral-300"><ChevronLeft className="w-8 h-8" /></button>
-          <button onClick={() => handleAction('Right')} className="absolute right-2 w-12 h-16 flex items-center justify-center rounded-2xl hover:bg-white dark:bg-[#111116]/10 active:bg-white dark:bg-[#111116]/20 transition text-neutral-300"><ChevronRight className="w-8 h-8" /></button>
+        <div className="relative w-56 h-56 bg-neutral-800/50 rounded-full flex items-center justify-center p-2 shadow-inner border border-border/20">
+          <button onClick={() => handleAction('Up')} className="absolute top-2 w-16 h-12 flex items-center justify-center rounded-2xl hover:bg-white dark:bg-secondary/20 active:bg-white dark:bg-secondary/40 transition text-neutral-300"><ChevronUp className="w-8 h-8" /></button>
+          <button onClick={() => handleAction('Down')} className="absolute bottom-2 w-16 h-12 flex items-center justify-center rounded-2xl hover:bg-white dark:bg-secondary/20 active:bg-white dark:bg-secondary/40 transition text-neutral-300"><ChevronDown className="w-8 h-8" /></button>
+          <button onClick={() => handleAction('Left')} className="absolute left-2 w-12 h-16 flex items-center justify-center rounded-2xl hover:bg-white dark:bg-secondary/20 active:bg-white dark:bg-secondary/40 transition text-neutral-300"><ChevronLeft className="w-8 h-8" /></button>
+          <button onClick={() => handleAction('Right')} className="absolute right-2 w-12 h-16 flex items-center justify-center rounded-2xl hover:bg-white dark:bg-secondary/20 active:bg-white dark:bg-secondary/40 transition text-neutral-300"><ChevronRight className="w-8 h-8" /></button>
           <button onClick={() => handleAction('OK')} className="w-20 h-20 rounded-full bg-blue-500/20 text-blue-400 flex items-center justify-center font-bold text-lg active:scale-95 transition shadow-sm border border-blue-500/30 shadow-[0_0_15px_rgba(59,130,246,0.2)]">OK</button>
         </div>
 
         {/* Vol & CH */}
         <div className="flex gap-12 w-full justify-center">
-          <div className="flex flex-col items-center bg-neutral-800/80 rounded-full p-2 shadow-sm border border-white/5">
-            <button onClick={() => handleAction('Volume Up')} className="w-12 h-12 flex items-center justify-center rounded-full hover:bg-white dark:bg-[#111116]/10 active:scale-95 transition text-neutral-300"><ChevronUp className="w-5 h-5" /></button>
+          <div className="flex flex-col items-center bg-neutral-800/80 rounded-full p-2 shadow-sm border border-border/20">
+            <button onClick={() => handleAction('Volume Up')} className="w-12 h-12 flex items-center justify-center rounded-full hover:bg-white dark:bg-secondary/20 active:scale-95 transition text-neutral-300"><ChevronUp className="w-5 h-5" /></button>
             <span className="text-[10px] font-bold my-2 text-neutral-500 tracking-widest">VOL</span>
-            <button onClick={() => handleAction('Volume Down')} className="w-12 h-12 flex items-center justify-center rounded-full hover:bg-white dark:bg-[#111116]/10 active:scale-95 transition text-neutral-300"><ChevronDown className="w-5 h-5" /></button>
+            <button onClick={() => handleAction('Volume Down')} className="w-12 h-12 flex items-center justify-center rounded-full hover:bg-white dark:bg-secondary/20 active:scale-95 transition text-neutral-300"><ChevronDown className="w-5 h-5" /></button>
           </div>
           <button onClick={() => handleAction('Mute')} className="w-12 h-12 mt-10 rounded-full bg-neutral-800 flex items-center justify-center active:scale-95 transition hover:bg-neutral-700 text-neutral-400"><VolumeX className="w-5 h-5" /></button>
-          <div className="flex flex-col items-center bg-neutral-800/80 rounded-full p-2 shadow-sm border border-white/5">
-            <button onClick={() => handleAction('Channel Up')} className="w-12 h-12 flex items-center justify-center rounded-full hover:bg-white dark:bg-[#111116]/10 active:scale-95 transition text-neutral-300"><ChevronUp className="w-5 h-5" /></button>
+          <div className="flex flex-col items-center bg-neutral-800/80 rounded-full p-2 shadow-sm border border-border/20">
+            <button onClick={() => handleAction('Channel Up')} className="w-12 h-12 flex items-center justify-center rounded-full hover:bg-white dark:bg-secondary/20 active:scale-95 transition text-neutral-300"><ChevronUp className="w-5 h-5" /></button>
             <span className="text-[10px] font-bold my-2 text-neutral-500 tracking-widest">CH</span>
-            <button onClick={() => handleAction('Channel Down')} className="w-12 h-12 flex items-center justify-center rounded-full hover:bg-white dark:bg-[#111116]/10 active:scale-95 transition text-neutral-300"><ChevronDown className="w-5 h-5" /></button>
+            <button onClick={() => handleAction('Channel Down')} className="w-12 h-12 flex items-center justify-center rounded-full hover:bg-white dark:bg-secondary/20 active:scale-95 transition text-neutral-300"><ChevronDown className="w-5 h-5" /></button>
           </div>
         </div>
 

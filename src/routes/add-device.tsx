@@ -145,12 +145,12 @@ function AddDevicePage() {
   const isNative = (window as any).Capacitor?.isNativePlatform();
 
   return (
-    <div className="bg-slate-50 dark:bg-black min-h-screen text-slate-900 dark:text-white pb-24 -mx-4 px-4 sm:-mx-8 sm:px-8">
+    <div className="bg-slate-50 dark:bg-black min-h-screen text-foreground pb-24 -mx-4 px-4 sm:-mx-8 sm:px-8">
       <div className="mx-auto max-w-xl space-y-6 pt-6">
         <div className="flex items-center gap-3">
           <button
             onClick={() => step === "setup" ? setStep("scan") : router.history.back()}
-            className="p-2 bg-white/40 dark:bg-[#111116] rounded-full hover:bg-white/60 dark:bg-[#111116]/10 transition-colors border border-blue-200 dark:border-white/5"
+            className="p-2 bg-white/40 dark:bg-card rounded-full hover:bg-white/60 dark:bg-secondary/20 transition-colors border border-blue-200 dark:border-border/20"
             aria-label="Back"
           >
             <ArrowLeft className="h-4 w-4" />
@@ -159,7 +159,7 @@ function AddDevicePage() {
             <h1 className="text-xl font-extrabold tracking-tight">
               {step === "scan" ? "Discover Devices" : "Setup Device"}
             </h1>
-            <p className="text-sm font-medium text-slate-500 dark:text-neutral-400">
+            <p className="text-sm font-medium text-muted-foreground">
               {step === "scan" ? "Scanning for local smart appliances..." : "Configure your new smart device."}
             </p>
           </div>
@@ -207,7 +207,7 @@ function AddDevicePage() {
                     <div 
                       key={i} 
                       onClick={() => handleSelectDevice(dev)}
-                      className="flex items-center justify-between p-4 bg-white/60 dark:bg-[#111116]/80 border border-purple-200 dark:border-white/5 rounded-2xl hover:border-purple-500 cursor-pointer transition-all shadow-sm group"
+                      className="flex items-center justify-between p-4 bg-white/60 dark:bg-card/80 border border-purple-200 dark:border-border/20 rounded-2xl hover:border-purple-500 cursor-pointer transition-all shadow-sm group"
                     >
                       <div className="flex items-center gap-4">
                         <div className="bg-purple-100 dark:bg-purple-900/30 p-2 rounded-full">
@@ -241,8 +241,8 @@ function AddDevicePage() {
             </p>
           </div>
         ) : (
-          <form onSubmit={handleSubmit} className="space-y-6 rounded-[2rem] border border-purple-200 dark:border-purple-500/25 bg-white/40 dark:bg-purple-950/30 backdrop-blur-md p-6 shadow-sm">
-            <div className="bg-purple-50 dark:bg-[#111116] p-4 rounded-xl border border-purple-100 dark:border-white/5 mb-6">
+          <form onSubmit={handleSubmit} className="space-y-6 rounded-[2rem] border border-purple-200 dark:border-purple-500/25 glass-card p-6 shadow-sm">
+            <div className="bg-purple-50 dark:bg-card p-4 rounded-xl border border-purple-100 dark:border-border/20 mb-6">
               <p className="text-xs text-slate-500 mb-1 uppercase font-bold">Selected Hardware</p>
               <div className="flex items-center gap-2">
                  {selectedDevice?.type === "wifi" ? <Wifi className="w-4 h-4 text-purple-500" /> : <Bluetooth className="w-4 h-4 text-blue-500" />}
@@ -251,25 +251,25 @@ function AddDevicePage() {
             </div>
 
             <div className="space-y-2">
-              <label className="text-sm font-bold text-slate-900 dark:text-white">Device Name</label>
+              <label className="text-sm font-bold text-foreground">Device Name</label>
               <input
                 type="text"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                className="w-full rounded-xl border border-blue-200 dark:border-white/10 bg-white/50 dark:bg-[#111116]/50 px-4 py-3 text-sm focus:border-purple-500 focus:outline-none transition-colors"
+                className="w-full rounded-xl border border-blue-200 dark:border-border/40 bg-white/50 dark:bg-secondary/100 px-4 py-3 text-sm focus:border-purple-500 focus:outline-none transition-colors"
                 placeholder="e.g., Living Room Fan"
               />
             </div>
 
             <div className="space-y-2">
-              <label className="text-sm font-bold text-slate-900 dark:text-white">Room</label>
+              <label className="text-sm font-bold text-foreground">Room</label>
               <select
                 value={roomId}
                 onChange={(e) => setRoomId(e.target.value)}
-                className="w-full rounded-xl border border-blue-200 dark:border-white/10 bg-white/50 dark:bg-[#111116]/50 px-4 py-3 text-sm focus:border-purple-500 focus:outline-none transition-colors appearance-none"
+                className="w-full rounded-xl border border-blue-200 dark:border-border/40 bg-white/50 dark:bg-secondary/100 px-4 py-3 text-sm focus:border-purple-500 focus:outline-none transition-colors appearance-none"
               >
                 {state.rooms.map((room) => (
-                  <option key={room.id} value={room.id} className="bg-white dark:bg-[#111116]">
+                  <option key={room.id} value={room.id} className="bg-white dark:bg-card">
                     {room.name}
                   </option>
                 ))}
@@ -277,20 +277,20 @@ function AddDevicePage() {
             </div>
 
             <div className="space-y-2">
-              <label className="text-sm font-bold text-slate-900 dark:text-white">Device Type / Icon</label>
+              <label className="text-sm font-bold text-foreground">Device Type / Icon</label>
               <select
                 value={type}
                 onChange={(e) => setType(e.target.value as DeviceType)}
-                className="w-full rounded-xl border border-blue-200 dark:border-white/10 bg-white/50 dark:bg-[#111116]/50 px-4 py-3 text-sm focus:border-purple-500 focus:outline-none transition-colors appearance-none"
+                className="w-full rounded-xl border border-blue-200 dark:border-border/40 bg-white/50 dark:bg-secondary/100 px-4 py-3 text-sm focus:border-purple-500 focus:outline-none transition-colors appearance-none"
               >
-                <option value="light" className="bg-white dark:bg-[#111116]">Light</option>
-                <option value="plug" className="bg-white dark:bg-[#111116]">Smart Plug</option>
-                <option value="ac" className="bg-white dark:bg-[#111116]">Air Conditioner</option>
-                <option value="fan" className="bg-white dark:bg-[#111116]">Fan</option>
-                <option value="fridge" className="bg-white dark:bg-[#111116]">Refrigerator</option>
-                <option value="appliance" className="bg-white dark:bg-[#111116]">Appliance</option>
-                <option value="tv" className="bg-white dark:bg-[#111116]">Television</option>
-                <option value="sensor" className="bg-white dark:bg-[#111116]">Sensor</option>
+                <option value="light" className="bg-white dark:bg-card">Light</option>
+                <option value="plug" className="bg-white dark:bg-card">Smart Plug</option>
+                <option value="ac" className="bg-white dark:bg-card">Air Conditioner</option>
+                <option value="fan" className="bg-white dark:bg-card">Fan</option>
+                <option value="fridge" className="bg-white dark:bg-card">Refrigerator</option>
+                <option value="appliance" className="bg-white dark:bg-card">Appliance</option>
+                <option value="tv" className="bg-white dark:bg-card">Television</option>
+                <option value="sensor" className="bg-white dark:bg-card">Sensor</option>
               </select>
             </div>
 

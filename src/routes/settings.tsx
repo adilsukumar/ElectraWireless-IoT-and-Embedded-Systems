@@ -25,10 +25,10 @@ function SettingsPage() {
   const { state, dispatch } = useHome();
 
   return (
-    <div className="bg-slate-50 dark:bg-black flex-1 text-slate-900 dark:text-white pb-6 -mx-4 px-4 sm:-mx-8 sm:px-8 flex flex-col">
+    <div className="bg-slate-50 dark:bg-black flex-1 text-foreground pb-6 -mx-4 px-4 sm:-mx-8 sm:px-8 flex flex-col">
       <div className="mx-auto max-w-4xl w-full space-y-6 pt-2">
         <div>
-          <h1 className="text-[32px] font-extrabold tracking-tight text-slate-900 dark:text-white">Settings</h1>
+          <h1 className="text-[32px] font-extrabold tracking-tight text-foreground">Settings</h1>
         </div>
 
         {/* 2x2 Grid */}
@@ -38,7 +38,7 @@ function SettingsPage() {
               <div className="flex h-10 w-10 items-center justify-center rounded-full bg-purple-500/10 border border-purple-500/20 shadow-[0_0_10px_rgba(168,85,247,0.15)]">
                 <Users className="h-5 w-5 text-purple-600 dark:text-purple-400" strokeWidth={2} />
               </div>
-              <span className="font-bold text-slate-900 dark:text-white text-xs">Users & Access</span>
+              <span className="font-bold text-foreground text-xs">Users & Access</span>
             </SciFiCard>
           </Link>
           
@@ -46,11 +46,11 @@ function SettingsPage() {
             <SciFiCard color="blue" className="flex flex-col items-center justify-center p-4 h-full gap-2 transition-all hover:scale-105">
               <div className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-500/10 border border-blue-500/20 shadow-[0_0_10px_rgba(59,130,246,0.15)] relative">
                 <Wifi className="h-5 w-5 text-blue-600 dark:text-blue-500 relative -left-0.5" strokeWidth={2} />
-                <div className="absolute -bottom-0.5 -right-0.5 bg-white dark:bg-[#111116] rounded-full p-[1px]">
+                <div className="absolute -bottom-0.5 -right-0.5 bg-white dark:bg-card rounded-full p-[1px]">
                   <ShieldCheck className="h-3 w-3 text-blue-600 dark:text-blue-400" strokeWidth={2.5} />
                 </div>
               </div>
-              <span className="font-bold text-slate-900 dark:text-white text-xs">Network & Fallback</span>
+              <span className="font-bold text-foreground text-xs">Network & Fallback</span>
             </SciFiCard>
           </Link>
 
@@ -59,7 +59,7 @@ function SettingsPage() {
               <div className="flex h-10 w-10 items-center justify-center rounded-full bg-orange-500/10 border border-orange-500/20 shadow-[0_0_10px_rgba(249,115,22,0.15)]">
                 <Server className="h-5 w-5 text-orange-600 dark:text-orange-500" strokeWidth={2} />
               </div>
-              <span className="font-bold text-slate-900 dark:text-white text-xs">Gateways</span>
+              <span className="font-bold text-foreground text-xs">Gateways</span>
             </SciFiCard>
           </Link>
 
@@ -68,7 +68,7 @@ function SettingsPage() {
               <div className="flex h-10 w-10 items-center justify-center rounded-full bg-emerald-500/10 border border-emerald-500/20 shadow-[0_0_10px_rgba(16,185,129,0.15)]">
                 <Shield className="h-5 w-5 text-emerald-600 dark:text-emerald-500" strokeWidth={2} />
               </div>
-              <span className="font-bold text-slate-900 dark:text-white text-xs">Safety</span>
+              <span className="font-bold text-foreground text-xs">Safety</span>
             </SciFiCard>
           </Link>
         </div>
@@ -82,7 +82,7 @@ function SettingsPage() {
               const roleDisplay = isSarah ? "Owner" : m.role === "family" ? "Family" : "Guest";
               const roleColor = roleDisplay === "Owner" 
                 ? "bg-fuchsia-100 dark:bg-fuchsia-500/20 text-fuchsia-700 dark:text-fuchsia-300 shadow-[0_0_10px_rgba(217,70,239,0.2)]" 
-                : "bg-slate-100 dark:bg-[#111116]/10 text-slate-600 dark:text-neutral-300";
+                : "bg-secondary/30 text-foreground/80";
               
               const initials = m.name.split(" ").map(n => n[0]).join("").substring(0, 2).toUpperCase();
 
@@ -91,29 +91,29 @@ function SettingsPage() {
                   <DialogTrigger asChild>
                     <div className={`flex w-full items-center justify-between p-3.5 ${i !== 1 ? "border-b border-fuchsia-200 dark:border-fuchsia-500/20" : ""} hover:bg-white/50 dark:hover:bg-fuchsia-900/10 transition-colors cursor-pointer`}>
                       <div className="flex items-center gap-3">
-                        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-white dark:bg-[#1c1c24] border border-fuchsia-200 dark:border-white/10 font-bold text-slate-900 dark:text-white text-[11px] tracking-wider shadow-sm">
+                        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-white dark:bg-secondary border border-fuchsia-200 dark:border-border/40 font-bold text-foreground text-[11px] tracking-wider shadow-sm">
                           {initials}
                         </div>
-                        <span className="font-bold text-slate-900 dark:text-white text-sm">{m.name}</span>
+                        <span className="font-bold text-foreground text-sm">{m.name}</span>
                       </div>
                       <span className={`px-3 py-1 rounded-full text-[10px] font-bold ${roleColor}`}>
                         {roleDisplay}
                       </span>
                     </div>
                   </DialogTrigger>
-                  <DialogContent className="bg-white dark:bg-[#111116] border border-white/10 text-slate-900 dark:text-white rounded-[2rem] sm:max-w-md">
+                  <DialogContent className="bg-white dark:bg-card border border-border/40 text-foreground rounded-[2rem] sm:max-w-md">
                     <DialogHeader>
                       <DialogTitle className="text-xl font-bold">Edit Member Access</DialogTitle>
                     </DialogHeader>
                     <div className="py-6 space-y-6">
                       <div className="flex flex-col items-center gap-3">
-                        <div className="flex h-20 w-20 items-center justify-center rounded-full bg-[#1c1c24] border border-white/10 font-bold text-slate-900 dark:text-white text-2xl tracking-widest shadow-inner">
+                        <div className="flex h-20 w-20 items-center justify-center rounded-full bg-secondary border border-border/40 font-bold text-foreground text-2xl tracking-widest shadow-inner">
                           {initials}
                         </div>
                         <h2 className="text-2xl font-bold">{m.name}</h2>
                         <span className={`px-5 py-1.5 rounded-full text-sm font-bold ${roleColor}`}>{roleDisplay}</span>
                       </div>
-                      <div className="space-y-3 bg-white dark:bg-[#111116]/5 p-5 rounded-2xl border border-white/5">
+                      <div className="space-y-3 bg-white dark:bg-secondary/10 p-5 rounded-2xl border border-border/20">
                         <div className="flex justify-between items-center"><span className="text-neutral-400 font-medium">Scope</span><span className="font-bold capitalize">{m.scope} devices</span></div>
                         <div className="flex justify-between items-center"><span className="text-neutral-400 font-medium">Notes</span><span className="font-bold">{m.note || "None"}</span></div>
                       </div>

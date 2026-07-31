@@ -1,8 +1,5 @@
 import { useEffect, useState, useRef } from 'react';
 import { toast } from 'sonner';
-
-import { useEffect, useState, useRef } from 'react';
-import { toast } from 'sonner';
 import { SpeechRecognition } from '@capacitor-community/speech-recognition';
 
 export function useHeyElly({ onWakeWord, pause }: { onWakeWord?: (cmd?: string) => void, pause?: boolean } = {}) {
@@ -105,6 +102,7 @@ export function useHeyElly({ onWakeWord, pause }: { onWakeWord?: (cmd?: string) 
           } catch (e) {
             // Usually throws when no speech is detected after a timeout. Just loop.
           }
+          if (!active) break;
           await new Promise(r => setTimeout(r, 500)); // small delay before restarting
         }
       } catch (err) {
@@ -128,18 +126,17 @@ export function useHeyElly({ onWakeWord, pause }: { onWakeWord?: (cmd?: string) 
 
 
 export async function enableBackgroundListening() {
-  if (typeof window !== 'undefined' && 'Notification' in window) {
-    if (Notification.permission !== 'granted') {
-      try {
-        // Capacitor might crash on raw Notification API on older Androids if not handled well, but this is web fallback
+  if (typeof window !== 'undefined' && 'Notification' in window && !(window as any).cordova) {
+    try {
+      if (Notification.permission !== 'granted') {
         const perm = await Notification.requestPermission();
         if (perm !== 'granted') {
           toast.error("Notification permission required for background service.");
           return;
         }
-      } catch (e) {
-        console.warn("Web Notification API failed, probably in Native context:", e);
       }
+    } catch (e) {
+      console.warn("Web Notification API failed:", e);
     }
   }
   

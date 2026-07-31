@@ -50,48 +50,48 @@ function MapPage() {
   const renderFurniture = (type: string) => {
     switch(type) {
       case 'sofa': return (
-        <div className="absolute top-[15%] right-[15%] w-[45%] h-[20%] border-[2px] border-white/10 rounded-sm pointer-events-none flex flex-col justify-between overflow-hidden">
-           <div className="h-[25%] border-b-[2px] border-white/10"></div>
+        <div className="absolute top-[15%] right-[15%] w-[45%] h-[20%] border-[2px] border-border/40 rounded-sm pointer-events-none flex flex-col justify-between overflow-hidden">
+           <div className="h-[25%] border-b-[2px] border-border/40"></div>
            <div className="flex-1 flex">
-             <div className="flex-1 border-r-[2px] border-white/10"></div>
-             <div className="flex-1 border-r-[2px] border-white/10"></div>
+             <div className="flex-1 border-r-[2px] border-border/40"></div>
+             <div className="flex-1 border-r-[2px] border-border/40"></div>
              <div className="flex-1"></div>
            </div>
            {/* TV Unit opposite */}
-           <div className="absolute top-[180%] left-[20%] w-[60%] h-[15%] border-[2px] border-white/10 rounded-sm flex items-center justify-center">
+           <div className="absolute top-[180%] left-[20%] w-[60%] h-[15%] border-[2px] border-border/40 rounded-sm flex items-center justify-center">
              <div className="w-[80%] h-[2px] bg-white/10"></div>
            </div>
         </div>
       );
       case 'kitchen': return (
         <>
-          <div className="absolute top-0 right-0 w-[40%] h-[100%] border-l-[2px] border-white/10 pointer-events-none bg-white/[0.02]">
+          <div className="absolute top-0 right-0 w-[40%] h-[100%] border-l-[2px] border-border/40 pointer-events-none bg-white/[0.02]">
              {/* Sink */}
-             <div className="absolute top-[30%] left-[50%] w-[16px] h-[16px] rounded-full border-[2px] border-white/10 -translate-x-1/2"></div>
+             <div className="absolute top-[30%] left-[50%] w-[16px] h-[16px] rounded-full border-[2px] border-border/40 -translate-x-1/2"></div>
              {/* Hob */}
-             <div className="absolute top-[60%] left-[50%] w-[20px] h-[30px] border-[2px] border-white/10 -translate-x-1/2 grid grid-cols-2 grid-rows-2 gap-[2px] p-[2px]">
+             <div className="absolute top-[60%] left-[50%] w-[20px] h-[30px] border-[2px] border-border/40 -translate-x-1/2 grid grid-cols-2 grid-rows-2 gap-[2px] p-[2px]">
                <div className="bg-white/10 rounded-full"></div><div className="bg-white/10 rounded-full"></div>
                <div className="bg-white/10 rounded-full"></div><div className="bg-white/10 rounded-full"></div>
              </div>
           </div>
-          <div className="absolute top-[10%] left-[10%] w-[35%] h-[30%] border-[2px] border-white/10 rounded-sm"></div>
+          <div className="absolute top-[10%] left-[10%] w-[35%] h-[30%] border-[2px] border-border/40 rounded-sm"></div>
         </>
       );
       case 'desk': return (
-        <div className="absolute top-[15%] right-[15%] w-[45%] h-[25%] border-[2px] border-white/10 pointer-events-none">
-           <div className="absolute top-[110%] left-[50%] -translate-x-1/2 w-[35%] h-[45%] border-[2px] border-white/10 rounded-full"></div>
+        <div className="absolute top-[15%] right-[15%] w-[45%] h-[25%] border-[2px] border-border/40 pointer-events-none">
+           <div className="absolute top-[110%] left-[50%] -translate-x-1/2 w-[35%] h-[45%] border-[2px] border-border/40 rounded-full"></div>
         </div>
       );
       case 'bed': return (
-        <div className="absolute top-[15%] left-[15%] w-[35%] h-[55%] border-[2px] border-white/10 rounded-md pointer-events-none overflow-hidden">
+        <div className="absolute top-[15%] left-[15%] w-[35%] h-[55%] border-[2px] border-border/40 rounded-md pointer-events-none overflow-hidden">
            {/* Pillows */}
-           <div className="absolute top-1 left-[10%] w-[35%] h-[15%] border-[2px] border-white/10 rounded-sm"></div>
-           <div className="absolute top-1 right-[10%] w-[35%] h-[15%] border-[2px] border-white/10 rounded-sm"></div>
+           <div className="absolute top-1 left-[10%] w-[35%] h-[15%] border-[2px] border-border/40 rounded-sm"></div>
+           <div className="absolute top-1 right-[10%] w-[35%] h-[15%] border-[2px] border-border/40 rounded-sm"></div>
            {/* Blanket */}
-           <div className="absolute bottom-[25%] left-0 w-full border-t-[2px] border-white/10"></div>
+           <div className="absolute bottom-[25%] left-0 w-full border-t-[2px] border-border/40"></div>
            {/* Side tables */}
-           <div className="absolute top-0 left-[-40%] w-[30%] h-[15%] border-[2px] border-white/10 rounded-sm"></div>
-           <div className="absolute top-0 right-[-40%] w-[30%] h-[15%] border-[2px] border-white/10 rounded-sm"></div>
+           <div className="absolute top-0 left-[-40%] w-[30%] h-[15%] border-[2px] border-border/40 rounded-sm"></div>
+           <div className="absolute top-0 right-[-40%] w-[30%] h-[15%] border-[2px] border-border/40 rounded-sm"></div>
         </div>
       );
       default: return null;
@@ -99,28 +99,28 @@ function MapPage() {
   };
 
   return (
-    <div className="flex flex-col h-full bg-slate-50 dark:bg-[#050505] text-slate-500 dark:text-[#b4b4b4] pb-20 font-mono transition-colors">
+    <div className="flex flex-col h-full bg-background text-foreground text-muted-foreground pb-20 font-mono transition-colors">
       <div className="flex items-center gap-4 p-6 pt-10 font-sans">
-        <Link to="/" className="flex h-12 w-12 items-center justify-center rounded-full bg-slate-200 dark:bg-white/5 shadow-sm border border-slate-300 dark:border-white/10 hover:bg-slate-300 dark:hover:bg-white/10 transition-colors">
-          <ArrowLeft className="h-6 w-6 text-slate-900 dark:text-white" />
+        <Link to="/" className="flex h-12 w-12 items-center justify-center rounded-full bg-slate-200 dark:bg-white/5 shadow-sm border border-slate-300 dark:border-border/40 hover:bg-slate-300 dark:hover:bg-white/10 transition-colors">
+          <ArrowLeft className="h-6 w-6 text-foreground" />
         </Link>
         <div className="flex-1">
-          <h1 className="text-2xl font-extrabold tracking-tight text-slate-900 dark:text-white">Property Plan</h1>
+          <h1 className="text-2xl font-extrabold tracking-tight text-foreground">Property Plan</h1>
           <p className="text-xs text-neutral-400 font-medium uppercase tracking-widest mt-1">Scale 1:100 · 1160 SQ.FT</p>
         </div>
       </div>
 
       <div className="px-6 pb-6 flex gap-3 font-sans">
-        <div className="flex flex-1 rounded-full bg-white dark:bg-white/5 p-1.5 border border-slate-200 dark:border-white/10 shadow-sm backdrop-blur-md">
+        <div className="flex flex-1 rounded-full bg-white dark:bg-white/5 p-1.5 border border-slate-200 dark:border-border/40 shadow-sm backdrop-blur-md">
           <button 
             onClick={() => setViewMode("control")}
-            className={cn("flex-1 flex items-center justify-center gap-2 py-2.5 rounded-full text-[10px] sm:text-xs uppercase tracking-wider font-bold transition-all", viewMode === "control" ? "bg-purple-500 dark:bg-white text-white dark:text-black shadow-lg" : "text-slate-500 dark:text-neutral-400 hover:text-slate-900 dark:hover:text-white")}
+            className={cn("flex-1 flex items-center justify-center gap-2 py-2.5 rounded-full text-[10px] sm:text-xs uppercase tracking-wider font-bold transition-all", viewMode === "control" ? "bg-purple-500 dark:bg-white text-white dark:text-black shadow-lg" : "text-muted-foreground hover:text-slate-900 dark:hover:text-white")}
           >
             <MapIcon className="h-4 w-4" /> Layout
           </button>
           <button 
             onClick={() => setViewMode("network")}
-            className={cn("flex-1 flex items-center justify-center gap-2 py-2.5 rounded-full text-[10px] sm:text-xs uppercase tracking-wider font-bold transition-all", viewMode === "network" ? "bg-teal-500 text-white dark:text-black shadow-[0_0_20px_rgba(20,184,166,0.4)]" : "text-slate-500 dark:text-neutral-400 hover:text-slate-900 dark:hover:text-white")}
+            className={cn("flex-1 flex items-center justify-center gap-2 py-2.5 rounded-full text-[10px] sm:text-xs uppercase tracking-wider font-bold transition-all", viewMode === "network" ? "bg-teal-500 text-white dark:text-black shadow-[0_0_20px_rgba(20,184,166,0.4)]" : "text-muted-foreground hover:text-slate-900 dark:hover:text-white")}
           >
             <Wifi className="h-4 w-4" /> Topology
           </button>
@@ -128,14 +128,14 @@ function MapPage() {
         {zoomedRoomId && (
           <button 
             onClick={() => setZoomedRoomId(null)}
-            className="px-5 rounded-full bg-slate-200 dark:bg-[#181820] text-slate-900 dark:text-white font-bold text-xs uppercase tracking-wider border border-slate-300 dark:border-white/20 hover:bg-slate-300 dark:hover:bg-white/10 transition-colors"
+            className="px-5 rounded-full bg-slate-200 dark:bg-[#181820] text-foreground font-bold text-xs uppercase tracking-wider border border-slate-300 dark:border-border/40 hover:bg-slate-300 dark:hover:bg-white/10 transition-colors"
           >
             Reset
           </button>
         )}
       </div>
 
-      <div className="relative flex-1 mx-6 mb-6 rounded-sm bg-[#09090b] border-[4px] border-[#2a2a35] overflow-hidden shadow-[inset_0_0_100px_rgba(0,0,0,0.8)]">
+      <div className="relative flex-1 mx-6 mb-6 rounded-sm bg-background border-[4px] border-[#2a2a35] overflow-hidden shadow-[inset_0_0_100px_rgba(0,0,0,0.8)]">
         {/* The zooming container */}
         <div 
           className="absolute inset-0 transition-transform duration-700 ease-[cubic-bezier(0.3,0,0.2,1)]"
@@ -177,7 +177,7 @@ function MapPage() {
                 onClick={() => !zoomedRoomId && setZoomedRoomId(room.id)}
                 className={cn(
                   "absolute border-[4px] border-[#2a2a35] flex flex-col cursor-pointer transition-all duration-700 ease-[cubic-bezier(0.3,0,0.2,1)]",
-                  isZoomed ? "bg-[#09090b] z-30 shadow-[0_0_50px_rgba(0,0,0,0.8)]" : "bg-[#09090b] z-10 hover:bg-[#111116]",
+                  isZoomed ? "bg-background z-30 shadow-[0_0_50px_rgba(0,0,0,0.8)]" : "bg-background z-10 hover:bg-secondary",
                   isOtherZoomed && "opacity-40"
                 )}
                 style={{ top: layout.top, left: layout.left, width: layout.width, height: layout.height }}
@@ -262,7 +262,7 @@ function MapPage() {
                             className={`flex flex-col items-center justify-center h-16 w-16 sm:h-20 sm:w-20 rounded-full transition-all active:scale-95 ${
                               device.on 
                                 ? "bg-white text-black shadow-[0_0_40px_rgba(255,255,255,1)] border-[3px] border-[#09090b]" 
-                                : "bg-[#181820]/90 text-neutral-400 border-[3px] border-white/20 backdrop-blur-md hover:bg-white/10"
+                                : "bg-[#181820]/90 text-neutral-400 border-[3px] border-border/40 backdrop-blur-md hover:bg-white/10"
                             }`}
                           >
                             <Icon className="h-8 w-8" />
@@ -274,16 +274,16 @@ function MapPage() {
                               {isOnline && <div className="absolute -inset-2 rounded-full border-2 border-teal-400/40 animate-ping opacity-30" style={{ animationDuration: '2s', animationDelay: `${i * 0.3}s` }} />}
                             </div>
                             {isOnline ? (
-                               <div className="mt-2 text-center leading-tight bg-black/80 px-3 py-1.5 rounded-md border border-white/10 backdrop-blur-md scale-90">
+                               <div className="mt-2 text-center leading-tight bg-black/80 px-3 py-1.5 rounded-md border border-border/40 backdrop-blur-md scale-90">
                                  <div className="text-[12px] sm:text-[14px] font-bold text-teal-300">{signal}%</div>
                                  <div className="text-[10px] sm:text-[11px] text-teal-500">{ping}ms</div>
                                </div>
                             ) : (
-                               <div className="mt-2 text-[12px] font-bold text-red-400 bg-black/80 px-2 py-1 rounded-md border border-white/10 scale-90">ERR</div>
+                               <div className="mt-2 text-[12px] font-bold text-red-400 bg-black/80 px-2 py-1 rounded-md border border-border/40 scale-90">ERR</div>
                             )}
                           </div>
                         )}
-                        <p className="text-center mt-2 text-[12px] sm:text-[14px] font-bold text-white opacity-0 group-hover:opacity-100 transition-opacity absolute top-full left-1/2 -translate-x-1/2 whitespace-nowrap bg-black/80 px-3 py-1.5 rounded-md border border-white/10 z-50">
+                        <p className="text-center mt-2 text-[12px] sm:text-[14px] font-bold text-white opacity-0 group-hover:opacity-100 transition-opacity absolute top-full left-1/2 -translate-x-1/2 whitespace-nowrap bg-black/80 px-3 py-1.5 rounded-md border border-border/40 z-50">
                           {device.name}
                         </p>
                       </div>

@@ -12,7 +12,8 @@ import {
   Menu,
   ClipboardList,
   PowerOff,
-  Power
+  Power,
+  User
 } from "lucide-react";
 import { KeepAwake } from '@capacitor-community/keep-awake';
 import { useHeyElly, enableBackgroundListening, disableBackgroundListening } from "@/hooks/useHeyElly";
@@ -83,114 +84,78 @@ function LayoutInner({ children }: { children: ReactNode }) {
 
   return (
     <div className="relative flex h-[100dvh] w-full justify-center overflow-hidden bg-secondary/50">
-      {/* Ambient static blobs (subtle, no blur filter to avoid per-frame repaint cost) */}
-      <div aria-hidden className="pointer-events-none absolute -left-12 -top-12 h-64 w-64 rounded-full bg-purple-500/10 dark:bg-purple-600/15" />
-      <div aria-hidden className="pointer-events-none absolute top-20 right-10 h-72 w-72 rounded-full bg-violet-500/10 dark:bg-violet-500/15" />
-      <div aria-hidden className="pointer-events-none absolute top-1/3 left-10 h-48 w-48 rounded-full bg-fuchsia-500/5 dark:bg-fuchsia-600/10" />
-      <div aria-hidden className="pointer-events-none absolute top-1/2 right-24 h-56 w-56 rounded-full bg-purple-400/10 dark:bg-purple-500/10" />
-      <div aria-hidden className="pointer-events-none absolute bottom-1/3 left-20 h-64 w-64 rounded-full bg-violet-400/10 dark:bg-violet-600/10" />
-      <div aria-hidden className="pointer-events-none absolute bottom-20 right-12 h-40 w-40 rounded-full bg-emerald-400/5 dark:bg-emerald-500/10" />
-      <div aria-hidden className="pointer-events-none absolute -bottom-10 left-1/3 h-52 w-52 rounded-full bg-purple-500/10 dark:bg-purple-600/10" />
-      <div aria-hidden className="pointer-events-none absolute top-3/4 -left-16 h-60 w-60 rounded-full bg-fuchsia-400/5 dark:bg-fuchsia-500/10" />
+      {/* Ambient glassmorphic blobs for a modern techy vibe */}
+      <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden opacity-50 mix-blend-screen dark:mix-blend-lighten">
+        <div aria-hidden className="absolute -left-12 -top-12 h-96 w-96 rounded-full bg-primary/20 blur-[100px] dark:bg-primary/30" />
+        <div aria-hidden className="absolute top-20 right-10 h-96 w-96 rounded-full bg-[#8B5CF6]/20 blur-[120px] dark:bg-[#7C3AED]/20" />
+        <div aria-hidden className="absolute top-1/2 right-24 h-80 w-80 rounded-full bg-[#A78BFA]/15 blur-[90px] dark:bg-[#6D28D9]/30" />
+        <div aria-hidden className="absolute bottom-1/3 left-20 h-96 w-96 rounded-full bg-[#C4B5FD]/20 blur-[120px] dark:bg-[#8B5CF6]/20" />
+        <div aria-hidden className="absolute -bottom-10 left-1/3 h-72 w-72 rounded-full bg-primary/20 blur-[100px] dark:bg-[#7C3AED]/20" />
+      </div>
 
       {/* Phone-sized app column */}
       <div className="relative z-10 flex h-full w-full max-w-md flex-col overflow-hidden bg-background shadow-lg shadow-primary/5 ring-1 ring-border/60">
         {/* Header */}
-        <header className="sticky top-0 z-20 border-b border-border/60 glass">
-          <div className="flex items-center gap-3 px-4 py-3">
-            <EllyLogo className="h-9 w-9" />
-            <div className="min-w-0 flex-1">
-              <p className="truncate font-display text-base font-extrabold leading-none">
-                ElectraWireless
-              </p>
-              <p className="truncate text-[11px] text-muted-foreground">ELLY Home Automation</p>
-            </div>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button
-                  variant="outline"
-                  size="icon"
-                  className="relative h-9 w-9 rounded-full"
-                  aria-label="Alerts"
-                >
-                  <Bell className="h-4 w-4" />
-                  {alerts.length > 0 && (
-                    <span className="absolute -right-1 -top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-destructive px-1 text-[10px] font-bold text-destructive-foreground">
-                      {alerts.length}
-                    </span>
-                  )}
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-72">
-                <DropdownMenuLabel>Alerts & Warnings</DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                {alerts.length === 0 ? (
-                  <DropdownMenuItem disabled>All systems nominal</DropdownMenuItem>
-                ) : (
-                  alerts.map((a) => (
-                    <DropdownMenuItem key={a} className="text-sm">
-                      <Badge variant="destructive" className="mr-2">
-                        !
-                      </Badge>
-                      {a}
-                    </DropdownMenuItem>
-                  ))
-                )}
-              </DropdownMenuContent>
-            </DropdownMenu>
-            <Button
-              variant="outline"
-              size="icon"
-              className="h-9 w-9 rounded-full"
-              onClick={toggle}
-              aria-label="Toggle theme"
-            >
-              {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
-            </Button>
-            <Button
-              variant={bgEnabled ? "default" : "outline"}
-              size="icon"
-              className={`h-9 w-9 rounded-full ${bgEnabled ? 'bg-purple-600 hover:bg-purple-700 shadow-[0_0_10px_rgba(168,85,247,0.5)]' : ''}`}
-              onClick={() => {
-                if (bgEnabled) {
-                  disableBackgroundListening();
-                  setBgEnabled(false);
-                } else {
-                  enableBackgroundListening();
-                  setBgEnabled(true);
-                }
-              }}
-              aria-label="Toggle Background Service"
-            >
-              {bgEnabled ? <Power className="h-4 w-4 text-slate-900 dark:text-white" /> : <PowerOff className="h-4 w-4" />}
-            </Button>
-            <Button
-              variant={state.appMode === "live" ? "default" : "outline"}
-              size="sm"
-              className={`h-9 px-3 rounded-full font-bold text-xs ${state.appMode === "live" ? 'bg-red-500 hover:bg-red-600 text-white shadow-[0_0_10px_rgba(239,68,68,0.5)] border-red-500' : 'text-neutral-500 border-neutral-300 dark:border-neutral-700'}`}
-              onClick={() => {
-                switchMode(state.appMode === "live" ? "demo" : "live");
-              }}
-              aria-label="Toggle App Mode"
-            >
-              {state.appMode === "live" ? "LIVE" : "DEMO"}
-            </Button>
-          </div>
-          <div className="px-4 pb-3">
-            <button
-              type="button"
-              onClick={openElly}
-              aria-label="Talk to ELLY"
-              className="flex w-full items-center gap-3 rounded-2xl border border-primary/30 bg-primary/5 px-3 py-2.5 text-left transition-colors hover:bg-primary/10"
-            >
-              <EllyLogo className="h-9 w-9 shrink-0" />
-              <div className="min-w-0 flex-1">
-                <p className="truncate text-sm font-semibold leading-none">Talk to ELLY</p>
-                <p className="truncate text-[11px] text-muted-foreground">
-                  Tap to speak or type a command
-                </p>
+        <header className="sticky top-0 z-20 border-b border-border/40 glass">
+          <div className="flex items-center justify-between px-4 py-3">
+            <div className="flex items-center gap-3">
+              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-secondary text-secondary-foreground shadow-sm">
+                <User className="h-5 w-5" />
               </div>
-            </button>
+              <div className="min-w-0">
+                <p className="truncate font-display text-sm font-bold leading-none">
+                  Hi, Adil
+                </p>
+                <p className="truncate text-[11px] text-muted-foreground mt-0.5">Welcome home</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-9 w-9 rounded-full hover:bg-secondary/50"
+                onClick={toggle}
+                aria-label="Toggle theme"
+              >
+                {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+              </Button>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="relative h-9 w-9 rounded-full hover:bg-secondary/50"
+                    aria-label="Alerts"
+                  >
+                    <Bell className="h-5 w-5 text-foreground/80" />
+                    {alerts.length > 0 && (
+                      <span className="absolute right-[6px] top-[6px] h-2 w-2 rounded-full bg-destructive border-2 border-background" />
+                    )}
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-72 glass-card">
+                  <DropdownMenuLabel>Alerts & Warnings</DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  {alerts.length === 0 ? (
+                    <DropdownMenuItem disabled>All systems nominal</DropdownMenuItem>
+                  ) : (
+                    alerts.map((a) => (
+                      <DropdownMenuItem key={a} className="text-sm">
+                        <Badge variant="destructive" className="mr-2">!</Badge>{a}
+                      </DropdownMenuItem>
+                    ))
+                  )}
+                </DropdownMenuContent>
+              </DropdownMenu>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-9 w-9 rounded-full hover:bg-secondary/50"
+                aria-label="Settings"
+              >
+                <Settings className="h-5 w-5 text-foreground/80" />
+              </Button>
+            </div>
           </div>
         </header>
 
@@ -198,7 +163,7 @@ function LayoutInner({ children }: { children: ReactNode }) {
         <main className="flex flex-1 flex-col overflow-y-auto no-scrollbar px-4 pb-4 pt-5">{children}</main>
 
         {/* Bottom Navigation Bar */}
-        <nav className="mt-auto shrink-0 z-50 flex items-center justify-around border-t border-border/60 bg-background/80 px-2 py-2 backdrop-blur-md">
+        <nav className="mt-auto shrink-0 z-50 flex items-center justify-around border-t border-border/40 bg-background/80 px-2 py-3 backdrop-blur-xl">
           {nav.map((item) => {
             const active = item.exact ? path === item.to : path.startsWith(item.to);
             return (
@@ -207,21 +172,19 @@ function LayoutInner({ children }: { children: ReactNode }) {
                 to={item.to}
                 preload="render"
                 className={cn(
-                  "flex flex-col items-center gap-1 rounded-xl p-2 text-[10px] font-medium transition-colors",
-                  active
-                    ? "text-primary"
-                    : "text-muted-foreground hover:text-foreground",
+                  "relative flex flex-col items-center justify-center gap-1 p-2 text-[10px] font-medium transition-all duration-300",
+                  active ? "text-primary" : "text-muted-foreground hover:text-foreground"
                 )}
               >
                 <div
                   className={cn(
-                    "flex h-8 w-8 items-center justify-center rounded-full transition-colors",
-                    active ? "bg-primary/15" : "bg-transparent",
+                    "flex items-center justify-center rounded-full transition-all duration-300",
+                    active ? "bg-primary/10 px-4 py-1.5" : "bg-transparent px-2 py-1.5"
                   )}
                 >
                   <item.icon className="h-5 w-5 shrink-0" />
                 </div>
-                {item.label}
+                {active && <span className="absolute -bottom-1 h-1 w-1 rounded-full bg-primary" />}
               </Link>
             );
           })}

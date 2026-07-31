@@ -40,30 +40,30 @@ function AddRoomPage() {
   };
 
   return (
-    <div className="bg-slate-50 dark:bg-black min-h-screen text-slate-900 dark:text-white pb-24 -mx-4 px-4 sm:-mx-8 sm:px-8">
+    <div className="bg-slate-50 dark:bg-black min-h-screen text-foreground pb-24 -mx-4 px-4 sm:-mx-8 sm:px-8">
       <div className="mx-auto max-w-xl space-y-6 pt-6">
         <div className="flex items-center gap-3">
           <button
             onClick={() => router.history.back()}
-            className="p-2 bg-white/40 dark:bg-[#111116] rounded-full hover:bg-white/60 dark:bg-[#111116]/10 transition-colors border border-blue-200 dark:border-white/5"
+            className="p-2 bg-white/40 dark:bg-card rounded-full hover:bg-white/60 dark:bg-secondary/20 transition-colors border border-blue-200 dark:border-border/20"
             aria-label="Back"
           >
             <ArrowLeft className="h-4 w-4" />
           </button>
           <div>
             <h1 className="text-xl font-extrabold tracking-tight">Add New Room</h1>
-            <p className="text-sm font-medium text-slate-500 dark:text-neutral-400">Create a new space for your devices.</p>
+            <p className="text-sm font-medium text-muted-foreground">Create a new space for your devices.</p>
           </div>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-6 rounded-[2rem] border border-purple-200 dark:border-purple-500/25 bg-white/40 dark:bg-purple-950/30 backdrop-blur-md p-6 shadow-sm">
+        <form onSubmit={handleSubmit} className="space-y-6 rounded-[2rem] border border-purple-200 dark:border-purple-500/25 glass-card p-6 shadow-sm">
           <div className="space-y-2">
-            <label className="text-sm font-bold text-slate-900 dark:text-white">Room Name</label>
+            <label className="text-sm font-bold text-foreground">Room Name</label>
             <input
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="w-full rounded-xl border border-blue-200 dark:border-white/10 bg-white/50 dark:bg-[#111116]/50 px-4 py-3 text-sm focus:border-purple-500 focus:outline-none transition-colors"
+              className="w-full rounded-xl border border-blue-200 dark:border-border/40 bg-white/50 dark:bg-secondary/100 px-4 py-3 text-sm focus:border-purple-500 focus:outline-none transition-colors"
               placeholder="e.g., Garage"
             />
           </div>

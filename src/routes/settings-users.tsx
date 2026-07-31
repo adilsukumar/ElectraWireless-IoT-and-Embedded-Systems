@@ -21,10 +21,10 @@ function SettingsUsersPage() {
   const { state, dispatch } = useHome();
 
   return (
-    <div className="bg-slate-50 dark:bg-black flex-1 text-slate-900 dark:text-white pb-6 -mx-4 px-4 sm:-mx-8 sm:px-8 flex flex-col">
+    <div className="bg-slate-50 dark:bg-black flex-1 text-foreground pb-6 -mx-4 px-4 sm:-mx-8 sm:px-8 flex flex-col">
       <div className="mx-auto max-w-4xl w-full space-y-6 pt-6">
         <div className="flex items-center gap-3">
-          <Link to="/settings" className="p-2 bg-white dark:bg-[#111116] rounded-full hover:bg-white dark:bg-[#111116]/10 transition-colors border border-white/5">
+          <Link to="/settings" className="p-2 bg-white dark:bg-card rounded-full hover:bg-white dark:bg-secondary/20 transition-colors border border-border/20">
             <ArrowLeft className="h-4 w-4" />
           </Link>
           <h1 className="text-xl font-extrabold tracking-tight">Users & Access</h1>
@@ -38,7 +38,7 @@ function SettingsUsersPage() {
                   <div className="p-2.5 bg-purple-500/10 rounded-xl border border-purple-500/20">
                     <r.icon className="h-5 w-5 text-purple-600 dark:text-purple-400" />
                   </div>
-                  <p className="font-bold text-slate-900 dark:text-white text-sm">{r.label}</p>
+                  <p className="font-bold text-foreground text-sm">{r.label}</p>
                   {activeRole && <span className="ml-auto px-3 py-1 bg-purple-100 dark:bg-purple-500/20 text-purple-700 dark:text-purple-300 text-[10px] font-bold rounded-full tracking-wide uppercase">Active</span>}
                 </div>
                 <ul className="mb-4 space-y-2 text-xs text-slate-600 dark:text-neutral-400 font-medium px-2">
@@ -47,7 +47,7 @@ function SettingsUsersPage() {
                   ))}
                 </ul>
                 <button
-                  className={cn("w-full py-2.5 rounded-xl font-bold text-xs transition-all border", activeRole ? "bg-slate-100 dark:bg-[#111116]/30 text-slate-400 dark:text-neutral-500 border-transparent" : "bg-purple-500 text-white hover:bg-purple-600 border-purple-400 shadow-[0_0_15px_rgba(168,85,247,0.3)]")}
+                  className={cn("w-full py-2.5 rounded-xl font-bold text-xs transition-all border", activeRole ? "bg-slate-100 dark:bg-secondary/40 text-muted-foreground border-transparent" : "bg-purple-500 text-white hover:bg-purple-600 border-purple-400 shadow-[0_0_15px_rgba(168,85,247,0.3)]")}
                   disabled={activeRole}
                   onClick={() => {
                     dispatch({ type: "SET_ROLE", role: r.id });
@@ -61,7 +61,7 @@ function SettingsUsersPage() {
           })}
         </div>
         
-        <div className="mt-8 border-t border-white/5 pt-6">
+        <div className="mt-8 border-t border-border/20 pt-6">
           <MembersManager />
         </div>
       </div>

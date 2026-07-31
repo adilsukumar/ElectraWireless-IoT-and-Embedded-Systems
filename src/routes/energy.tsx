@@ -136,7 +136,7 @@ function EnergyPage() {
 
       <SciFiCard color="violet" className="p-5">
         <div className="mb-4 flex items-center justify-between">
-          <h2 className="font-bold text-slate-900 dark:text-white">Consumption</h2>
+          <h2 className="font-bold text-foreground">Consumption</h2>
           <Tabs value={range} onValueChange={(v) => setRange(v as keyof typeof ranges)}>
             <TabsList>
               <TabsTrigger value="daily">Daily</TabsTrigger>
@@ -160,14 +160,14 @@ function EnergyPage() {
 
       <div className="grid gap-4">
         <SciFiCard color="purple" className="p-5">
-          <h2 className="mb-3 flex items-center gap-2 font-bold text-slate-900 dark:text-white">
+          <h2 className="mb-3 flex items-center gap-2 font-bold text-foreground">
             <TrendingUp className="h-4 w-4" /> Top consumers
           </h2>
           <EnergyBarChart data={ranking} />
         </SciFiCard>
 
         <SciFiCard color="fuchsia" className="space-y-3 p-5">
-          <h2 className="font-bold text-slate-900 dark:text-white">Suggested optimizations</h2>
+          <h2 className="font-bold text-foreground">Suggested optimizations</h2>
           {optimizations.filter((o) => !appliedIds.includes(o.id)).length === 0 && (
             <p className="text-sm text-fuchsia-600 dark:text-fuchsia-300">All optimizations applied. Nice work.</p>
           )}

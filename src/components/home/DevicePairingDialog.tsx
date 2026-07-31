@@ -114,10 +114,10 @@ export function DevicePairingDialog() {
     <Dialog open={open} onOpenChange={(val) => {
       if (!val) handleClose();
     }}>
-      <DialogContent className="sm:max-w-[425px] border-slate-200 dark:border-white/10 bg-white dark:bg-[#111116] text-slate-900 dark:text-white">
+      <DialogContent className="sm:max-w-[425px] border-slate-200 dark:border-border/40 bg-white dark:bg-card text-foreground">
         <DialogHeader>
           <DialogTitle className="text-xl font-bold">New Appliance Found!</DialogTitle>
-          <DialogDescription className="text-slate-500 dark:text-neutral-400">
+          <DialogDescription className="text-muted-foreground">
             ELLY discovered a new Bluetooth device nearby. Let's set it up.
           </DialogDescription>
         </DialogHeader>
@@ -129,7 +129,7 @@ export function DevicePairingDialog() {
               value={networkAddress} 
               onChange={(e) => setNetworkAddress(e.target.value)} 
               placeholder="e.g. 192.168.1.100 or 00:11:22:33:FF:EE"
-              className="bg-slate-100 dark:bg-black border-slate-200 dark:border-white/5 rounded-xl h-12 font-mono"
+              className="bg-slate-100 dark:bg-black border-slate-200 dark:border-border/20 rounded-xl h-12 font-mono"
             />
             <p className="text-[10px] text-slate-500">ELLY will auto-detect the commercial ecosystem.</p>
           </div>
@@ -140,17 +140,17 @@ export function DevicePairingDialog() {
               value={name} 
               onChange={(e) => setName(e.target.value)} 
               placeholder="e.g. Living Room AC"
-              className="bg-slate-100 dark:bg-black border-slate-200 dark:border-white/5 rounded-xl h-12"
+              className="bg-slate-100 dark:bg-black border-slate-200 dark:border-border/20 rounded-xl h-12"
             />
           </div>
 
           <div className="space-y-2">
             <label className="text-sm font-semibold">Appliance Type</label>
             <Select value={deviceType} onValueChange={(val) => setDeviceType(val as DeviceType)}>
-              <SelectTrigger className="bg-slate-100 dark:bg-black border-slate-200 dark:border-white/5 rounded-xl h-12">
+              <SelectTrigger className="bg-slate-100 dark:bg-black border-slate-200 dark:border-border/20 rounded-xl h-12">
                 <SelectValue placeholder="Select Type..." />
               </SelectTrigger>
-              <SelectContent className="bg-white dark:bg-[#181820] border-slate-200 dark:border-white/10">
+              <SelectContent className="bg-white dark:bg-[#181820] border-slate-200 dark:border-border/40">
                 <SelectItem value="light">💡 Light / Bulb / LED Strip</SelectItem>
                 <SelectItem value="fan">🌀 Fan / Air Circulator</SelectItem>
                 <SelectItem value="ac">❄️ Air Conditioner / Heat Pump</SelectItem>
@@ -172,10 +172,10 @@ export function DevicePairingDialog() {
           <div className="space-y-2">
             <label className="text-sm font-semibold">Assign to Room</label>
             <Select value={roomId} onValueChange={setRoomId}>
-              <SelectTrigger className="bg-slate-100 dark:bg-black border-slate-200 dark:border-white/5 rounded-xl h-12">
+              <SelectTrigger className="bg-slate-100 dark:bg-black border-slate-200 dark:border-border/20 rounded-xl h-12">
                 <SelectValue placeholder="Select Room..." />
               </SelectTrigger>
-              <SelectContent className="bg-white dark:bg-[#181820] border-slate-200 dark:border-white/10">
+              <SelectContent className="bg-white dark:bg-[#181820] border-slate-200 dark:border-border/40">
                 {state.rooms.map(r => (
                   <SelectItem key={r.id} value={r.id}>{r.name}</SelectItem>
                 ))}

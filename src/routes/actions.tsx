@@ -30,11 +30,11 @@ function ActionsPage() {
   const { dispatch, canEdit } = useHome();
 
   return (
-    <div className="bg-slate-50 dark:bg-black min-h-screen text-slate-900 dark:text-white pb-24 -mx-4 px-4 sm:-mx-8 sm:px-8">
+    <div className="bg-slate-50 dark:bg-black min-h-screen text-foreground pb-24 -mx-4 px-4 sm:-mx-8 sm:px-8">
       <div className="mx-auto max-w-4xl space-y-6 pt-6">
         <div>
           <h1 className="text-xl font-extrabold tracking-tight">Quick Actions</h1>
-          <p className="text-sm font-medium text-slate-500 dark:text-neutral-400">Trigger whole-home scenes instantly.</p>
+          <p className="text-sm font-medium text-muted-foreground">Trigger whole-home scenes instantly.</p>
         </div>
 
       <div className="grid grid-cols-2 gap-4">
@@ -105,9 +105,9 @@ function QuickAction({
     <button
       onClick={onClick}
       disabled={disabled}
-      className="flex flex-col items-center gap-3 rounded-[2rem] border border-purple-200 dark:border-purple-500/25 bg-white/40 dark:bg-purple-950/30 backdrop-blur-md py-6 text-sm font-bold text-slate-900 dark:text-white transition-all hover:bg-white/60 dark:hover:bg-purple-900/40 hover:scale-[1.02] active:scale-95 disabled:cursor-not-allowed disabled:opacity-50 shadow-sm group"
+      className="flex flex-col items-center gap-3 rounded-[2rem] border border-purple-200 dark:border-purple-500/25 glass-card py-6 text-sm font-bold text-foreground transition-all hover:bg-white/60 dark:hover:bg-purple-900/40 hover:scale-[1.02] active:scale-95 disabled:cursor-not-allowed disabled:opacity-50 shadow-sm group"
     >
-      <span className="flex h-12 w-12 items-center justify-center rounded-full bg-slate-200 dark:bg-[#111116]/10 text-slate-900 dark:text-white transition-transform group-hover:scale-110">
+      <span className="flex h-12 w-12 items-center justify-center rounded-full bg-secondary/50 text-foreground transition-transform group-hover:scale-110">
         <Icon className="h-6 w-6" />
       </span>
       {label}

@@ -56,86 +56,86 @@
 }
 
 :root {
-  /* Light Theme — Clean & Modern */
-  --radius: 0.875rem;
-  --background: #f8f9fa;
-  --foreground: #1a1a1a;
+  /* Light Theme — Soft Off-White (#F8FAFC) */
+  --radius: 1.5rem; /* Soft squircle geometry */
+  --background: #f8fafc;
+  --foreground: #0f172a;
   --card: #ffffff;
-  --card-foreground: #1a1a1a;
+  --card-foreground: #0f172a;
   --popover: #ffffff;
-  --popover-foreground: #1a1a1a;
-  --primary: #8b5cf6;
+  --popover-foreground: #0f172a;
+  --primary: #818cf8; /* Periwinkle/Soft Lavender */
   --primary-foreground: #ffffff;
-  --secondary: #ede9fe;
-  --secondary-foreground: #5b3fb0;
-  --muted: #f1f0f7;
-  --muted-foreground: #6b6b78;
-  --accent: #ede9fe;
-  --accent-foreground: #5b3fb0;
+  --secondary: #f1f5f9;
+  --secondary-foreground: #475569;
+  --muted: #f1f5f9;
+  --muted-foreground: #64748b;
+  --accent: #f1f5f9;
+  --accent-foreground: #475569;
   --destructive: #ef4444;
   --destructive-foreground: #ffffff;
-  --success: #22c55e;
+  --success: #34d399; /* Soft Sage Green */
   --success-foreground: #ffffff;
-  --warning: #f59e0b;
-  --warning-foreground: #1a1a1a;
-  --border: #e7e5f0;
-  --input: #e7e5f0;
-  --ring: #8b5cf6;
-  --chart-1: #8b5cf6;
+  --warning: #fbbf24;
+  --warning-foreground: #0f172a;
+  --border: #e2e8f0;
+  --input: #e2e8f0;
+  --ring: #818cf8;
+  --chart-1: #818cf8;
   --chart-2: #a78bfa;
   --chart-3: #c4b5fd;
-  --chart-4: #ddd6fe;
-  --chart-5: #f59e0b;
-  --glow: #ede9fe;
+  --chart-4: #34d399;
+  --chart-5: #fbbf24;
+  --glow: #a78bfa;
   --sidebar: #ffffff;
-  --sidebar-foreground: #1a1a1a;
-  --sidebar-primary: #8b5cf6;
+  --sidebar-foreground: #0f172a;
+  --sidebar-primary: #818cf8;
   --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #ede9fe;
-  --sidebar-accent-foreground: #5b3fb0;
-  --sidebar-border: #e7e5f0;
-  --sidebar-ring: #8b5cf6;
+  --sidebar-accent: #f1f5f9;
+  --sidebar-accent-foreground: #475569;
+  --sidebar-border: #e2e8f0;
+  --sidebar-ring: #818cf8;
 }
 
 .dark {
-  /* Deep Space Purple — ELLY signature theme */
-  --background: #07010f;
-  --foreground: #f0ecff;
-  --card: #110820;
-  --card-foreground: #f0ecff;
-  --popover: #110820;
-  --popover-foreground: #f0ecff;
-  --primary: #a855f7;
+  /* Deep Premium Slate/Charcoal (#0F172A) */
+  --background: #0f172a;
+  --foreground: #ffffff;
+  --card: #1e293b;
+  --card-foreground: #ffffff;
+  --popover: #1e293b;
+  --popover-foreground: #ffffff;
+  --primary: #f97316; /* Sunset orange */
   --primary-foreground: #ffffff;
-  --secondary: #1e0d35;
-  --secondary-foreground: #d8b4fe;
-  --muted: #160b28;
-  --muted-foreground: #9d8abf;
-  --accent: #2d1054;
-  --accent-foreground: #d8b4fe;
+  --secondary: #0f172a;
+  --secondary-foreground: #cbd5e1;
+  --muted: #0f172a;
+  --muted-foreground: #94a3b8; /* Soft grey secondary text */
+  --accent: #0f172a;
+  --accent-foreground: #cbd5e1;
   --destructive: #f0506e;
   --destructive-foreground: #ffffff;
   --success: #34d399;
-  --success-foreground: #06140f;
+  --success-foreground: #000000;
   --warning: #fbbf24;
-  --warning-foreground: #1a1a1a;
-  --border: #2d1054;
-  --input: #2d1054;
-  --ring: #a855f7;
-  --chart-1: #a855f7;
-  --chart-2: #c084fc;
-  --chart-3: #e879f9;
+  --warning-foreground: #000000;
+  --border: #334155;
+  --input: #334155;
+  --ring: #f97316;
+  --chart-1: #f97316;
+  --chart-2: #c084fc; /* Soft lavender */
+  --chart-3: #a855f7;
   --chart-4: #7c3aed;
-  --chart-5: #fbbf24;
-  --glow: #a855f7;
-  --sidebar: #07010f;
-  --sidebar-foreground: #f0ecff;
-  --sidebar-primary: #a855f7;
+  --chart-5: #fb923c;
+  --glow: #f97316;
+  --sidebar: #0f172a;
+  --sidebar-foreground: #ffffff;
+  --sidebar-primary: #f97316;
   --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #1e0d35;
-  --sidebar-accent-foreground: #d8b4fe;
-  --sidebar-border: #2d1054;
-  --sidebar-ring: #a855f7;
+  --sidebar-accent: #0f172a;
+  --sidebar-accent-foreground: #cbd5e1;
+  --sidebar-border: #334155;
+  --sidebar-ring: #f97316;
 }
 
 @layer base {
@@ -175,12 +175,19 @@
     }
   }
 
-  /* "Glass" surfaces — near-opaque tint (no backdrop-filter, so no per-frame repaint cost) */
+  /* "Glass" surfaces */
   .glass {
-    background-color: color-mix(in srgb, var(--color-background) 92%, transparent);
+    background-color: color-mix(in srgb, var(--color-background) 70%, transparent);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
   }
   .glass-card {
-    background-color: color-mix(in srgb, var(--color-card) 94%, transparent);
+    background-color: var(--color-card);
+    box-shadow: 0 10px 25px -5px color-mix(in srgb, #0f172a 5%, transparent), 0 8px 10px -6px color-mix(in srgb, #0f172a 5%, transparent);
+  }
+  .dark .glass-card {
+    background-color: var(--color-card);
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, #ffffff 5%, transparent);
   }
 
   /* Soft radial glow behind primary icons (subtle, low-intensity) */
@@ -208,11 +215,11 @@
   /* Subtle neon ring for active inputs / focus */
   .neon-ring {
     box-shadow:
-      0 0 0 1px color-mix(in srgb, var(--color-primary) 40%, transparent),
-      0 0 8px color-mix(in srgb, var(--color-primary) 15%, transparent);
+      0 0 0 1px color-mix(in srgb, var(--color-primary) 50%, transparent),
+      0 0 16px color-mix(in srgb, var(--color-primary) 30%, transparent);
   }
   .neon-glow {
-    box-shadow: 0 0 12px color-mix(in srgb, var(--color-primary) 20%, transparent);
+    box-shadow: 0 0 24px color-mix(in srgb, var(--color-primary) 40%, transparent);
   }
 
   /* Hide scrollbars */
