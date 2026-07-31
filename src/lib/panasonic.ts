@@ -78,7 +78,7 @@ export async function sendPanasonicCommand(ip: string, keyCommand: string): Prom
  */
 export async function autoDiscoverPanasonicTV(): Promise<string | null> {
   // We'll scan common local subnets
-  const subnetsToScan = ['192.168.1', '192.168.0', '10.0.0'];
+  const subnetsToScan = ['192.168.1', '192.168.0', '192.168.29', '192.168.31', '192.168.50', '10.0.0'];
   
   // Create an array of IPs to scan
   const ipsToScan: string[] = [];
