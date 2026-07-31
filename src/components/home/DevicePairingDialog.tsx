@@ -114,7 +114,7 @@ export function DevicePairingDialog() {
     <Dialog open={open} onOpenChange={(val) => {
       if (!val) handleClose();
     }}>
-      <DialogContent className="sm:max-w-[425px] border-slate-200 dark:border-border/40 bg-white dark:bg-card text-foreground">
+      <DialogContent className="sm:max-w-[425px] border-border/40 bg-white dark:bg-card text-foreground">
         <DialogHeader>
           <DialogTitle className="text-xl font-bold">New Appliance Found!</DialogTitle>
           <DialogDescription className="text-muted-foreground">
@@ -129,7 +129,7 @@ export function DevicePairingDialog() {
               value={networkAddress} 
               onChange={(e) => setNetworkAddress(e.target.value)} 
               placeholder="e.g. 192.168.1.100 or 00:11:22:33:FF:EE"
-              className="bg-slate-100 dark:bg-black border-slate-200 dark:border-border/20 rounded-xl h-12 font-mono"
+              className="bg-card border-border/20 rounded-[1rem] h-12 font-mono"
             />
             <p className="text-[10px] text-slate-500">ELLY will auto-detect the commercial ecosystem.</p>
           </div>
@@ -140,17 +140,17 @@ export function DevicePairingDialog() {
               value={name} 
               onChange={(e) => setName(e.target.value)} 
               placeholder="e.g. Living Room AC"
-              className="bg-slate-100 dark:bg-black border-slate-200 dark:border-border/20 rounded-xl h-12"
+              className="bg-card border-border/20 rounded-[1rem] h-12"
             />
           </div>
 
           <div className="space-y-2">
             <label className="text-sm font-semibold">Appliance Type</label>
             <Select value={deviceType} onValueChange={(val) => setDeviceType(val as DeviceType)}>
-              <SelectTrigger className="bg-slate-100 dark:bg-black border-slate-200 dark:border-border/20 rounded-xl h-12">
+              <SelectTrigger className="bg-card border-border/20 rounded-[1rem] h-12">
                 <SelectValue placeholder="Select Type..." />
               </SelectTrigger>
-              <SelectContent className="bg-white dark:bg-[#181820] border-slate-200 dark:border-border/40">
+              <SelectContent className="bg-white dark:bg-[#181820] border-border/40">
                 <SelectItem value="light">💡 Light / Bulb / LED Strip</SelectItem>
                 <SelectItem value="fan">🌀 Fan / Air Circulator</SelectItem>
                 <SelectItem value="ac">❄️ Air Conditioner / Heat Pump</SelectItem>
@@ -172,10 +172,10 @@ export function DevicePairingDialog() {
           <div className="space-y-2">
             <label className="text-sm font-semibold">Assign to Room</label>
             <Select value={roomId} onValueChange={setRoomId}>
-              <SelectTrigger className="bg-slate-100 dark:bg-black border-slate-200 dark:border-border/20 rounded-xl h-12">
+              <SelectTrigger className="bg-card border-border/20 rounded-[1rem] h-12">
                 <SelectValue placeholder="Select Room..." />
               </SelectTrigger>
-              <SelectContent className="bg-white dark:bg-[#181820] border-slate-200 dark:border-border/40">
+              <SelectContent className="bg-white dark:bg-[#181820] border-border/40">
                 {state.rooms.map(r => (
                   <SelectItem key={r.id} value={r.id}>{r.name}</SelectItem>
                 ))}
@@ -185,10 +185,10 @@ export function DevicePairingDialog() {
         </div>
 
         <DialogFooter>
-          <Button variant="ghost" onClick={handleClose} disabled={isAutoDetecting} className="rounded-xl h-12 hover:bg-slate-100 dark:hover:bg-white/5">
+          <Button variant="ghost" onClick={handleClose} disabled={isAutoDetecting} className="rounded-[1rem] h-12 hover:bg-secondary/10 dark:hover:bg-white/5">
             Ignore Device
           </Button>
-          <Button onClick={handleSave} disabled={isAutoDetecting} className="rounded-xl h-12 bg-blue-500 hover:bg-blue-600 shadow-[0_0_15px_rgba(59,130,246,0.4)] text-white font-semibold">
+          <Button onClick={handleSave} disabled={isAutoDetecting} className="rounded-[1rem] h-12 bg-blue-500 hover:bg-blue-600 shadow-[0_0_15px_rgba(59,130,246,0.4)] text-white font-semibold">
             {isAutoDetecting ? "Detecting..." : "Add to ELLY"}
           </Button>
         </DialogFooter>

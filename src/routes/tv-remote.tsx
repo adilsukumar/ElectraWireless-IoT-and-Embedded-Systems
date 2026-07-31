@@ -89,7 +89,7 @@ function TvRemotePage() {
             <Wifi className="w-12 h-12 text-muted-foreground mb-4 opacity-50" />
             <h3 className="font-bold text-lg mb-2">TV Not Connected</h3>
             <p className="text-sm text-muted-foreground mb-6">Tap Auto-Connect to scan your local Wi-Fi for your Panasonic Smart TV.</p>
-            <button onClick={startAutoDiscovery} className="px-6 py-3 bg-blue-500 text-white rounded-xl font-bold shadow-[0_0_20px_rgba(59,130,246,0.4)] active:scale-95 transition-all">
+            <button onClick={startAutoDiscovery} className="px-6 py-3 bg-blue-500 text-white rounded-[1rem] font-bold shadow-[0_0_20px_rgba(59,130,246,0.4)] active:scale-95 transition-all">
               Start Scan
             </button>
           </div>
@@ -113,10 +113,10 @@ function TvRemotePage() {
 
         {/* D-Pad */}
         <div className="relative w-56 h-56 bg-secondary/30 rounded-full flex items-center justify-center p-2 shadow-inner border border-border/20">
-          <button onClick={() => handleAction('Up', PANASONIC_KEYS.UP)} className="absolute top-2 w-16 h-12 flex items-center justify-center rounded-2xl hover:bg-secondary/50 active:bg-secondary transition text-foreground/80"><ChevronUp className="w-8 h-8" /></button>
-          <button onClick={() => handleAction('Down', PANASONIC_KEYS.DOWN)} className="absolute bottom-2 w-16 h-12 flex items-center justify-center rounded-2xl hover:bg-secondary/50 active:bg-secondary transition text-foreground/80"><ChevronDown className="w-8 h-8" /></button>
-          <button onClick={() => handleAction('Left', PANASONIC_KEYS.LEFT)} className="absolute left-2 w-12 h-16 flex items-center justify-center rounded-2xl hover:bg-secondary/50 active:bg-secondary transition text-foreground/80"><ChevronLeft className="w-8 h-8" /></button>
-          <button onClick={() => handleAction('Right', PANASONIC_KEYS.RIGHT)} className="absolute right-2 w-12 h-16 flex items-center justify-center rounded-2xl hover:bg-secondary/50 active:bg-secondary transition text-foreground/80"><ChevronRight className="w-8 h-8" /></button>
+          <button onClick={() => handleAction('Up', PANASONIC_KEYS.UP)} className="absolute top-2 w-16 h-12 flex items-center justify-center rounded-[1.5rem] hover:bg-secondary/50 active:bg-secondary transition text-foreground/80"><ChevronUp className="w-8 h-8" /></button>
+          <button onClick={() => handleAction('Down', PANASONIC_KEYS.DOWN)} className="absolute bottom-2 w-16 h-12 flex items-center justify-center rounded-[1.5rem] hover:bg-secondary/50 active:bg-secondary transition text-foreground/80"><ChevronDown className="w-8 h-8" /></button>
+          <button onClick={() => handleAction('Left', PANASONIC_KEYS.LEFT)} className="absolute left-2 w-12 h-16 flex items-center justify-center rounded-[1.5rem] hover:bg-secondary/50 active:bg-secondary transition text-foreground/80"><ChevronLeft className="w-8 h-8" /></button>
+          <button onClick={() => handleAction('Right', PANASONIC_KEYS.RIGHT)} className="absolute right-2 w-12 h-16 flex items-center justify-center rounded-[1.5rem] hover:bg-secondary/50 active:bg-secondary transition text-foreground/80"><ChevronRight className="w-8 h-8" /></button>
           <button onClick={() => handleAction('OK', PANASONIC_KEYS.OK)} className="w-20 h-20 rounded-full bg-blue-500/20 text-blue-500 flex items-center justify-center font-bold text-lg active:scale-95 transition shadow-sm border border-blue-500/30 shadow-[0_0_15px_rgba(59,130,246,0.2)]">OK</button>
         </div>
 
@@ -138,15 +138,15 @@ function TvRemotePage() {
         {/* Keypad & Apps */}
         <div className="w-full max-w-[280px] grid grid-cols-3 gap-3">
           {[1,2,3,4,5,6,7,8,9].map(n => (
-            <button key={n} onClick={() => handleAction(`Channel ${n}`, PANASONIC_KEYS[`NUM_${n}` as keyof typeof PANASONIC_KEYS])} className="h-12 rounded-xl bg-secondary/50 text-foreground/80 font-semibold active:scale-95 transition hover:bg-secondary">{n}</button>
+            <button key={n} onClick={() => handleAction(`Channel ${n}`, PANASONIC_KEYS[`NUM_${n}` as keyof typeof PANASONIC_KEYS])} className="h-12 rounded-[1rem] bg-secondary/50 text-foreground/80 font-semibold active:scale-95 transition hover:bg-secondary">{n}</button>
           ))}
           <div />
-          <button onClick={() => handleAction(`Channel 0`, PANASONIC_KEYS.NUM_0)} className="h-12 rounded-xl bg-secondary/50 text-foreground/80 font-semibold active:scale-95 transition hover:bg-secondary">0</button>
+          <button onClick={() => handleAction(`Channel 0`, PANASONIC_KEYS.NUM_0)} className="h-12 rounded-[1rem] bg-secondary/50 text-foreground/80 font-semibold active:scale-95 transition hover:bg-secondary">0</button>
           <div />
         </div>
         <div className="w-full max-w-[280px] grid grid-cols-2 gap-3 mt-2">
-           <button onClick={() => handleAction('Apps', PANASONIC_KEYS.APPS)} className="h-12 rounded-xl bg-purple-500/10 text-purple-500 font-bold active:scale-95 transition shadow-[0_0_10px_rgba(168,85,247,0.2)] border border-purple-500/20 hover:bg-purple-500/20">APPS</button>
-           <button onClick={() => handleAction('Home', PANASONIC_KEYS.HOME)} className="h-12 rounded-xl bg-blue-500/10 text-blue-500 font-bold active:scale-95 transition shadow-[0_0_10px_rgba(59,130,246,0.2)] border border-blue-500/20 hover:bg-blue-500/20">HOME</button>
+           <button onClick={() => handleAction('Apps', PANASONIC_KEYS.APPS)} className="h-12 rounded-[1rem] bg-purple-500/10 text-purple-500 font-bold active:scale-95 transition shadow-[0_0_10px_rgba(168,85,247,0.2)] border border-purple-500/20 hover:bg-purple-500/20">APPS</button>
+           <button onClick={() => handleAction('Home', PANASONIC_KEYS.HOME)} className="h-12 rounded-[1rem] bg-blue-500/10 text-blue-500 font-bold active:scale-95 transition shadow-[0_0_10px_rgba(59,130,246,0.2)] border border-blue-500/20 hover:bg-blue-500/20">HOME</button>
         </div>
       </div>
     </div>

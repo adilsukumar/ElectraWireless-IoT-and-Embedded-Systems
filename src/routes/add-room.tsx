@@ -63,12 +63,12 @@ function AddRoomPage() {
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="w-full rounded-xl border border-blue-200 dark:border-border/40 bg-white/50 dark:bg-secondary/100 px-4 py-3 text-sm focus:border-purple-500 focus:outline-none transition-colors"
+              className="w-full rounded-[1rem] border border-blue-200 dark:border-border/40 bg-white/50 dark:bg-secondary/100 px-4 py-3 text-sm focus:border-purple-500 focus:outline-none transition-colors"
               placeholder="e.g., Garage"
             />
           </div>
 
-          <button type="submit" className="w-full rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 transition-colors shadow-[0_0_15px_rgba(147,51,234,0.3)]">
+          <button type="submit" className="w-full rounded-[1rem] bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 transition-colors shadow-[0_0_15px_rgba(147,51,234,0.3)]">
             Add Room
           </button>
         </form>

@@ -20,8 +20,8 @@ function SettingsSafetyPage() {
         <div className="grid gap-3 mt-5">
           <SciFiCard color="emerald" className="flex items-center justify-between p-4">
             <div className="flex items-center gap-4">
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white/40 dark:bg-secondary border border-emerald-200 dark:border-border/20 text-emerald-600 dark:text-foreground/80">
-                <Thermometer className="h-5 w-5 text-emerald-600 dark:text-neutral-400" />
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[1rem] bg-white/40 dark:bg-secondary border border-emerald-200 dark:border-border/20 text-emerald-600 dark:text-foreground/80">
+                <Thermometer className="h-5 w-5 text-emerald-600 dark:text-muted-foreground" />
               </div>
               <span className="font-bold text-sm text-foreground">Overheating</span>
             </div>
@@ -33,8 +33,8 @@ function SettingsSafetyPage() {
           
           <SciFiCard color="emerald" className="flex items-center justify-between p-4">
             <div className="flex items-center gap-4">
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white/40 dark:bg-secondary border border-emerald-200 dark:border-border/20 text-emerald-600 dark:text-foreground/80">
-                <Activity className="h-5 w-5 text-emerald-600 dark:text-neutral-400" />
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[1rem] bg-white/40 dark:bg-secondary border border-emerald-200 dark:border-border/20 text-emerald-600 dark:text-foreground/80">
+                <Activity className="h-5 w-5 text-emerald-600 dark:text-muted-foreground" />
               </div>
               <span className="font-bold text-sm text-foreground">Abnormal usage</span>
             </div>
@@ -46,8 +46,8 @@ function SettingsSafetyPage() {
           
           <SciFiCard color="emerald" className="flex items-center justify-between p-4">
             <div className="flex items-center gap-4">
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white/40 dark:bg-secondary border border-emerald-200 dark:border-border/20 text-emerald-600 dark:text-foreground/80">
-                <Server className="h-5 w-5 text-emerald-600 dark:text-neutral-400" />
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[1rem] bg-white/40 dark:bg-secondary border border-emerald-200 dark:border-border/20 text-emerald-600 dark:text-foreground/80">
+                <Server className="h-5 w-5 text-emerald-600 dark:text-muted-foreground" />
               </div>
               <span className="font-bold text-sm text-foreground">Overload guard</span>
             </div>

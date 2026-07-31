@@ -35,19 +35,19 @@ function SettingsUsersPage() {
             return (
               <SciFiCard key={r.id} color="purple" glow={activeRole} className={cn("p-4", activeRole ? "border-purple-400/50 shadow-[0_0_15px_rgba(168,85,247,0.2)]" : "")}>
                 <div className="mb-3 flex items-center gap-3">
-                  <div className="p-2.5 bg-purple-500/10 rounded-xl border border-purple-500/20">
+                  <div className="p-2.5 bg-purple-500/10 rounded-[1rem] border border-purple-500/20">
                     <r.icon className="h-5 w-5 text-purple-600 dark:text-purple-400" />
                   </div>
                   <p className="font-bold text-foreground text-sm">{r.label}</p>
                   {activeRole && <span className="ml-auto px-3 py-1 bg-purple-100 dark:bg-purple-500/20 text-purple-700 dark:text-purple-300 text-[10px] font-bold rounded-full tracking-wide uppercase">Active</span>}
                 </div>
-                <ul className="mb-4 space-y-2 text-xs text-slate-600 dark:text-neutral-400 font-medium px-2">
+                <ul className="mb-4 space-y-2 text-xs text-slate-600 dark:text-muted-foreground font-medium px-2">
                   {r.perms.map((p) => (
                     <li key={p} className="flex items-center gap-2">• {p}</li>
                   ))}
                 </ul>
                 <button
-                  className={cn("w-full py-2.5 rounded-xl font-bold text-xs transition-all border", activeRole ? "bg-slate-100 dark:bg-secondary/40 text-muted-foreground border-transparent" : "bg-purple-500 text-white hover:bg-purple-600 border-purple-400 shadow-[0_0_15px_rgba(168,85,247,0.3)]")}
+                  className={cn("w-full py-2.5 rounded-[1rem] font-bold text-xs transition-all border", activeRole ? "bg-secondary/10 dark:bg-secondary/40 text-muted-foreground border-transparent" : "bg-purple-500 text-white hover:bg-purple-600 border-purple-400 shadow-[0_0_15px_rgba(168,85,247,0.3)]")}
                   disabled={activeRole}
                   onClick={() => {
                     dispatch({ type: "SET_ROLE", role: r.id });

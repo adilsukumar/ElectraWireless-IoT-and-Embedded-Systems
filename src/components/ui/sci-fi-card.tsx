@@ -41,7 +41,7 @@ const SciFiCard = React.forwardRef<HTMLDivElement, SciFiCardProps>(
       <div
         ref={ref}
         className={cn(
-          "rounded-2xl border backdrop-blur-md relative overflow-hidden shadow-sm transition-all duration-300",
+          "rounded-[1.5rem] border backdrop-blur-md relative overflow-hidden shadow-sm transition-all duration-300",
           theme.base,
           className
         )}

@@ -4,7 +4,8 @@ import { ArrowLeft, Radar, Bluetooth, Wifi, Plus, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { useHome } from "@/lib/home/store";
 import type { Device, DeviceType } from "@/lib/home/types";
-import { pairBluetoothDevice, startNativeBluetoothScan } from "@/lib/home/bluetooth";
+import { startNativeBluetoothScan } from "@/lib/home/bluetooth";
+import { autoDiscoverPanasonicTV } from "@/lib/panasonic";
 
 export const Route = createFileRoute("/add-device")({
   head: () => ({
@@ -38,14 +39,36 @@ function AddDevicePage() {
   const [roomId, setRoomId] = useState(state.rooms[0]?.id || "");
   const [type, setType] = useState<DeviceType>("light");
 
-  // Simulated Web Wi-Fi Discovery
+  // Unified Native Discovery
   useEffect(() => {
     if (step !== "scan") return;
 
+    // 1. WiFi / IP Scanning (Panasonic TV)
+    let isMounted = true;
+    const scanWiFi = async () => {
+      try {
+        const ip = await autoDiscoverPanasonicTV();
+        if (ip && isMounted) {
+          setDiscoveredDevices(prev => {
+            if (prev.some(d => d.address === ip)) return prev;
+            return [...prev, {
+              id: `panasonic-${ip.replace(/\./g, "")}`,
+              name: "Panasonic Smart TV",
+              type: "wifi",
+              address: ip,
+              ecosystem: "panasonic"
+            }];
+          });
+        }
+      } catch (e) {
+        console.error("WiFi scan error", e);
+      }
+    };
+    scanWiFi();
+
+    // 2. Native BLE Scanning
     const isNative = (window as any).Capacitor?.isNativePlatform();
-    
     if (isNative) {
-      // Live Native BLE Discovery
       startNativeBluetoothScan((device: any) => {
         const mapped: DiscoveredDevice = {
           id: device.id || `ELLY-BLE-${Math.random().toString(36).substring(7)}`,
@@ -62,43 +85,10 @@ function AddDevicePage() {
       });
     }
     
-    // Simulate Wi-Fi Discovery (always run for demo purposes so the UI isn't completely empty if BLE fails)
-    const timer1 = setTimeout(() => {
-      setDiscoveredDevices(prev => {
-        if (prev.some(d => d.id === "sim-1")) return prev;
-        return [...prev, { id: "sim-1", name: "Smart Plug (Tuya)", type: "wifi", address: "192.168.1.155", ecosystem: "tuya" }];
-      });
-    }, 2500);
-
-    const timer2 = setTimeout(() => {
-      setDiscoveredDevices(prev => {
-        if (prev.some(d => d.id === "sim-2")) return prev;
-        return [...prev, { id: "sim-2", name: "Living Room Light (WLED)", type: "wifi", address: "192.168.1.180", ecosystem: "wled" }];
-      });
-    }, 5000);
-
     return () => {
-      clearTimeout(timer1);
-      clearTimeout(timer2);
+      isMounted = false;
     };
   }, [step]);
-
-  const handleWebBluetoothScan = async () => {
-    try {
-      const result = await pairBluetoothDevice();
-      if (result) {
-        setDiscoveredDevices(prev => [
-          ...prev,
-          { id: result.id, name: result.name, type: "ble", address: result.macAddress || "" }
-        ]);
-        toast.success(`Found ${result.name}!`);
-      }
-    } catch (e: any) {
-      if (e.name !== "NotFoundError" && !e.message?.includes("cancelled")) {
-        toast.error(`Scan failed: ${e.message}`);
-      }
-    }
-  };
 
   const handleSelectDevice = (dev: DiscoveredDevice) => {
     setSelectedDevice(dev);
@@ -109,7 +99,7 @@ function AddDevicePage() {
     if (n.includes("plug") || n.includes("socket")) setType("plug");
     else if (n.includes("ac") || n.includes("air")) setType("ac");
     else if (n.includes("fan")) setType("fan");
-    else if (n.includes("tv")) setType("tv");
+    else if (n.includes("tv") || n.includes("panasonic")) setType("tv");
     else setType("light");
 
     setStep("setup");
@@ -123,9 +113,7 @@ function AddDevicePage() {
     }
 
     const newDevice: Device = {
-      id: selectedDevice.id.startsWith("sim-") 
-          ? `ELLY-${type.toUpperCase().substring(0, 2)}-${Math.floor(Math.random() * 1000)}` 
-          : selectedDevice.id, // preserve BLE id so it stays connected
+      id: selectedDevice.id,
       name: name.trim(),
       type,
       roomId,
@@ -142,15 +130,13 @@ function AddDevicePage() {
     router.navigate({ to: "/all-devices" });
   };
 
-  const isNative = (window as any).Capacitor?.isNativePlatform();
-
   return (
-    <div className="bg-slate-50 dark:bg-black min-h-screen text-foreground pb-24 -mx-4 px-4 sm:-mx-8 sm:px-8">
+    <div className="bg-background min-h-screen text-foreground pb-24 -mx-4 px-4 sm:-mx-8 sm:px-8">
       <div className="mx-auto max-w-xl space-y-6 pt-6">
         <div className="flex items-center gap-3">
           <button
             onClick={() => step === "setup" ? setStep("scan") : router.history.back()}
-            className="p-2 bg-white/40 dark:bg-card rounded-full hover:bg-white/60 dark:bg-secondary/20 transition-colors border border-blue-200 dark:border-border/20"
+            className="p-2 bg-secondary/50 rounded-full hover:bg-secondary transition-colors border border-border/20"
             aria-label="Back"
           >
             <ArrowLeft className="h-4 w-4" />
@@ -169,36 +155,23 @@ function AddDevicePage() {
           <div className="space-y-8 mt-8">
             {/* Radar Animation */}
             <div className="relative flex items-center justify-center h-48 w-full">
-              <div className="absolute w-32 h-32 bg-purple-500/20 rounded-full animate-ping" />
-              <div className="absolute w-48 h-48 border border-purple-500/30 rounded-full" />
-              <div className="absolute w-64 h-64 border border-blue-500/20 rounded-full" />
-              <div className="z-10 bg-purple-600 rounded-full p-4 shadow-[0_0_30px_rgba(147,51,234,0.5)]">
-                <Radar className="w-8 h-8 text-white animate-pulse" />
+              <div className="absolute w-32 h-32 bg-primary/20 rounded-full animate-ping" />
+              <div className="absolute w-48 h-48 border border-primary/30 rounded-full" />
+              <div className="absolute w-64 h-64 border border-primary/10 rounded-full" />
+              <div className="z-10 bg-primary rounded-full p-4 shadow-[0_0_30px_rgba(var(--color-primary),0.5)]">
+                <Radar className="w-8 h-8 text-primary-foreground animate-pulse" />
               </div>
             </div>
 
-            {/* Web Bluetooth Manual Trigger */}
-            {!isNative && (
-              <div className="flex justify-center">
-                <button
-                  onClick={handleWebBluetoothScan}
-                  className="flex items-center gap-2 bg-[#111116] dark:bg-white/10 hover:bg-black dark:hover:bg-white/20 border border-purple-500/30 px-6 py-3 rounded-full text-sm font-bold transition-all shadow-lg"
-                >
-                  <Bluetooth className="w-4 h-4 text-blue-400" />
-                  Pair Web Bluetooth Device
-                </button>
-              </div>
-            )}
-
             {/* Discovered Devices List */}
             <div className="space-y-3">
-              <h3 className="text-sm font-bold text-slate-500 dark:text-slate-400 px-2 uppercase tracking-wider flex items-center justify-between">
+              <h3 className="text-sm font-bold text-muted-foreground px-2 uppercase tracking-wider flex items-center justify-between">
                 Discovered in Area
-                <Loader2 className="w-4 h-4 animate-spin text-purple-500" />
+                <Loader2 className="w-4 h-4 animate-spin text-primary" />
               </h3>
               
               {discoveredDevices.length === 0 ? (
-                <div className="text-center py-8 text-slate-500 dark:text-slate-400 text-sm border border-dashed border-slate-300 dark:border-slate-800 rounded-2xl">
+                <div className="text-center py-8 text-muted-foreground text-sm border border-dashed border-border/40 rounded-[2rem]">
                   Listening for signals...
                 </div>
               ) : (
@@ -207,95 +180,97 @@ function AddDevicePage() {
                     <div 
                       key={i} 
                       onClick={() => handleSelectDevice(dev)}
-                      className="flex items-center justify-between p-4 bg-white/60 dark:bg-card/80 border border-purple-200 dark:border-border/20 rounded-2xl hover:border-purple-500 cursor-pointer transition-all shadow-sm group"
+                      className="flex items-center justify-between p-4 glass-card border border-border/20 rounded-[1.5rem] hover:border-primary/50 cursor-pointer transition-all shadow-sm group"
                     >
                       <div className="flex items-center gap-4">
-                        <div className="bg-purple-100 dark:bg-purple-900/30 p-2 rounded-full">
+                        <div className="bg-primary/10 p-2 rounded-full">
                           {dev.type === "wifi" ? (
-                            <Wifi className="w-5 h-5 text-purple-600 dark:text-purple-400" />
+                            <Wifi className="w-5 h-5 text-primary" />
                           ) : (
-                            <Bluetooth className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+                            <Bluetooth className="w-5 h-5 text-primary" />
                           )}
                         </div>
                         <div>
                           <div className="flex items-center gap-2">
                             <p className="font-bold text-sm">{dev.name}</p>
                             {dev.isPaired && (
-                              <span className="text-[10px] uppercase font-bold bg-green-500/20 text-green-600 dark:text-green-400 px-2 py-0.5 rounded-full">
+                              <span className="text-[10px] uppercase font-bold bg-success/20 text-success px-2 py-0.5 rounded-full">
                                 Paired
                               </span>
                             )}
                           </div>
-                          <p className="text-xs text-slate-500">{dev.address || "No Address"}</p>
+                          <p className="text-xs text-muted-foreground">{dev.address || "No Address"}</p>
                         </div>
                       </div>
-                      <Plus className="w-5 h-5 text-slate-400 group-hover:text-purple-500 transition-colors" />
+                      <Plus className="w-5 h-5 text-muted-foreground group-hover:text-primary transition-colors" />
                     </div>
                   ))}
                 </div>
               )}
             </div>
             
-            <p className="text-center text-xs text-slate-500">
+            <p className="text-center text-xs text-muted-foreground">
               Make sure your device is powered on and in pairing mode.
             </p>
           </div>
         ) : (
-          <form onSubmit={handleSubmit} className="space-y-6 rounded-[2rem] border border-purple-200 dark:border-purple-500/25 glass-card p-6 shadow-sm">
-            <div className="bg-purple-50 dark:bg-card p-4 rounded-xl border border-purple-100 dark:border-border/20 mb-6">
-              <p className="text-xs text-slate-500 mb-1 uppercase font-bold">Selected Hardware</p>
+          <form onSubmit={handleSubmit} className="space-y-6 rounded-[2rem] border border-primary/20 glass-card p-6 shadow-sm">
+            <div className="bg-card p-4 rounded-[1.5rem] border border-border/20 mb-6">
+              <p className="text-xs text-muted-foreground mb-1 uppercase font-bold">Selected Hardware</p>
               <div className="flex items-center gap-2">
-                 {selectedDevice?.type === "wifi" ? <Wifi className="w-4 h-4 text-purple-500" /> : <Bluetooth className="w-4 h-4 text-blue-500" />}
-                 <p className="text-sm font-medium">{selectedDevice?.name} <span className="text-slate-500">({selectedDevice?.address})</span></p>
+                 {selectedDevice?.type === "wifi" ? <Wifi className="w-4 h-4 text-primary" /> : <Bluetooth className="w-4 h-4 text-primary" />}
+                 <p className="text-sm font-medium">{selectedDevice?.name} <span className="text-muted-foreground">({selectedDevice?.address})</span></p>
               </div>
             </div>
 
             <div className="space-y-2">
-              <label className="text-sm font-bold text-foreground">Device Name</label>
+              <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Device Name</label>
               <input
                 type="text"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                className="w-full rounded-xl border border-blue-200 dark:border-border/40 bg-white/50 dark:bg-secondary/100 px-4 py-3 text-sm focus:border-purple-500 focus:outline-none transition-colors"
-                placeholder="e.g., Living Room Fan"
+                className="w-full bg-secondary/50 border border-border/20 rounded-[1.5rem] px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
+                placeholder="e.g. Living Room TV"
+                required
               />
             </div>
 
             <div className="space-y-2">
-              <label className="text-sm font-bold text-foreground">Room</label>
+              <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Room</label>
               <select
                 value={roomId}
                 onChange={(e) => setRoomId(e.target.value)}
-                className="w-full rounded-xl border border-blue-200 dark:border-border/40 bg-white/50 dark:bg-secondary/100 px-4 py-3 text-sm focus:border-purple-500 focus:outline-none transition-colors appearance-none"
+                className="w-full bg-secondary/50 border border-border/20 rounded-[1.5rem] px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all appearance-none"
               >
-                {state.rooms.map((room) => (
-                  <option key={room.id} value={room.id} className="bg-white dark:bg-card">
-                    {room.name}
+                {state.rooms.map((r) => (
+                  <option key={r.id} value={r.id}>
+                    {r.name}
                   </option>
                 ))}
               </select>
             </div>
-
+            
             <div className="space-y-2">
-              <label className="text-sm font-bold text-foreground">Device Type / Icon</label>
+              <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Device Type</label>
               <select
                 value={type}
                 onChange={(e) => setType(e.target.value as DeviceType)}
-                className="w-full rounded-xl border border-blue-200 dark:border-border/40 bg-white/50 dark:bg-secondary/100 px-4 py-3 text-sm focus:border-purple-500 focus:outline-none transition-colors appearance-none"
+                className="w-full bg-secondary/50 border border-border/20 rounded-[1.5rem] px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all appearance-none"
               >
-                <option value="light" className="bg-white dark:bg-card">Light</option>
-                <option value="plug" className="bg-white dark:bg-card">Smart Plug</option>
-                <option value="ac" className="bg-white dark:bg-card">Air Conditioner</option>
-                <option value="fan" className="bg-white dark:bg-card">Fan</option>
-                <option value="fridge" className="bg-white dark:bg-card">Refrigerator</option>
-                <option value="appliance" className="bg-white dark:bg-card">Appliance</option>
-                <option value="tv" className="bg-white dark:bg-card">Television</option>
-                <option value="sensor" className="bg-white dark:bg-card">Sensor</option>
+                <option value="light">Light</option>
+                <option value="plug">Smart Plug</option>
+                <option value="ac">Air Conditioner</option>
+                <option value="fan">Fan</option>
+                <option value="tv">TV</option>
+                <option value="camera">Camera</option>
               </select>
             </div>
 
-            <button type="submit" className="w-full rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 transition-colors shadow-[0_0_15px_rgba(147,51,234,0.3)] mt-8">
-              Complete Setup
+            <button
+              type="submit"
+              className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-bold py-4 rounded-[1.5rem] transition-all shadow-[0_0_20px_rgba(var(--color-primary),0.3)] hover:scale-[1.02] active:scale-95"
+            >
+              Add Device to Home
             </button>
           </form>
         )}

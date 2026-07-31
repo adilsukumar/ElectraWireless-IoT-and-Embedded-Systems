@@ -176,7 +176,7 @@ function EnergyPage() {
             .map((o) => (
               <div
                 key={o.id}
-                className="flex items-center justify-between gap-3 rounded-xl border border-fuchsia-200 dark:border-fuchsia-500/20 bg-white/40 dark:bg-fuchsia-950/20 p-3 text-sm text-slate-800 dark:text-fuchsia-200 shadow-sm"
+                className="flex items-center justify-between gap-3 rounded-[1rem] border border-fuchsia-200 dark:border-fuchsia-500/20 bg-white/40 dark:bg-fuchsia-950/20 p-3 text-sm text-slate-800 dark:text-fuchsia-200 shadow-sm"
               >
                 <span>{o.text}</span>
                 <Button size="sm" variant="outline" onClick={() => applyOptimization(o)} className="dark:border-fuchsia-500/30 dark:hover:bg-fuchsia-900/50">

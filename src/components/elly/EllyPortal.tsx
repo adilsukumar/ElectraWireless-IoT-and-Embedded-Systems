@@ -334,7 +334,7 @@ export function EllyPortal({ open, onClose, initialCmd }: { open: boolean; onClo
             </div>
           ) : (
             <div key={m.id} className="flex justify-end">
-              <p className="max-w-[85%] rounded-2xl rounded-br-sm bg-primary px-3.5 py-2 text-sm leading-relaxed text-primary-foreground">
+              <p className="max-w-[85%] rounded-[1.5rem] rounded-br-sm bg-primary px-3.5 py-2 text-sm leading-relaxed text-primary-foreground">
                 {m.content}
               </p>
             </div>
@@ -349,7 +349,7 @@ export function EllyPortal({ open, onClose, initialCmd }: { open: boolean; onClo
           </div>
         )}
         {mlcProgress && (
-          <div className="flex flex-col gap-1 rounded-xl border border-primary/20 bg-primary/5 p-3 text-xs text-primary">
+          <div className="flex flex-col gap-1 rounded-[1rem] border border-primary/20 bg-primary/5 p-3 text-xs text-primary">
             <div className="flex items-center gap-2 font-medium">
               <Cpu size={14} />
               <span>Initializing In-Browser AI Engine...</span>
@@ -359,7 +359,7 @@ export function EllyPortal({ open, onClose, initialCmd }: { open: boolean; onClo
         )}
         {listening && (
           <div className="flex justify-end">
-            <p className="max-w-[85%] rounded-2xl rounded-br-sm bg-muted px-3.5 py-2 text-sm italic text-muted-foreground">
+            <p className="max-w-[85%] rounded-[1.5rem] rounded-br-sm bg-muted px-3.5 py-2 text-sm italic text-muted-foreground">
               {heard || "Listening…"}
             </p>
           </div>

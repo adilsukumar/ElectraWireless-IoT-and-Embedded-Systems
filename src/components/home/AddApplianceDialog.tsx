@@ -294,7 +294,7 @@ export function AddApplianceDialog({ defaultRoomId }: { defaultRoomId?: string }
           Add Appliance
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px] border-slate-200 dark:border-border/40 bg-white dark:bg-card text-foreground">
+      <DialogContent className="sm:max-w-[425px] border-border/40 bg-white dark:bg-card text-foreground">
         <DialogHeader>
           <DialogTitle className="text-xl font-bold">Add New Appliance</DialogTitle>
           <DialogDescription className="text-muted-foreground">
@@ -312,10 +312,10 @@ export function AddApplianceDialog({ defaultRoomId }: { defaultRoomId?: string }
             <div className="flex flex-col gap-3">
               <label className="text-sm font-medium text-slate-700 dark:text-foreground/80">Room</label>
               <Select value={roomId} onValueChange={setRoomId}>
-                <SelectTrigger className="border-slate-200 dark:border-border/40 bg-slate-100 dark:bg-white dark:bg-secondary/10 focus:ring-blue-500">
+                <SelectTrigger className="border-border/40 bg-secondary/10 focus:ring-blue-500">
                   <SelectValue placeholder="Select a room" />
                 </SelectTrigger>
-                <SelectContent className="border-slate-200 dark:border-border/40 bg-slate-50 dark:bg-[#181820] text-foreground">
+                <SelectContent className="border-border/40 bg-slate-50 dark:bg-[#181820] text-foreground">
                   {state.rooms.map((r) => (
                     <SelectItem key={r.id} value={r.id}>
                       {r.name}
@@ -336,7 +336,7 @@ export function AddApplianceDialog({ defaultRoomId }: { defaultRoomId?: string }
                     "h-auto justify-start p-4 text-left transition-all",
                     connectionType === "direct" 
                       ? "bg-blue-500 hover:bg-blue-600 text-foreground shadow-[0_0_15px_rgba(59,130,246,0.4)] border-transparent" 
-                      : "bg-slate-100 dark:bg-white dark:bg-secondary/10 border-slate-200 dark:border-border/40 hover:bg-slate-200 dark:bg-white dark:bg-secondary/20 text-foreground"
+                      : "bg-secondary/10 border-border/40 hover:bg-secondary/20 text-foreground"
                   )}
                   onClick={() => setConnectionType("direct")}
                 >
@@ -356,7 +356,7 @@ export function AddApplianceDialog({ defaultRoomId }: { defaultRoomId?: string }
                     "h-auto justify-start p-4 text-left transition-all",
                     connectionType === "third-party" 
                       ? "bg-blue-500 hover:bg-blue-600 text-foreground shadow-[0_0_15px_rgba(59,130,246,0.4)] border-transparent" 
-                      : "bg-slate-100 dark:bg-white dark:bg-secondary/10 border-slate-200 dark:border-border/40 hover:bg-slate-200 dark:bg-white dark:bg-secondary/20 text-foreground"
+                      : "bg-secondary/10 border-border/40 hover:bg-secondary/20 text-foreground"
                   )}
                   onClick={() => setConnectionType("third-party")}
                 >
@@ -383,7 +383,7 @@ export function AddApplianceDialog({ defaultRoomId }: { defaultRoomId?: string }
                 <>
                   <Button 
                     variant="outline" 
-                    className="w-full h-32 flex flex-col items-center justify-center gap-3 border-slate-200 dark:border-border/40 bg-slate-100 dark:bg-white dark:bg-secondary/10 hover:bg-slate-200 dark:bg-white dark:bg-secondary/20 text-foreground group transition-all"
+                    className="w-full h-32 flex flex-col items-center justify-center gap-3 border-border/40 bg-secondary/10 hover:bg-secondary/20 text-foreground group transition-all"
                     onClick={startCamera}
                   >
                     <div className="p-3 rounded-full bg-blue-500/20 group-hover:bg-blue-500/30 transition-colors">
@@ -396,18 +396,18 @@ export function AddApplianceDialog({ defaultRoomId }: { defaultRoomId?: string }
                   </Button>
                   
                   <div className="flex items-center gap-3">
-                    <div className="h-px flex-1 bg-slate-200 dark:bg-white dark:bg-secondary/20" />
+                    <div className="h-px flex-1 bg-secondary/20" />
                     <span className="text-xs text-neutral-500 font-medium uppercase tracking-wider">OR</span>
-                    <div className="h-px flex-1 bg-slate-200 dark:bg-white dark:bg-secondary/20" />
+                    <div className="h-px flex-1 bg-secondary/20" />
                   </div>
 
                   <div className="flex flex-col gap-3">
                     <label className="text-sm font-medium text-slate-700 dark:text-foreground/80">Select Manually</label>
                     <Select value={deviceType} onValueChange={(v) => setDeviceType(v as DeviceType)}>
-                      <SelectTrigger className="border-slate-200 dark:border-border/40 bg-slate-100 dark:bg-white dark:bg-secondary/10 focus:ring-blue-500">
+                      <SelectTrigger className="border-border/40 bg-secondary/10 focus:ring-blue-500">
                         <SelectValue placeholder="Select appliance type" />
                       </SelectTrigger>
-                      <SelectContent className="border-slate-200 dark:border-border/40 bg-slate-50 dark:bg-[#181820] text-foreground">
+                      <SelectContent className="border-border/40 bg-slate-50 dark:bg-[#181820] text-foreground">
                         <SelectItem value="light">Smart Light</SelectItem>
                         <SelectItem value="ac">Air Conditioner</SelectItem>
                         <SelectItem value="fan">Fan</SelectItem>
@@ -421,7 +421,7 @@ export function AddApplianceDialog({ defaultRoomId }: { defaultRoomId?: string }
                   </div>
                 </>
               ) : (
-                <div className="relative overflow-hidden rounded-2xl bg-black aspect-square flex flex-col">
+                <div className="relative overflow-hidden rounded-[1.5rem] bg-black aspect-square flex flex-col">
                   <div className="absolute top-2 right-2 z-10">
                     <Button size="icon" variant="ghost" className="h-8 w-8 rounded-full bg-black/50 text-foreground hover:bg-black/80" onClick={stopCamera}>
                       <X className="h-4 w-4" />
@@ -470,10 +470,10 @@ export function AddApplianceDialog({ defaultRoomId }: { defaultRoomId?: string }
                 <>
                   <label className="text-sm font-medium text-slate-700 dark:text-foreground/80">Brand</label>
                   <Select value={brand} onValueChange={setBrand}>
-                    <SelectTrigger className="border-slate-200 dark:border-border/40 bg-slate-100 dark:bg-white dark:bg-secondary/10 focus:ring-blue-500">
+                    <SelectTrigger className="border-border/40 bg-secondary/10 focus:ring-blue-500">
                       <SelectValue placeholder="Select brand" />
                     </SelectTrigger>
-                    <SelectContent className="border-slate-200 dark:border-border/40 bg-slate-50 dark:bg-[#181820] text-foreground">
+                    <SelectContent className="border-border/40 bg-slate-50 dark:bg-[#181820] text-foreground">
                       <SelectItem value="ElectraWireless">ElectraWireless</SelectItem>
                       <SelectItem value="Philips">Philips</SelectItem>
                       <SelectItem value="LG">LG</SelectItem>
@@ -500,7 +500,7 @@ export function AddApplianceDialog({ defaultRoomId }: { defaultRoomId?: string }
                     </Button>
                   </div>
                   
-                  <div className="flex flex-col gap-2 max-h-48 overflow-y-auto rounded-lg border border-slate-200 dark:border-border/40 p-2">
+                  <div className="flex flex-col gap-2 max-h-48 overflow-y-auto rounded-lg border border-border/40 p-2">
                     {scannedDevices.length === 0 ? (
                       <p className="text-xs text-center p-4 text-slate-500">No devices found. Click refresh.</p>
                     ) : (
@@ -508,7 +508,7 @@ export function AddApplianceDialog({ defaultRoomId }: { defaultRoomId?: string }
                         <div 
                           key={d.address}
                           onClick={() => setSelectedMac(d.address)}
-                          className={`p-3 rounded-md cursor-pointer transition-colors ${selectedMac === d.address ? 'bg-blue-500 text-white' : 'bg-slate-100 dark:bg-white dark:bg-secondary/10 hover:bg-slate-200 dark:hover:bg-white dark:bg-secondary/20'}`}
+                          className={`p-3 rounded-md cursor-pointer transition-colors ${selectedMac === d.address ? 'bg-blue-500 text-white' : 'bg-secondary/10 hover:bg-slate-200 dark:hover:bg-white dark:bg-secondary/20'}`}
                         >
                           <div className="font-semibold">{d.name || "Unknown"}</div>
                           <div className="text-xs opacity-70">{d.address}</div>
@@ -527,10 +527,10 @@ export function AddApplianceDialog({ defaultRoomId }: { defaultRoomId?: string }
                 <div className="flex flex-col gap-3">
                   <label className="text-sm font-medium text-slate-700 dark:text-foreground/80">Lighting Capabilities</label>
                   <Select value={lightMode} onValueChange={(v) => setLightMode(v as any)}>
-                    <SelectTrigger className="border-slate-200 dark:border-border/40 bg-slate-100 dark:bg-white dark:bg-secondary/10 focus:ring-blue-500">
+                    <SelectTrigger className="border-border/40 bg-secondary/10 focus:ring-blue-500">
                       <SelectValue placeholder="Select lighting options" />
                     </SelectTrigger>
-                    <SelectContent className="border-slate-200 dark:border-border/40 bg-slate-50 dark:bg-[#181820] text-foreground">
+                    <SelectContent className="border-border/40 bg-slate-50 dark:bg-[#181820] text-foreground">
                       <SelectItem value="normal">Standard (On/Off only)</SelectItem>
                       <SelectItem value="warm">Warm White Dimmable</SelectItem>
                       <SelectItem value="cool">Cool White Dimmable</SelectItem>
@@ -543,7 +543,7 @@ export function AddApplianceDialog({ defaultRoomId }: { defaultRoomId?: string }
               <div className="flex flex-col gap-2">
                 <label className="text-sm font-medium text-slate-700 dark:text-foreground/80">Appliance Name</label>
                 <Input
-                  className="border-slate-200 dark:border-border/40 bg-slate-100 dark:bg-white dark:bg-secondary/10 focus:border-blue-500 focus:ring-blue-500 text-foreground placeholder:text-neutral-500"
+                  className="border-border/40 bg-secondary/10 focus:border-blue-500 focus:ring-blue-500 text-foreground placeholder:text-neutral-500"
                   placeholder={`e.g. ${brand} ${deviceType}`}
                   value={name}
                   onChange={(e) => setName(e.target.value)}
@@ -586,7 +586,7 @@ export function AddApplianceDialog({ defaultRoomId }: { defaultRoomId?: string }
               variant="ghost" 
               onClick={handleBack} 
               disabled={step === 1 || (step === 2 && defaultRoomId !== undefined) || isScanning}
-              className="text-muted-foreground hover:text-foreground hover:bg-slate-100 dark:bg-white dark:bg-secondary/10"
+              className="text-muted-foreground hover:text-foreground hover:bg-secondary/10"
             >
               Back
             </Button>

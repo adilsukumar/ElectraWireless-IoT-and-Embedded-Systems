@@ -113,9 +113,9 @@ function SettingsPage() {
                         <h2 className="text-2xl font-bold">{m.name}</h2>
                         <span className={`px-5 py-1.5 rounded-full text-sm font-bold ${roleColor}`}>{roleDisplay}</span>
                       </div>
-                      <div className="space-y-3 bg-white dark:bg-secondary/10 p-5 rounded-2xl border border-border/20">
-                        <div className="flex justify-between items-center"><span className="text-neutral-400 font-medium">Scope</span><span className="font-bold capitalize">{m.scope} devices</span></div>
-                        <div className="flex justify-between items-center"><span className="text-neutral-400 font-medium">Notes</span><span className="font-bold">{m.note || "None"}</span></div>
+                      <div className="space-y-3 bg-white dark:bg-secondary/10 p-5 rounded-[1.5rem] border border-border/20">
+                        <div className="flex justify-between items-center"><span className="text-muted-foreground font-medium">Scope</span><span className="font-bold capitalize">{m.scope} devices</span></div>
+                        <div className="flex justify-between items-center"><span className="text-muted-foreground font-medium">Notes</span><span className="font-bold">{m.note || "None"}</span></div>
                       </div>
                       <button className="w-full py-3 rounded-full border border-red-500/20 text-red-500 font-bold hover:bg-red-500/10 transition-all">Remove Member</button>
                     </div>

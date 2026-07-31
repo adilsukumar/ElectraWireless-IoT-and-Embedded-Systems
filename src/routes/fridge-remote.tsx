@@ -33,14 +33,14 @@ function FridgeRemotePage() {
         <div className="grid grid-cols-2 gap-6">
           <div className="space-y-4">
             <div className="flex justify-between items-end">
-              <p className="text-sm font-semibold text-neutral-300">Fridge</p>
+              <p className="text-sm font-semibold text-muted-foreground">Fridge</p>
               <p className="text-xl font-bold text-teal-400">{fridgeTemps[0]}°C</p>
             </div>
             <Slider value={fridgeTemps} min={1} max={7} step={1} onValueChange={setFridgeTemps} className="[&>span:first-child]:bg-teal-500/20 [&_[role=slider]]:border-teal-500 [&_[role=slider]]:bg-teal-950 [&>span:first-child>span]:bg-teal-500" />
           </div>
           <div className="space-y-4">
             <div className="flex justify-between items-end">
-              <p className="text-sm font-semibold text-neutral-300">Freezer</p>
+              <p className="text-sm font-semibold text-muted-foreground">Freezer</p>
               <p className="text-xl font-bold text-blue-400">{freezerTemps[0]}°C</p>
             </div>
             <Slider value={freezerTemps} min={-24} max={-14} step={1} onValueChange={setFreezerTemps} className="[&>span:first-child]:bg-blue-500/20 [&_[role=slider]]:border-blue-500 [&_[role=slider]]:bg-blue-950 [&>span:first-child>span]:bg-blue-500" />
@@ -48,13 +48,13 @@ function FridgeRemotePage() {
         </div>
 
         <div className="space-y-3">
-          <p className="text-sm font-semibold text-neutral-300">Ice Maker</p>
-          <div className="flex bg-neutral-800/50 p-1 rounded-2xl">
+          <p className="text-sm font-semibold text-muted-foreground">Ice Maker</p>
+          <div className="flex bg-secondary/50 p-1 rounded-[1.5rem]">
             {['Cubed', 'Crushed', 'Off'].map(m => (
               <button 
                 key={m} 
                 onClick={() => setIceMaker(m)}
-                className={cn("flex-1 py-2 text-sm font-medium rounded-xl transition-all", iceMaker === m ? "bg-teal-500/20 text-teal-400 shadow-[0_0_10px_rgba(20,184,166,0.2)]" : "text-neutral-500 hover:text-neutral-300")}
+                className={cn("flex-1 py-2 text-sm font-medium rounded-[1rem] transition-all", iceMaker === m ? "bg-teal-500/20 text-teal-400 shadow-[0_0_10px_rgba(20,184,166,0.2)]" : "text-neutral-500 hover:text-muted-foreground")}
               >
                 {m}
               </button>
@@ -63,10 +63,10 @@ function FridgeRemotePage() {
         </div>
 
         <div className="space-y-3">
-          <p className="text-sm font-semibold text-neutral-300">Mode</p>
+          <p className="text-sm font-semibold text-muted-foreground">Mode</p>
           <div className="grid grid-cols-2 gap-3">
-            <button onClick={() => { setFridgeMode('Quick Cool'); toast.success('Quick Cool activated'); }} className={cn("py-3 rounded-xl border border-border/20 text-sm font-medium transition-all active:scale-95", fridgeMode === 'Quick Cool' ? "bg-blue-500/20 text-blue-400 border-blue-500/30" : "bg-neutral-800/50 text-neutral-400")}>Quick Cool</button>
-            <button onClick={() => { setFridgeMode('Energy Saver'); toast.success('Energy Saver activated'); }} className={cn("py-3 rounded-xl border border-border/20 text-sm font-medium transition-all active:scale-95", fridgeMode === 'Energy Saver' ? "bg-green-500/20 text-green-400 border-green-500/30" : "bg-neutral-800/50 text-neutral-400")}>Energy Saver</button>
+            <button onClick={() => { setFridgeMode('Quick Cool'); toast.success('Quick Cool activated'); }} className={cn("py-3 rounded-[1rem] border border-border/20 text-sm font-medium transition-all active:scale-95", fridgeMode === 'Quick Cool' ? "bg-blue-500/20 text-blue-400 border-blue-500/30" : "bg-secondary/50 text-muted-foreground")}>Quick Cool</button>
+            <button onClick={() => { setFridgeMode('Energy Saver'); toast.success('Energy Saver activated'); }} className={cn("py-3 rounded-[1rem] border border-border/20 text-sm font-medium transition-all active:scale-95", fridgeMode === 'Energy Saver' ? "bg-green-500/20 text-green-400 border-green-500/30" : "bg-secondary/50 text-muted-foreground")}>Energy Saver</button>
           </div>
         </div>
 

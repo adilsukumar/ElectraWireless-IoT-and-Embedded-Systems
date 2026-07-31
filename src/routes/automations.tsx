@@ -64,7 +64,7 @@ function AutomationsPage() {
       {/* ELLY suggestion */}
       {suggestionOpen && (
         <SciFiCard color="fuchsia" className="flex flex-col gap-3 p-5 sm:flex-row sm:items-center">
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-accent text-accent-foreground">
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[1rem] bg-accent text-accent-foreground">
             <Sparkles className="h-5 w-5" />
           </div>
           <p className="flex-1 text-sm">
@@ -110,7 +110,7 @@ function AutomationsPage() {
           const Icon = typeIcon[a.type];
           return (
             <SciFiCard key={a.id} color="purple" className="flex items-center gap-4 p-4">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-secondary text-secondary-foreground">
+              <div className="flex h-10 w-10 items-center justify-center rounded-[1rem] bg-secondary text-secondary-foreground">
                 <Icon className="h-5 w-5" />
               </div>
               <div className="flex-1">

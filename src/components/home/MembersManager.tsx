@@ -83,7 +83,7 @@ export function MembersManager() {
     <section className="space-y-4">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-sm font-bold text-neutral-300">Household Members</h2>
+          <h2 className="text-sm font-bold text-muted-foreground">Household Members</h2>
           <p className="text-[10px] text-neutral-500 mt-0.5">
             {isOwner
               ? "Manage who can control your home."
@@ -142,17 +142,17 @@ function MemberGroup({
   const { dispatch } = useHome();
   return (
     <div className="space-y-2">
-      <div className="flex items-center gap-1.5 text-xs font-bold text-neutral-400">
+      <div className="flex items-center gap-1.5 text-xs font-bold text-muted-foreground">
         <Icon className="h-3 w-3" /> {title}
       </div>
       {members.length === 0 ? (
-        <p className="rounded-xl border border-dashed border-border/40 bg-white dark:bg-secondary/10 p-3 text-xs text-neutral-500">
+        <p className="rounded-[1rem] border border-dashed border-border/40 bg-white dark:bg-secondary/10 p-3 text-xs text-neutral-500">
           {emptyText}
         </p>
       ) : (
         <div className="grid gap-2 sm:grid-cols-2">
           {members.map((m) => (
-            <div key={m.id} className="p-3 rounded-2xl bg-white dark:bg-card border border-border/20 shadow-lg relative overflow-hidden">
+            <div key={m.id} className="p-3 rounded-[1.5rem] bg-white dark:bg-card border border-border/20 shadow-lg relative overflow-hidden">
               <div className="flex items-start justify-between gap-2">
                 <div className="min-w-0 flex-1">
                   <div className="flex flex-wrap items-center gap-2">
@@ -169,7 +169,7 @@ function MemberGroup({
                       initial={m}
                       trigger={
                         <button
-                          className="h-6 w-6 flex items-center justify-center rounded-full hover:bg-white dark:bg-secondary/20 text-neutral-400 transition-colors"
+                          className="h-6 w-6 flex items-center justify-center rounded-full hover:bg-white dark:bg-secondary/20 text-muted-foreground transition-colors"
                           aria-label="Edit member"
                         >
                           <Pencil className="h-3 w-3" />
@@ -192,7 +192,7 @@ function MemberGroup({
                       <AlertDialogContent className="bg-white dark:bg-card border border-border/40 text-foreground rounded-[2rem]">
                         <AlertDialogHeader>
                           <AlertDialogTitle className="text-xl">Remove {m.name}?</AlertDialogTitle>
-                          <AlertDialogDescription className="text-neutral-400">
+                          <AlertDialogDescription className="text-muted-foreground">
                             They will lose all access to your home.
                           </AlertDialogDescription>
                         </AlertDialogHeader>
@@ -213,10 +213,10 @@ function MemberGroup({
                   </div>
                 )}
               </div>
-              <div className="mt-3 flex items-start gap-2 rounded-xl bg-secondary p-2 text-[10px]">
+              <div className="mt-3 flex items-start gap-2 rounded-[1rem] bg-secondary p-2 text-[10px]">
                 <AccessIcon scope={m.scope} />
                 <div>
-                  <p className="font-bold text-neutral-300">{accessLabel(m.scope)}</p>
+                  <p className="font-bold text-muted-foreground">{accessLabel(m.scope)}</p>
                   <p className="text-neutral-500 mt-0.5 leading-tight">{scopeSummary(m, roomName, deviceName)}</p>
                 </div>
               </div>
@@ -298,7 +298,7 @@ function MemberDialog({
       <DialogContent className="max-h-[85vh] overflow-y-auto sm:max-w-md bg-white dark:bg-card border border-border/40 text-foreground rounded-[2rem]">
         <DialogHeader>
           <DialogTitle className="text-xl font-bold">{initial ? "Edit access" : "Give access"}</DialogTitle>
-          <DialogDescription className="text-neutral-400 text-sm">
+          <DialogDescription className="text-muted-foreground text-sm">
             Set their name, role and exactly what they can control.
           </DialogDescription>
         </DialogHeader>

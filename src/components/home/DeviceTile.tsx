@@ -26,7 +26,7 @@ export function DeviceTile({ device }: { device: Device }) {
       whileTap={{ scale: 0.98 }}
       transition={{ type: "spring", stiffness: 350, damping: 24 }}
       className={cn(
-        "group relative flex flex-col gap-3 rounded-3xl p-4 transition-colors",
+        "group relative flex flex-col gap-3 rounded-[2rem] p-4 transition-colors",
         device.on ? "bg-primary text-primary-foreground" : "bg-card",
       )}
     >
@@ -35,7 +35,7 @@ export function DeviceTile({ device }: { device: Device }) {
           animate={device.on ? { scale: [1, 1.12, 1] } : {}}
           transition={{ duration: 0.3 }}
           className={cn(
-            "flex h-11 w-11 items-center justify-center rounded-2xl transition-colors",
+            "flex h-11 w-11 items-center justify-center rounded-[1.5rem] transition-colors",
             device.on
               ? "bg-primary-foreground/20 text-primary-foreground"
               : "bg-muted text-muted-foreground",

@@ -33,12 +33,12 @@ function AudioRemotePage() {
 
         <div className="pt-4 flex flex-col items-center gap-8 rounded-[2rem] border border-purple-200 dark:border-purple-500/25 glass-card p-6 mx-auto max-w-sm shadow-sm">
         
-        <div className="flex bg-neutral-800/50 p-1 rounded-full w-full max-w-[280px]">
+        <div className="flex bg-secondary/50 p-1 rounded-full w-full max-w-[280px]">
           {['Wi-Fi', 'Bluetooth', 'TV Audio'].map(s => (
             <button 
               key={s} 
               onClick={() => { setAudioSource(s); toast.success(`Source switched to ${s}`); }}
-              className={cn("flex-1 py-2 text-xs font-semibold rounded-full transition-all", audioSource === s ? "bg-orange-500/20 text-orange-400 shadow-[0_0_10px_rgba(249,115,22,0.2)]" : "text-neutral-500 hover:text-neutral-300")}
+              className={cn("flex-1 py-2 text-xs font-semibold rounded-full transition-all", audioSource === s ? "bg-orange-500/20 text-orange-400 shadow-[0_0_10px_rgba(249,115,22,0.2)]" : "text-neutral-500 hover:text-muted-foreground")}
             >
               {s}
             </button>
@@ -47,19 +47,19 @@ function AudioRemotePage() {
 
         {/* Playback Controls */}
         <div className="flex items-center gap-8 mt-2">
-          <button onClick={() => handleAction('Skip Back')} className="w-12 h-12 flex items-center justify-center rounded-full text-neutral-400 hover:text-foreground hover:bg-white dark:bg-secondary/10 active:scale-95 transition"><SkipBack className="w-6 h-6 fill-current" /></button>
+          <button onClick={() => handleAction('Skip Back')} className="w-12 h-12 flex items-center justify-center rounded-full text-muted-foreground hover:text-foreground hover:bg-white dark:bg-secondary/10 active:scale-95 transition"><SkipBack className="w-6 h-6 fill-current" /></button>
           <button 
             onClick={() => setAudioState(audioState === 'Playing' ? 'Paused' : 'Playing')} 
             className="w-20 h-20 rounded-full bg-orange-500/20 text-orange-400 border border-orange-500/30 shadow-[0_0_20px_rgba(249,115,22,0.3)] flex items-center justify-center active:scale-95 transition"
           >
             {audioState === 'Playing' ? <Pause className="w-8 h-8 fill-current" /> : <Play className="w-8 h-8 fill-current ml-1" />}
           </button>
-          <button onClick={() => handleAction('Skip Forward')} className="w-12 h-12 flex items-center justify-center rounded-full text-neutral-400 hover:text-foreground hover:bg-white dark:bg-secondary/10 active:scale-95 transition"><SkipForward className="w-6 h-6 fill-current" /></button>
+          <button onClick={() => handleAction('Skip Forward')} className="w-12 h-12 flex items-center justify-center rounded-full text-muted-foreground hover:text-foreground hover:bg-white dark:bg-secondary/10 active:scale-95 transition"><SkipForward className="w-6 h-6 fill-current" /></button>
         </div>
 
         {/* Volume Slider */}
         <div className="w-full space-y-4 max-w-[280px]">
-          <div className="flex justify-between items-center text-xs font-semibold text-neutral-400">
+          <div className="flex justify-between items-center text-xs font-semibold text-muted-foreground">
             <Volume2 className="w-4 h-4" />
             <span>{audioVolume[0]}%</span>
           </div>
@@ -67,13 +67,13 @@ function AudioRemotePage() {
         </div>
 
         {/* EQ */}
-        <div className="w-full flex gap-6 max-w-[280px] bg-neutral-800/40 p-4 rounded-3xl border border-border/20">
+        <div className="w-full flex gap-6 max-w-[280px] bg-secondary/40 p-4 rounded-[2rem] border border-border/20">
           <div className="flex-1 space-y-3">
-            <div className="flex justify-between text-xs text-neutral-400"><span>Bass</span><span>{bass[0]}</span></div>
+            <div className="flex justify-between text-xs text-muted-foreground"><span>Bass</span><span>{bass[0]}</span></div>
             <Slider value={bass} min={-10} max={10} step={1} onValueChange={setBass} className="[&>span:first-child]:bg-orange-500/20 [&_[role=slider]]:border-orange-500 [&_[role=slider]]:bg-orange-950 [&>span:first-child>span]:bg-orange-500" />
           </div>
           <div className="flex-1 space-y-3">
-            <div className="flex justify-between text-xs text-neutral-400"><span>Treble</span><span>{treble[0]}</span></div>
+            <div className="flex justify-between text-xs text-muted-foreground"><span>Treble</span><span>{treble[0]}</span></div>
             <Slider value={treble} min={-10} max={10} step={1} onValueChange={setTreble} className="[&>span:first-child]:bg-orange-500/20 [&_[role=slider]]:border-orange-500 [&_[role=slider]]:bg-orange-950 [&>span:first-child>span]:bg-orange-500" />
           </div>
         </div>

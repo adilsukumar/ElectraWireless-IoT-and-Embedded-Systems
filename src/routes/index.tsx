@@ -157,7 +157,7 @@ function Dashboard() {
 
       {/* Status Cards Row */}
       <div className="relative z-10 grid grid-cols-2 gap-3">
-        <div className="glass-card rounded-3xl p-5 relative overflow-hidden shadow-sm flex flex-col justify-center">
+        <div className="glass-card rounded-[2rem] p-5 relative overflow-hidden shadow-sm flex flex-col justify-center">
           <p className="text-muted-foreground font-mono text-[10px] tracking-[0.2em] uppercase mb-2">System Time</p>
           <p className="text-3xl font-extrabold text-foreground tabular-nums leading-none tracking-tight">
             {time.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
@@ -166,7 +166,7 @@ function Dashboard() {
             {time.toLocaleDateString([], { weekday: "long", month: "long", day: "numeric" })}
           </p>
         </div>
-        <div className="glass-card rounded-3xl p-5 relative overflow-hidden shadow-sm flex flex-col justify-center">
+        <div className="glass-card rounded-[2rem] p-5 relative overflow-hidden shadow-sm flex flex-col justify-center">
           <p className="text-muted-foreground font-mono text-[10px] tracking-[0.2em] uppercase mb-2">Grid Load</p>
           <p className="text-3xl font-extrabold text-foreground leading-none tracking-tight">
             {(totalWatts / 1000).toFixed(2)}<span className="text-base text-muted-foreground font-medium ml-1">kW</span>
@@ -180,15 +180,15 @@ function Dashboard() {
 
       {/* Status Pill Row */}
       <div className="relative z-10 flex gap-2">
-        <div className="flex-1 flex items-center gap-2 rounded-xl glass-card px-3 py-2 shadow-sm">
+        <div className="flex-1 flex items-center gap-2 rounded-[1rem] glass-card px-3 py-2 shadow-sm">
           <span className="w-2 h-2 rounded-full bg-emerald-500 dark:bg-emerald-400 animate-pulse shrink-0" />
           <span className="text-[11px] font-medium text-emerald-700 dark:text-emerald-300 truncate">Online</span>
         </div>
-        <div className="flex-1 flex items-center gap-2 rounded-xl glass-card px-3 py-2 shadow-sm">
+        <div className="flex-1 flex items-center gap-2 rounded-[1rem] glass-card px-3 py-2 shadow-sm">
           <Wifi className="h-3 w-3 text-primary shrink-0" />
           <span className="text-[11px] font-medium text-primary truncate">{onDevices} Active</span>
         </div>
-        <div className="flex-1 flex items-center gap-2 rounded-xl glass-card px-3 py-2 shadow-sm">
+        <div className="flex-1 flex items-center gap-2 rounded-[1rem] glass-card px-3 py-2 shadow-sm">
           <Activity className="h-3 w-3 text-secondary-foreground shrink-0" />
           <span className="text-[11px] font-medium text-secondary-foreground truncate">60+ Protocols</span>
         </div>
@@ -272,7 +272,7 @@ function Dashboard() {
       </div>
 
       {/* Protocol Badge Strip */}
-      <div className="relative z-10 rounded-2xl glass-card p-4 shadow-sm">
+      <div className="relative z-10 rounded-[1.5rem] glass-card p-4 shadow-sm">
         <p className="text-primary font-mono text-[10px] tracking-[0.2em] uppercase mb-3">Universal Bridge · 60+ Protocols Active</p>
         <div className="flex flex-wrap gap-1.5">
           {["Tuya", "Shelly", "Hue", "ESPHome", "Z-Wave", "Zigbee", "Sonos", "Roku", "LG TV", "Samsung", "IKEA", "Nest", "Ring", "WLED", "Kodi", "+45 more"].map(p => (
@@ -304,13 +304,13 @@ function EllyBtn({ icon: Icon, label, sublabel, onClick, disabled, color, wide }
       onClick={onClick}
       disabled={disabled}
       className={cn(
-        "relative group rounded-2xl border glass-card transition-all duration-300 disabled:opacity-40 disabled:cursor-not-allowed",
+        "relative group rounded-[1.5rem] border glass-card transition-all duration-300 disabled:opacity-40 disabled:cursor-not-allowed",
         colorMap[color] || colorMap.purple,
         wide ? "w-full flex items-center gap-4 px-5 py-4" : "w-full flex flex-col items-center justify-center gap-2 p-5 h-28"
       )}
     >
       <div className={cn(
-        "flex items-center justify-center rounded-xl transition-transform group-hover:scale-110 group-active:scale-95",
+        "flex items-center justify-center rounded-[1rem] transition-transform group-hover:scale-110 group-active:scale-95",
         wide ? "w-10 h-10 shrink-0" : "w-11 h-11"
       )}>
         <Icon className="h-6 w-6" />
@@ -341,9 +341,9 @@ function EmergencyAction({ onConfirm, disabled }: { onConfirm: () => void; disab
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel className="bg-secondary text-secondary-foreground rounded-xl">Abort</AlertDialogCancel>
+          <AlertDialogCancel className="bg-secondary text-secondary-foreground rounded-[1rem]">Abort</AlertDialogCancel>
           <AlertDialogAction
-            className="bg-destructive/20 text-destructive border border-destructive/50 hover:bg-destructive hover:text-white transition-all shadow-[0_0_20px_rgba(239,68,68,0.4)] rounded-xl"
+            className="bg-destructive/20 text-destructive border border-destructive/50 hover:bg-destructive hover:text-white transition-all shadow-[0_0_20px_rgba(239,68,68,0.4)] rounded-[1rem]"
             onClick={onConfirm}
           >
             Execute Lockdown

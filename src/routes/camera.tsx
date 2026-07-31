@@ -416,7 +416,7 @@ function CameraPage() {
         {!state.cameraEnabled && (
           <SciFiCard color="blue" className="flex flex-col items-center gap-4 p-8 text-center">
             <ShieldCheck className="h-10 w-10 text-blue-400" />
-            <p className="text-[15px] font-medium text-neutral-300">
+            <p className="text-[15px] font-medium text-muted-foreground">
               Camera access requires your explicit consent. Enable to view live feed and alerts.
             </p>
             <button
@@ -460,7 +460,7 @@ function CameraPage() {
                   </span>
                 )}
                 {!model && (
-                  <span className="absolute bottom-6 left-1/2 -translate-x-1/2 bg-black/60 backdrop-blur-md border border-slate-200 dark:border-border/40 px-4 py-2 rounded-2xl text-[13px] font-bold text-foreground tracking-wide z-10 shadow-lg">
+                  <span className="absolute bottom-6 left-1/2 -translate-x-1/2 bg-black/60 backdrop-blur-md border border-border/40 px-4 py-2 rounded-[1.5rem] text-[13px] font-bold text-foreground tracking-wide z-10 shadow-lg">
                     Loading AI Model...
                   </span>
                 )}
@@ -488,11 +488,11 @@ function CameraPage() {
           </div>
           
           {/* Action Bar below camera */}
-          <div className="flex items-center justify-between border-t border-slate-200 dark:border-border/20 bg-slate-50 dark:bg-[#181820] p-4">
+          <div className="flex items-center justify-between border-t border-border/20 bg-slate-50 dark:bg-[#181820] p-4">
             <div className="flex items-center gap-3">
               <div
                 className={`h-3 w-3 rounded-full shadow-[0_0_10px_currentColor] transition-colors ${
-                  active && !camError && !starting ? "bg-purple-500" : "bg-neutral-600"
+                  active && !camError && !starting ? "bg-purple-500" : "bg-secondary/70"
                 }`}
               />
               <p className="text-sm font-bold text-foreground uppercase tracking-wider">
@@ -504,7 +504,7 @@ function CameraPage() {
               <button
                 disabled={!active || starting}
                 onClick={() => setFacingMode(f => f === "environment" ? "user" : "environment")}
-                className="flex items-center gap-2 rounded-full bg-slate-100 dark:bg-secondary/10 px-4 py-2 text-xs font-bold text-foreground hover:bg-secondary/50 transition-colors disabled:opacity-50"
+                className="flex items-center gap-2 rounded-full bg-secondary/10 px-4 py-2 text-xs font-bold text-foreground hover:bg-secondary/50 transition-colors disabled:opacity-50"
               >
                 <SwitchCamera className="h-4 w-4" />
                 FLIP
@@ -640,7 +640,7 @@ function FaceManagerDialog({
   
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 max-w-md mx-auto">
-      <div className="w-full max-w-sm rounded-[2rem] bg-white dark:bg-card p-6 shadow-2xl border border-slate-200 dark:border-border/40">
+      <div className="w-full max-w-sm rounded-[2rem] bg-white dark:bg-card p-6 shadow-2xl border border-border/40">
         <div className="flex justify-between items-center mb-6">
           <h3 className="text-lg font-bold text-foreground flex items-center gap-2">
             <UserPlus className="h-5 w-5 text-purple-400" /> Face Management
@@ -658,7 +658,7 @@ function FaceManagerDialog({
               placeholder="e.g. Adil Sukumar"
               value={localName}
               onChange={(e) => setLocalName(e.target.value)}
-              className="mt-1 w-full rounded-xl border border-slate-200 dark:border-border/40 bg-slate-50 dark:bg-secondary/10 px-4 py-3 text-foreground placeholder:text-slate-400 dark:placeholder:text-foreground/20 focus:outline-none focus:ring-2 focus:ring-purple-500/50 transition-all"
+              className="mt-1 w-full rounded-[1rem] border border-border/40 bg-slate-50 dark:bg-secondary/10 px-4 py-3 text-foreground placeholder:text-slate-400 dark:placeholder:text-foreground/20 focus:outline-none focus:ring-2 focus:ring-purple-500/50 transition-all"
             />
           </div>
 
@@ -680,17 +680,17 @@ function FaceManagerDialog({
           <button
             type="submit"
             disabled={!localName.trim() || scanProgress > 0}
-            className="w-full rounded-xl bg-purple-600 px-4 py-3 font-bold text-foreground transition-colors hover:bg-purple-700 disabled:opacity-50"
+            className="w-full rounded-[1rem] bg-purple-600 px-4 py-3 font-bold text-foreground transition-colors hover:bg-purple-700 disabled:opacity-50"
           >
             {scanProgress > 0 ? "Scanning..." : "Start Scan"}
           </button>
           
           {customFaces.length > 0 && (
-            <div className="mt-4 border-t border-slate-200 dark:border-border/40 pt-4">
+            <div className="mt-4 border-t border-border/40 pt-4">
               <h4 className="text-xs font-bold text-muted-foreground uppercase tracking-widest mb-3">Registered Users</h4>
               <div className="space-y-2 max-h-40 overflow-y-auto custom-scrollbar pr-2">
                 {customFaces.map((face) => (
-                  <div key={face.id} className="flex justify-between items-center bg-slate-100 dark:bg-secondary/10 border border-slate-200 dark:border-border/40 rounded-lg p-2 px-3">
+                  <div key={face.id} className="flex justify-between items-center bg-secondary/10 border border-border/40 rounded-lg p-2 px-3">
                     <div>
                       <p className="text-sm font-bold text-foreground">{face.name}</p>
                       <p className="text-[10px] text-muted-foreground font-mono">ID: #{face.id}</p>
@@ -711,7 +711,7 @@ function FaceManagerDialog({
           <button
             type="button"
             onClick={onClearDatabase}
-            className="w-full rounded-xl bg-red-500/20 px-4 py-3 font-bold text-red-500 transition-colors hover:bg-red-500/30 mt-4"
+            className="w-full rounded-[1rem] bg-red-500/20 px-4 py-3 font-bold text-red-500 transition-colors hover:bg-red-500/30 mt-4"
           >
             Wipe All Data
           </button>

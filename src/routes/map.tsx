@@ -101,17 +101,17 @@ function MapPage() {
   return (
     <div className="flex flex-col h-full bg-background text-foreground text-muted-foreground pb-20 font-mono transition-colors">
       <div className="flex items-center gap-4 p-6 pt-10 font-sans">
-        <Link to="/" className="flex h-12 w-12 items-center justify-center rounded-full bg-slate-200 dark:bg-white/5 shadow-sm border border-slate-300 dark:border-border/40 hover:bg-slate-300 dark:hover:bg-white/10 transition-colors">
+        <Link to="/" className="flex h-12 w-12 items-center justify-center rounded-full bg-secondary/10 shadow-sm border border-border/40 hover:hover:bg-secondary/20 transition-colors">
           <ArrowLeft className="h-6 w-6 text-foreground" />
         </Link>
         <div className="flex-1">
           <h1 className="text-2xl font-extrabold tracking-tight text-foreground">Property Plan</h1>
-          <p className="text-xs text-neutral-400 font-medium uppercase tracking-widest mt-1">Scale 1:100 · 1160 SQ.FT</p>
+          <p className="text-xs text-muted-foreground font-medium uppercase tracking-widest mt-1">Scale 1:100 · 1160 SQ.FT</p>
         </div>
       </div>
 
       <div className="px-6 pb-6 flex gap-3 font-sans">
-        <div className="flex flex-1 rounded-full bg-white dark:bg-white/5 p-1.5 border border-slate-200 dark:border-border/40 shadow-sm backdrop-blur-md">
+        <div className="flex flex-1 rounded-full bg-white dark:bg-white/5 p-1.5 border border-border/40 shadow-sm backdrop-blur-md">
           <button 
             onClick={() => setViewMode("control")}
             className={cn("flex-1 flex items-center justify-center gap-2 py-2.5 rounded-full text-[10px] sm:text-xs uppercase tracking-wider font-bold transition-all", viewMode === "control" ? "bg-purple-500 dark:bg-white text-white dark:text-black shadow-lg" : "text-muted-foreground hover:text-slate-900 dark:hover:text-white")}
@@ -128,7 +128,7 @@ function MapPage() {
         {zoomedRoomId && (
           <button 
             onClick={() => setZoomedRoomId(null)}
-            className="px-5 rounded-full bg-slate-200 dark:bg-[#181820] text-foreground font-bold text-xs uppercase tracking-wider border border-slate-300 dark:border-border/40 hover:bg-slate-300 dark:hover:bg-white/10 transition-colors"
+            className="px-5 rounded-full bg-secondary text-foreground font-bold text-xs uppercase tracking-wider border border-border/40 hover:hover:bg-secondary/20 transition-colors"
           >
             Reset
           </button>
@@ -262,7 +262,7 @@ function MapPage() {
                             className={`flex flex-col items-center justify-center h-16 w-16 sm:h-20 sm:w-20 rounded-full transition-all active:scale-95 ${
                               device.on 
                                 ? "bg-white text-black shadow-[0_0_40px_rgba(255,255,255,1)] border-[3px] border-[#09090b]" 
-                                : "bg-[#181820]/90 text-neutral-400 border-[3px] border-border/40 backdrop-blur-md hover:bg-white/10"
+                                : "bg-[#181820]/90 text-muted-foreground border-[3px] border-border/40 backdrop-blur-md hover:bg-white/10"
                             }`}
                           >
                             <Icon className="h-8 w-8" />
@@ -295,7 +295,7 @@ function MapPage() {
                 <div className={cn("absolute inset-0 flex flex-col items-center justify-center z-0 transition-opacity duration-300 pointer-events-none", isZoomed ? "opacity-0" : "opacity-100")}>
                     <div className="text-center z-10 px-2">
                       <div className="mt-1 sm:mt-2 flex items-center justify-center gap-1 sm:gap-1.5 opacity-60">
-                         <span className="text-[7px] sm:text-[9px] font-medium text-neutral-300 tracking-[0.2em]">{roomDevices.length} DEV</span>
+                         <span className="text-[7px] sm:text-[9px] font-medium text-muted-foreground tracking-[0.2em]">{roomDevices.length} DEV</span>
                       </div>
                       {viewMode === "control" && activeCount > 0 && (
                         <div className="mt-1.5 sm:mt-3 inline-flex items-center bg-white px-2 py-0.5 text-[7px] sm:text-[8px] font-bold text-black font-sans rounded-sm">
