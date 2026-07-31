@@ -98,41 +98,65 @@ export async function scanBluetoothDevices(): Promise<BluetoothDevice[]> {
   }
 
   return new Promise((resolve, reject) => {
-    const bs = (window as any).bluetoothSerial;
-    if (!bs) return reject(new Error("Native Bluetooth plugin is not ready."));
+    const isNative = Capacitor.isNativePlatform();
     
-    // Request turning on Bluetooth if it isn't
-    bs.isEnabled(
-      () => {
-        toast.loading("Scanning for nearby Bluetooth devices...", { id: "bt-scan" });
-        bs.discoverUnpaired(
-          (devices: BluetoothDevice[]) => {
-            toast.dismiss("bt-scan");
-            resolve(devices);
-          },
-          (err: any) => {
-            toast.dismiss("bt-scan");
-            reject(new Error(`Scan failed: ${err}`));
-          }
-        );
-      },
-      () => {
-        toast("Enabling Bluetooth...");
-        bs.enable(
-          () => {
-            toast.loading("Scanning for nearby Bluetooth devices...", { id: "bt-scan" });
-            bs.discoverUnpaired(
-              (devices: BluetoothDevice[]) => {
-                toast.dismiss("bt-scan");
-                resolve(devices);
-              },
-              (err: any) => reject(new Error(`Scan failed: ${err}`))
-            );
-          },
-          () => reject(new Error("Bluetooth was not enabled."))
-        );
+    const startScan = () => {
+      const bs = (window as any).bluetoothSerial;
+      if (!bs) return reject(new Error("Native Bluetooth plugin is not ready."));
+      
+      // Request turning on Bluetooth if it isn't
+      bs.isEnabled(
+        () => {
+          toast.loading("Scanning for nearby Bluetooth devices...", { id: "bt-scan" });
+          bs.discoverUnpaired(
+            (devices: BluetoothDevice[]) => {
+              toast.dismiss("bt-scan");
+              resolve(devices);
+            },
+            (err: any) => {
+              toast.dismiss("bt-scan");
+              reject(new Error(`Scan failed: ${err}`));
+            }
+          );
+        },
+        () => {
+          toast("Enabling Bluetooth...");
+          bs.enable(
+            () => {
+              toast.loading("Scanning for nearby Bluetooth devices...", { id: "bt-scan" });
+              bs.discoverUnpaired(
+                (devices: BluetoothDevice[]) => {
+                  toast.dismiss("bt-scan");
+                  resolve(devices);
+                },
+                (err: any) => reject(new Error(`Scan failed: ${err}`))
+              );
+            },
+            () => reject(new Error("Bluetooth was not enabled."))
+          );
+        }
+      );
+    };
+
+    if (isNative) {
+      const permissions = (window as any).cordova?.plugins?.permissions;
+      if (permissions) {
+        const perms = [
+          permissions.BLUETOOTH_SCAN,
+          permissions.BLUETOOTH_CONNECT,
+          permissions.ACCESS_FINE_LOCATION
+        ];
+        permissions.requestPermissions(perms, () => {
+          startScan();
+        }, () => {
+          reject(new Error("Bluetooth permissions denied."));
+        });
+      } else {
+        startScan();
       }
-    );
+    } else {
+      startScan();
+    }
   });
 }
 

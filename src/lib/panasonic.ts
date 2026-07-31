@@ -72,16 +72,19 @@ export async function sendPanasonicCommand(ip: string, keyCommand: string): Prom
   }
 }
 
+import { getLocalSubnet } from "./network";
+
 /**
- * Sweeps the local network to find the Panasonic TV.
+ * Sweeps the local network to find Panasonic Smart TVs.
  * Returns the IP address if found, otherwise null.
  */
 export async function autoDiscoverPanasonicTV(): Promise<string | null> {
-  // We'll scan common local subnets
-  const subnetsToScan = ['192.168.1', '192.168.0', '192.168.29', '192.168.31', '192.168.50', '10.0.0'];
+  const localSubnet = await getLocalSubnet();
+  const subnetsToScan = localSubnet ? [localSubnet] : ['192.168.1', '192.168.0', '192.168.29', '192.168.31', '192.168.50', '10.0.0'];
   
   // Create an array of IPs to scan
   const ipsToScan: string[] = [];
+  
   for (const subnet of subnetsToScan) {
     for (let i = 2; i <= 254; i++) {
       ipsToScan.push(`${subnet}.${i}`);
