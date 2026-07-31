@@ -4,7 +4,7 @@ import { ArrowLeft, Radar, Bluetooth, Wifi, Plus, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { useHome } from "@/lib/home/store";
 import type { Device, DeviceType } from "@/lib/home/types";
-import { startNativeBluetoothScan } from "@/lib/home/bluetooth";
+import { scanBluetoothDevices } from "@/lib/home/bluetooth";
 import { autoDiscoverPanasonicTV } from "@/lib/panasonic";
 import { autoDiscoverSamsungTV } from "@/lib/samsung";
 
@@ -84,20 +84,22 @@ function AddDevicePage() {
     // 2. Native BLE Scanning
     const isNative = (window as any).Capacitor?.isNativePlatform();
     if (isNative) {
-      startNativeBluetoothScan((device: any) => {
-        const mapped: DiscoveredDevice = {
-          id: device.id || `ELLY-BLE-${Math.random().toString(36).substring(7)}`,
-          name: device.name || "Unknown BLE Device",
-          type: "ble",
-          address: device.address || device.macAddress || "",
-          isPaired: device.isPaired
-        };
-        // Avoid duplicates
-        setDiscoveredDevices(prev => {
-          if (prev.some(d => d.address === mapped.address)) return prev;
-          return [...prev, mapped];
+      scanBluetoothDevices().then(devices => {
+        devices.forEach((device: any) => {
+          const mapped: DiscoveredDevice = {
+            id: device.id || `ELLY-BLE-${Math.random().toString(36).substring(7)}`,
+            name: device.name || "Unknown BLE Device",
+            type: "ble",
+            address: device.address || device.macAddress || "",
+            isPaired: device.isPaired
+          };
+          // Avoid duplicates
+          setDiscoveredDevices(prev => {
+            if (prev.some(d => d.address === mapped.address)) return prev;
+            return [...prev, mapped];
+          });
         });
-      });
+      }).catch(err => console.error("BLE Scan Error:", err));
     }
     
     return () => {

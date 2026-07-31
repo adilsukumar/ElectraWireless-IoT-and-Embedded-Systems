@@ -101,8 +101,9 @@ export async function autoDiscoverPanasonicTV(): Promise<string | null> {
         // A real Panasonic TV will immediately respond with 200 OK or 400 Bad Request to a GET on this port,
         // while dead IPs will timeout.
         const res = await CapacitorHttp.get({
-          url: `http://${ip}:55000/nrc/smp_0000`,
-          connectTimeout: 1000, // Very aggressive timeout for scanning
+          url: `http://${ip}:55000/nrc/sdd_0000.xml`,
+          connectTimeout: 1500,
+          readTimeout: 1500,
         });
         
         if (res.status >= 200 && res.status < 500) {

@@ -159,8 +159,8 @@ export async function autoDiscoverSamsungTV(): Promise<string | null> {
         // Tizen API endpoint for TV metadata
         const response = await CapacitorHttp.get({
           url: `http://${ip}:8001/api/v2/`,
-          connectTimeout: 800,
-          readTimeout: 800,
+          connectTimeout: 1500,
+          readTimeout: 1500,
         });
 
         if (response.status === 200 && response.data) {
