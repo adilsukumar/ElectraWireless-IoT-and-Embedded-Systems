@@ -6,6 +6,7 @@ import { useHome } from "@/lib/home/store";
 import type { Device, DeviceType } from "@/lib/home/types";
 import { startNativeBluetoothScan } from "@/lib/home/bluetooth";
 import { autoDiscoverPanasonicTV } from "@/lib/panasonic";
+import { autoDiscoverSamsungTV } from "@/lib/samsung";
 
 export const Route = createFileRoute("/add-device")({
   head: () => ({
@@ -47,16 +48,30 @@ function AddDevicePage() {
     let isMounted = true;
     const scanWiFi = async () => {
       try {
-        const ip = await autoDiscoverPanasonicTV();
-        if (ip && isMounted) {
+        const panasonicIp = await autoDiscoverPanasonicTV();
+        if (panasonicIp && isMounted) {
           setDiscoveredDevices(prev => {
-            if (prev.some(d => d.address === ip)) return prev;
+            if (prev.some(d => d.address === panasonicIp)) return prev;
             return [...prev, {
-              id: `panasonic-${ip.replace(/\./g, "")}`,
+              id: `panasonic-${panasonicIp.replace(/\./g, "")}`,
               name: "Panasonic Smart TV",
               type: "wifi",
-              address: ip,
+              address: panasonicIp,
               ecosystem: "panasonic"
+            }];
+          });
+        }
+        
+        const samsungIp = await autoDiscoverSamsungTV();
+        if (samsungIp && isMounted) {
+          setDiscoveredDevices(prev => {
+            if (prev.some(d => d.address === samsungIp)) return prev;
+            return [...prev, {
+              id: `samsung-${samsungIp.replace(/\./g, "")}`,
+              name: "Samsung Smart TV",
+              type: "wifi",
+              address: samsungIp,
+              ecosystem: "samsung"
             }];
           });
         }
