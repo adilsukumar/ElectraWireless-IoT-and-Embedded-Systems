@@ -149,7 +149,8 @@ export async function autoDiscoverSamsungTV(): Promise<string | null> {
     }
   }
 
-  const chunkSize = 50;
+  // Reduced to 10 to prevent Capacitor bridge crashes
+  const chunkSize = 10;
   for (let i = 0; i < ipsToScan.length; i += chunkSize) {
     const chunk = ipsToScan.slice(i, i + chunkSize);
     

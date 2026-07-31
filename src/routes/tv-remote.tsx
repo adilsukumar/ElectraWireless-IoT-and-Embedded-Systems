@@ -54,11 +54,13 @@ function TvRemotePage() {
     setIsScanning(true);
     toast("Scanning local network for Smart TVs...");
     
-    // Scan in parallel
-    const [panasonicIp, samsungIp] = await Promise.all([
-      autoDiscoverPanasonicTV(),
-      autoDiscoverSamsungTV()
-    ]);
+    // Scan sequentially to avoid overwhelming the Android networking bridge
+    let samsungIp = await autoDiscoverSamsungTV();
+    let panasonicIp = null;
+    
+    if (!samsungIp) {
+      panasonicIp = await autoDiscoverPanasonicTV();
+    }
     
     if (samsungIp) {
       setTvIp(samsungIp);
