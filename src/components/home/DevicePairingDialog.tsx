@@ -90,7 +90,7 @@ export function DevicePairingDialog() {
         on: false,
         online: true,
         watts: 15,
-        connectionType: isIP ? "wifi" : "ble",
+        connectionType: (deviceType === "tv" || isIP) ? "wifi" : "ble",
         ecosystem: detectedEcosystem,
         ...(isIP ? { ipAddress: networkAddress } : { macAddress: networkAddress }),
       };

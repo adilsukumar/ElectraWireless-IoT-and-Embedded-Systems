@@ -576,14 +576,8 @@ export function HomeProvider({ children }: { children: ReactNode }) {
             if (!matched.online) {
                dispatch({ type: "UPDATE_DEVICE", id: matched.id, patch: { online: true } });
             }
-          } else {
-            // Unrecognized paired device!
-            // Ignore generic audio devices if possible
-            const name = (deviceInfo.name || "").toLowerCase();
-            if (!name.includes("audio") && !name.includes("buds") && !name.includes("airpods")) {
-                setNewlyDiscoveredDevice(deviceInfo);
-            }
           }
+          // Intrusive auto-popup removed to prevent JBL/TV spam
         });
       });
     }
