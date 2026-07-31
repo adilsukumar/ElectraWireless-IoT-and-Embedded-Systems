@@ -34,6 +34,7 @@ import { useHome } from "@/lib/home/store";
 import { EllyLogo } from "@/components/elly/EllyLogo";
 import { EllyProvider, useElly } from "@/components/elly/EllyContext";
 import { Toaster } from "@/components/ui/sonner";
+import { Logo } from "@/components/Logo";
 
 const nav = [
   { to: "/", label: "Home", icon: LayoutDashboard, exact: true },
@@ -99,14 +100,12 @@ function LayoutInner({ children }: { children: ReactNode }) {
         <header className="sticky top-0 z-20 border-b border-border/40 glass">
           <div className="flex items-center justify-between px-4 py-3">
             <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-secondary text-secondary-foreground shadow-sm">
-                <User className="h-5 w-5" />
-              </div>
+              <Logo className="w-10 h-10" />
               <div className="min-w-0">
                 <p className="truncate font-display text-sm font-bold leading-none">
-                  Hi, Adil
+                  ElectraWireless
                 </p>
-                <p className="truncate text-[11px] text-muted-foreground mt-0.5">Welcome home</p>
+                <p className="truncate text-[11px] text-muted-foreground mt-0.5">Welcome, Adil</p>
               </div>
             </div>
             <div className="flex items-center gap-2">
