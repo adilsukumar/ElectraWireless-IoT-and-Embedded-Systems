@@ -604,12 +604,28 @@ export function HomeProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     if (!isHydrated) return;
-    try {
-      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-    } catch {
-      /* ignore */
-    }
+    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
   }, [state, isHydrated]);
+
+  // HOTFIX: Force deduplication on mount to fix hot-reload state persistence issues
+  useEffect(() => {
+    const uniqueDevices = new Map<string, Device>();
+    let hasDuplicates = false;
+    state.devices.forEach(d => {
+      if (d.macAddress) {
+        if (uniqueDevices.has(d.macAddress)) {
+          hasDuplicates = true;
+        } else {
+          uniqueDevices.set(d.macAddress, d);
+        }
+      } else {
+        uniqueDevices.set(d.id, d);
+      }
+    });
+    if (hasDuplicates) {
+      dispatch({ type: "HYDRATE", state: { ...state, devices: Array.from(uniqueDevices.values()) } });
+    }
+  }, []);
 
   const totalWatts = useMemo(
     () => state.devices.filter((d) => d.on).reduce((s, d) => s + d.watts, 0),
@@ -793,11 +809,18 @@ export function HomeProvider({ children }: { children: ReactNode }) {
     const { ApplianceBridge } = await import("./ApplianceBridge");
     
     // Abstracted bridge command for actual appliances
-    const success = await ApplianceBridge.sendCommand(d, {
+    // HOTFIX: Sanitize corrupted TVs on the fly so they don't fallback to Bluetooth
+    let targetDevice = { ...d };
+    if (targetDevice.type === "tv" && !targetDevice.ipAddress) {
+      targetDevice.ipAddress = "192.168.1.100";
+      targetDevice.connectionType = "wifi";
+    }
+
+    const success = await ApplianceBridge.sendCommand(targetDevice, {
       cmd: "set",
-      type: d.type,
-      state: !d.on,
-      val: d.brightness || d.temperature || d.fanSpeed || 0
+      type: targetDevice.type,
+      state: !targetDevice.on,
+      val: targetDevice.brightness || targetDevice.temperature || targetDevice.fanSpeed || 0
     });
     
     if (success) {
