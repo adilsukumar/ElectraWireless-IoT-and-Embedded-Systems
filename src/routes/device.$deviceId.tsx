@@ -1,5 +1,5 @@
 import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
-import { ArrowLeft, Thermometer, Gauge, Snowflake, Activity } from "lucide-react";
+import { ArrowLeft, Thermometer, Gauge, Snowflake, Activity, Tv } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
@@ -195,6 +195,24 @@ function DevicePage() {
                         />
                       ))}
                     </div>
+                  </div>
+                </div>
+              )}
+
+              {device.type === "tv" && (
+                <div className="space-y-6 mt-4">
+                  <div className="flex flex-col items-center justify-center p-8 border border-border/20 rounded-[1.5rem] bg-white dark:bg-secondary/10">
+                    <div className="bg-purple-500/20 p-4 rounded-full mb-4">
+                      <Tv className="h-8 w-8 text-purple-400" />
+                    </div>
+                    <h3 className="text-xl font-bold mb-2">Smart Remote</h3>
+                    <p className="text-muted-foreground text-center mb-6 max-w-[200px]">Launch the full-screen smart remote to control your TV</p>
+                    <Link 
+                      to="/tv-remote"
+                      className="w-full bg-primary text-primary-foreground hover:bg-primary/90 font-bold py-3 rounded-full flex items-center justify-center gap-2 transition-all"
+                    >
+                      Open Remote
+                    </Link>
                   </div>
                 </div>
               )}
