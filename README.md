@@ -8,27 +8,54 @@
   <a href="https://tailwindcss.com/"><img src="https://img.shields.io/badge/Tailwind_v4-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white" alt="TailwindCSS" /></a>
   <a href="https://capacitorjs.com/"><img src="https://img.shields.io/badge/Capacitor_8-119EFF?style=for-the-badge&logo=capacitor&logoColor=white" alt="Capacitor" /></a>
   <a href="https://www.tensorflow.org/js"><img src="https://img.shields.io/badge/TensorFlow.js-FF6F00?style=for-the-badge&logo=tensorflow&logoColor=white" alt="TensorFlow.js" /></a>
+  <a href="https://mlc.ai/web-llm/"><img src="https://img.shields.io/badge/Web_LLM-4B0082?style=for-the-badge&logo=web&logoColor=white" alt="Web-LLM" /></a>
 </div>
 
 <br />
 
-> **ELLY** is a local-first environmental control dashboard and conversational AI designed to orchestrate smart home ecosystems. It removes cloud dependencies to provide zero-latency execution, guarantees absolute privacy, and ensures continuous functionality during internet outages.
+> **ELLY** is the ultimate local-first, zero-latency environmental control dashboard and conversational AI ecosystem. Designed to orchestrate highly complex smart home infrastructures without relying on cloud servers, ELLY guarantees absolute privacy, unparalleled speed, and continuous functionality during internet outages.
 
 ---
 
 ## 🌟 Executive Summary
 
-ELLY reimagines the smart home experience by pushing computation to the edge. Built with a mobile-first philosophy using **React 19**, **TailwindCSS v4**, and **Capacitor 8**, the ecosystem boasts an incredibly fluid, glassmorphic UI characterized by dynamic blurs and deep OLED-optimized blacks. 
+ELLY reimagines the smart home experience by pushing computation entirely to the edge. Built with a mobile-first philosophy using **React 19**, **TailwindCSS v4**, and **Capacitor 8**, the ecosystem boasts an incredibly fluid, glassmorphic UI characterized by dynamic blurs, swipe gestures, and deep OLED-optimized blacks. 
 
-Beyond aesthetics, ELLY replaces rigid voice commands with a **Natural Language Processing engine (Web-LLM)** and an **AI Vision portal (TensorFlow.js + MobileNet Embeddings)** that operate entirely offline. By leveraging **Dual-Band Discovery (BLE & Local Subnet)**, ELLY finds, connects, and controls hardware instantaneously without ever routing through a manufacturer's cloud.
+Beyond aesthetics, ELLY replaces rigid voice commands and fragmented apps with a **Natural Language Processing engine (Web-LLM)** and an **AI Vision portal (TensorFlow.js + MobileNet Embeddings)** that operate entirely offline. By leveraging **Dual-Band Discovery (BLE & Local Subnet)**, ELLY finds, connects, and controls over 60+ hardware protocols instantaneously without ever routing through a manufacturer's cloud server.
+
+---
+
+## 🚀 Core Features & Modules
+
+### 🤖 Elly Portal: The Conversational AI
+At the heart of the ecosystem is the **EllyPortal**—a conversational AI that breaks the mold of traditional smart assistants.
+*   **Edge-Native LLM:** Powered by `@mlc-ai/web-llm`, Elly processes intents natively in the browser/app. She understands contextual aliases, spatial awareness, and chained commands (e.g., *"Dim the lights in the bedroom and turn the AC to 22"*).
+*   **Native Voice Engine:** Utilizes Capacitor's native STT (Speech-to-Text) and TTS (Text-to-Speech) for a highly responsive, hands-free conversational interface (`VoiceBar.tsx`).
+*   **Dynamic Fallbacks:** If a device is unreachable or a command is ambiguous, Elly provides context-aware conversational alternatives rather than a generic error.
+
+### 👁️ AI Vision & Biometrics
+*   **Appliance Scanning:** In the `AddApplianceDialog`, users can simply point their device's camera at an appliance. Using TensorFlow.js and COCO-SSD, ELLY automatically detects the object (e.g., Fan, TV) and initiates pairing mode.
+*   **Biometric Facial Recognition:** The `MembersManager` module utilizes MobileNet embeddings to map user facial features. By computing cosine similarity vectors, ELLY can recognize authorized household members locally to restrict access to secure gateways or locks, entirely on-device.
+*   **Live Camera Matrix (`camera.tsx`):** Aggregates local IP/RTSP camera feeds into a zero-latency monitoring grid.
+
+### 🏠 Universal Remotes & Dashboards
+ELLY provides hyper-specific, beautifully designed remote interfaces for diverse hardware:
+*   **TV & Entertainment (`tv-remote.tsx`, `audio-remote.tsx`):** Full D-pad controls, input selection, and volume rockers. Connects directly to Samsung Tizen (via WebSockets), LG WebOS, and Panasonic Viera (via local SOAP).
+*   **Climate Control:** Interactive circular sliders and dials for Air Conditioners and HVAC systems.
+*   **Smart Refrigeration (`fridge-remote.tsx`):** Tracks internal temperatures and integrates with smart fridge diagnostics.
+*   **Gaming Consoles (`console-remote.tsx`):** Xbox and PlayStation local REST API integrations for waking devices and switching inputs.
+*   **Spatial Floorplan (`map.tsx`):** An interactive 2D floorplan where users can drag and drop devices into specific rooms, visualizing their smart home layout intuitively.
+
+### ⚡ Analytics & Energy Management
+*   **Live Telemetry (`EnergyChart.tsx`):** Utilizes `recharts` to render real-time, interactive graphs detailing live household power draw (Watts), temperature trends, and air quality metrics over time.
+*   **Macro Automations (`automations.tsx`):** Create cross-ecosystem routines. E.g., *Night Mode* dims lights, adjusts the HVAC, and arms perimeter sensors. *Eco Mode* actively throttles high-draw appliances based on real-time energy telemetry.
 
 ---
 
 ## 🔌 Unprecedented Hardware Support (60+ Native Protocols)
 
-ELLY is engineered to be the ultimate universal remote for the smart home, completely bypassing the fragmentation of vendor-specific apps. We have natively integrated **over 60+ communication protocols and appliance ecosystems** directly into our Edge Event Bus. 
+ELLY is engineered to be the ultimate universal remote for the smart home. We have natively integrated **over 60+ communication protocols and appliance ecosystems** directly into our Edge Event Bus.
 
-### Supported Ecosystems & Hardware Protocols
 <details>
 <summary><b>💡 Smart Lighting & LEDs</b> (Click to expand)</summary>
 
@@ -109,8 +136,6 @@ ELLY is engineered to be the ultimate universal remote for the smart home, compl
 *   **Pi-hole** (Local DNS sinkhole controls)
 </details>
 
-*Note: Integration levels vary by device, but all utilize ELLY's decentralized event bus to skip external API round-trips for near-instantaneous response times.*
-
 ---
 
 ## 🎨 Interface & Interaction Design
@@ -124,28 +149,21 @@ Our UI/UX architecture is engineered to provide a premium native app experience 
 
 ---
 
-## 🧠 Conversational AI & Biometric Portal
-
-ELLY removes the need for rigid "wake words" and exact command syntaxes by processing data natively on the device.
-
-*   **In-Browser LLM Inference (`@mlc-ai/web-llm`):** Understands complex natural language variations and semantic aliases (e.g., treating "AC", "cooling", and "climate" as the same operational endpoint) with zero network latency.
-*   **Biometric Facial Recognition:** ELLY's AI Vision utilizes MobileNet embeddings (`tfjs`) to perform facial recognition directly on the device. It calculates cosine similarity vectors to specifically recognize custom user profiles (like identifying "Snehal Dixit") without sending images to the cloud.
-*   **On-Device Computer Vision:** Utilizing TensorFlow.js and the COCO-SSD model, the system performs real-time object detection and movement tracking on live camera feeds.
-*   **Voice Operations:** Features native Text-to-Speech (TTS) and Speech-to-Text (STT) via Capacitor for a seamless hands-free portal.
-*   **Dynamic Fallback Logic:** Intelligently suggests randomized, context-aware alternatives when a command falls outside recognized parameters.
-
----
-
 ## ⚡ Core Architecture & Data Flow
 
 Engineered for complete offline reliability and zero-latency execution.
 
+### Dual-Band Discovery Engine
+The system bypasses standard browser sandboxing to detect hardware automatically without manual IP configuration.
+*   **Bluetooth Low Energy (BLE):** Utilizes native Web Bluetooth and Capacitor plugins to scan for and establish connections with smart peripherals actively broadcasting in pairing mode.
+*   **Wi-Fi Subnet Scanning:** Sweeps the local subnet via Port 55000 to identify IP-based smart appliances, hooking directly into native REST/SOAP endpoints.
+
 ### State & Storage Backbone
-*   **Hydration:** Global application state is managed via React 19 Context and continuously synced with `localStorage`.
+*   **Hydration:** Global application state is managed via React 19 Context (`store.tsx`) and continuously synced with `localStorage`.
 *   **Resilience:** If external routing drops, the local dashboard and automated triggers retain 100% of their operational logic.
 
 ### Decentralized Event Bus
-*   **Workflow:** When the Web-LLM parser recognizes an intent, the payload is immediately broadcast to the corresponding device adapter.
+*   **Workflow:** When the Web-LLM parser recognizes an intent or a UI toggle is switched, the payload is immediately broadcast to the corresponding device adapter.
 *   **Latency Elimination:** By skipping external API round-trips, the system achieves near-instantaneous hardware response times.
 
 ### Technology Stack
@@ -156,38 +174,6 @@ Engineered for complete offline reliability and zero-latency execution.
 | **Routing & State** | TanStack Router, TanStack Query, React Context |
 | **Edge AI & Vision** | `@mlc-ai/web-llm`, TensorFlow.js, coco-ssd, MobileNet |
 | **Native Compilation** | `@capacitor/core` (iOS/Android bindings) |
-
----
-
-## 🔌 Hardware Connectivity & Protocol Interface
-
-### Dual-Band Discovery Engine
-The system bypasses standard browser sandboxing to detect hardware automatically without manual IP configuration.
-*   **Bluetooth Low Energy (BLE):** Utilizes native Capacitor plugins to scan for and establish connections with smart peripherals actively broadcasting in pairing mode.
-*   **Wi-Fi Subnet Scanning:** Sweeps the local subnet via Port 55000 to identify IP-based smart appliances, hooking directly into native REST/SOAP endpoints.
-
-### Modular Protocol Bridges
-Device integration is strictly decoupled from the core event bus for future-proofing.
-*   **Architecture:** Protocol bridges (e.g., `samsung.ts`) operate as self-contained modules. Adding support for Matter, Zigbee, or MQTT simply requires dropping a new adapter into the directory without refactoring core logic.
-*   **Universal Remotes:** Exposes full D-Pad interactions, input source switching, and precise volume control for Smart Displays (Samsung, Panasonic).
-*   **Immersive Controls:** Fluid, touch-optimized circular sliders for HVAC/AC units, multi-stage fan speed controllers, and tactile RGB+ color pickers for smart lights.
-
----
-
-## 🛡️ Automation, Security & Analytics
-
-*   **Energy Consumption Monitoring:** Integrates a live energy dashboard utilizing `recharts` to visualize real-time power draw and temperature trends across the household.
-*   **Local-Only Credential Storage:** Employs secure, encrypted local storage for sensitive TV and API tokens so credentials never leave the physical device.
-*   **Always-On Dashboard Mode:** Integrates `@capacitor-community/keep-awake` to prevent the device from sleeping when mounted as a permanent smart home wall-panel.
-
-### Macro Automations
-Pre-configured environmental states manage multiple hardware endpoints simultaneously:
-
-| Automation Mode | System Actions Initiated |
-| :--- | :--- |
-| 🌙 **Night Mode** | Dims internal lighting, lowers HVAC temperature, and activates perimeter security sensors. |
-| 🍃 **Eco/Saver Mode** | Identifies and throttles high-draw appliances to optimize energy consumption. |
-| 🔒 **Away Mode** | Arms security modules, terminates unnecessary power loads, and engages smart locks. |
 
 ---
 
