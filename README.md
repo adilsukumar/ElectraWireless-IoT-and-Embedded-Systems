@@ -17,271 +17,202 @@
 
 <div align="center">
   <h1 align="center">🏡 ELLY: Intelligent Home Automation</h1>
-  <p align="center">
-    <strong>A lightning-fast, local-first IoT dashboard and conversational AI assistant for the ultimate smart home experience.</strong>
-  </p>
 </div>
+
+---
+
+## 📝 Executive Summary
+
+**ELLY** is a monolithic, fully localized smart home automation platform built by **ElectraWireless**. Designed to completely eliminate the latency, privacy concerns, and downtime associated with cloud-dependent IoT systems, ELLY functions as a standalone brain for your environment. 
+
+It combines **cutting-edge web architectures (React 19, Vite, TanStack Router)** with **in-browser Machine Learning (Web-LLM, TensorFlow.js)** to deliver a zero-latency conversational AI and computer vision security system. Packaged natively for iOS and Android via Capacitor, it discovers devices organically across Wi-Fi and Bluetooth, uniting Panasonic TVs, Samsung appliances, and BLE hardware under one gorgeous, glassmorphic UI.
 
 ---
 
 <details open>
-  <summary><h2>📑 Table of Contents</h2></summary>
+  <summary><h2>📑 Detailed Table of Contents</h2></summary>
 
-- [🌟 Overview](#-overview)
-- [✨ Key Features](#-key-features)
-  - [📡 Unified Native Device Discovery](#-unified-native-device-discovery)
-  - [🤖 Local-First Conversational AI](#-local-first-conversational-ai)
-  - [🎛️ Universal Remotes & Control](#️-universal-remotes--control)
-  - [🔒 Security & Vision Integration](#-security--vision-integration)
-  - [⚡ Energy & Automation Hub](#-energy--automation-hub)
-- [🎨 Stunning UI/UX & Responsive Design](#-stunning-uiux--responsive-design)
-- [🛠️ Technology Stack](#️-technology-stack)
-- [📁 Folder Structure](#-folder-structure)
+- [📝 Executive Summary](#-executive-summary)
+- [✨ Extensive Feature Breakdown](#-extensive-feature-breakdown)
+  - [Hardware & Device Discovery](#hardware--device-discovery)
+  - [Conversational AI Portal](#conversational-ai-portal)
+  - [Security & Local Vision](#security--local-vision)
+  - [Energy & Environment Macros](#energy--environment-macros)
+- [🛠️ Deep Dive: Technology Stack](#️-deep-dive-technology-stack)
+- [🧠 Under the Hood: How We Built It](#-under-the-hood-how-we-built-it)
+  - [1. Local In-Browser LLM Engine](#1-local-in-browser-llm-engine)
+  - [2. On-Device TensorFlow Vision & Face Recognition](#2-on-device-tensorflow-vision--face-recognition)
+  - [3. Zero-Setup Discovery Protocol (Wi-Fi & BLE)](#3-zero-setup-discovery-protocol-wi-fi--ble)
+  - [4. The Decentralized Event Bus](#4-the-decentralized-event-bus)
+- [🎨 Aesthetics & UI Engineering](#-aesthetics--ui-engineering)
+- [📁 Project Architecture (Tree)](#-project-architecture-tree)
 - [📱 Installation & Deployment](#-installation--deployment)
-  - [Run on the Web (Development)](#run-on-the-web-development)
-  - [Build for Android (Native)](#build-for-android-native)
-  - [Build for iOS (Native via GitHub Actions)](#build-for-ios-native-via-github-actions)
-- [📝 Architecture Notes](#-architecture-notes)
+  - [Web / Local Server](#web--local-server)
+  - [Android Native Deployment](#android-native-deployment)
+  - [iOS Cloud Build Pipeline](#ios-cloud-build-pipeline)
 - [🤝 Contributing](#-contributing)
-- [📄 License](#-license)
-- [👏 Credits](#-credits)
+- [📄 License & Credits](#-license--credits)
 </details>
 
 ---
 
-## 🌟 Overview
+## ✨ Extensive Feature Breakdown
 
-Welcome to the future of smart home control. **ELLY** is an advanced environmental and automation layer designed specifically for modern smart homes. Built by **ElectraWireless**, this project completely re-imagines how we interact with our living spaces by bridging cutting-edge web technologies with localized hardware protocols.
+### Hardware & Device Discovery
+*   **Dual-Band Scanner:** The system automatically sweeps the local network (Port 55000 for Panasonic SOAP, REST for Samsung) and leverages Native Bluetooth Low Energy APIs to find devices.
+*   **Universal Remotes:** Deep, granular React control panels built specifically for:
+    *   **Smart TVs:** Full D-Pad navigation, app launching, input switching, and volume control.
+    *   **Climate Control (AC):** Thermostat dialing and swing modes.
+    *   **Refrigerators:** Temperature monitoring and inventory tagging.
+    *   **Audio/Consoles:** Volume syncing and power state management.
 
-Say goodbye to slow, cloud-dependent dashboards that fail when your internet goes down. ELLY uses a **100% localized state management architecture** and a **lightning-fast local AI parser** to give you *instantaneous* feedback and control over every appliance, light, and climate system in your house.
+### Conversational AI Portal
+*   **Natural Language Processing:** Say things like "Set the bedroom AC to 23 degrees" or "Turn off everything." The semantic parser breaks this down without needing rigid, robotic phrasing.
+*   **Jarvis-Mode Voice Integration:** Uses Capacitor's native Speech-to-Text (`@capacitor-community/speech-recognition`) and Text-to-Speech engines for hands-free interactions. 
 
----
+### Security & Local Vision
+*   **Real-time Object Detection:** Identifies people, pets, and movement directly through local IP cameras using COCO-SSD.
+*   **Custom Face Registration:** Allows the homeowner to register faces via the device's camera, mapping embeddings locally so the system recognizes authorized users versus intruders.
 
-## ✨ Key Features
-
-### 📡 Unified Native Device Discovery
-ELLY features a custom-built, dual-band discovery engine designed to seamlessly detect real hardware on your network with **Zero Setup**:
-
-<table align="center">
-  <tr>
-    <td align="center" width="50%">
-      <img src="https://cdn.simpleicons.org/bluetooth/0082FC" width="50" alt="Bluetooth" />
-      <br />
-      <b>Native Bluetooth Low Energy (BLE)</b>
-      <p>Bypasses browser sandboxes to scan for and connect to active smart home peripherals (like smart plugs and bulbs) in pairing mode via Capacitor plugins.</p>
-    </td>
-    <td align="center" width="50%">
-      <img src="https://cdn.simpleicons.org/wifi/0080ff" width="50" alt="Network" />
-      <br />
-      <b>Local Wi-Fi Subnet Scanning</b>
-      <p>Automatically sweeps the local Wi-Fi subnet (Port 55000) to discover Panasonic Viera, Samsung TVs, and IP-based smart appliances, instantly hooking into their native SOAP/REST interfaces.</p>
-    </td>
-  </tr>
-</table>
-
-### 🤖 Local-First Conversational AI
-Why click when you can just talk? ELLY features a beautifully integrated conversational portal that operates **without** relying on slow, rate-limited cloud LLMs, utilizing Web-LLM and local parsing.
-
-*   💬 **Advanced Semantic Parsing**: Understands dozens of natural language variations, complex aliases (like "climate" vs "ac", "bulb" vs "light"), and conversational small talk.
-*   🧠 **Dynamic Fallback Logic**: Instead of generic errors, ELLY actively attempts to guide you with randomized, context-aware suggestions if a command isn't recognized.
-*   🎙️ **Voice Integration**: Built-in speech-to-text (STT) and text-to-speech (TTS) utilizing native capacitor plugins for a true hands-free Jarvis-like experience.
-*   ⚡ **Zero-Latency Execution**: Saying "Turn off all lights" instantly triggers the event bus to shut off devices with zero network latency.
-
-### 🎛️ Universal Remotes & Control
-ELLY doesn't just turn things on and off; it provides deep, granular control interfaces for your devices.
-
-*   📺 **Smart TV Remote**: Full D-Pad, volume control, input switching, and app launching directly integrated with Panasonic and Samsung protocols.
-*   🎵 **Audio Control**: Multi-room audio syncing, equalizer presets, and volume management.
-*   🎮 **Console Management**: Monitor state and manage network connectivity for gaming consoles.
-*   ❄️ **Smart Appliances**: Dedicated remote interfaces for AC units (Climate control) and Smart Fridges (Temperature & Inventory monitoring).
-
-### 🔒 Security & Vision Integration
-*   📹 **Live Camera Feeds**: Integrates with local IP cameras.
-*   👁️ **AI Vision**: Employs `@tensorflow/tfjs` and `coco-ssd` to perform on-device object detection and movement tracking without sending video feeds to external servers.
-
-### ⚡ Energy & Automation Hub
-*   📊 **Energy Dashboard**: Real-time charts via `recharts` to monitor household power consumption and optimize usage.
-*   🏠 **Room Mapping**: Assign devices to specific rooms with interactive floorplan/map views.
-*   ⚙️ **Quick Automations**:
-    *   🌙 **Night Mode**: Dims the lights, lowers the AC temperature, and activates perimeter sensors.
-    *   🌿 **Eco/Saver Mode**: Optimizes high-draw appliances to reduce your carbon footprint and save electricity.
-    *   🚶 **Away Mode**: Arms the security system, turns off all unnecessary devices, and locks the doors.
+### Energy & Environment Macros
+*   **Live Metrics:** Recharts integration displays total Wattage load on the house dynamically.
+*   **One-Tap Automations:** Night Mode, Eco/Saver Mode, and Away Mode dynamically adjust dozens of variables across the state tree in milliseconds.
 
 ---
 
-## 🎨 Stunning UI/UX & Responsive Design
+## 🛠️ Deep Dive: Technology Stack
 
-<div align="center">
-  <img src="https://img.shields.io/badge/Design-Glassmorphism-1e1e1e?style=for-the-badge&logo=figma&logoColor=white" alt="Design" />
-  <img src="https://img.shields.io/badge/Theme-OLED_Dark-black?style=for-the-badge&logo=moon&logoColor=white" alt="Theme" />
-  <img src="https://img.shields.io/badge/Animations-Framer_Motion-e91e63?style=for-the-badge&logo=framer&logoColor=white" alt="Animations" />
-</div>
-<br />
+We refused to compromise on performance. ELLY utilizes the absolute latest web paradigms to achieve native-like speeds:
 
-*   💎 **Premium Glassmorphism**: The entire application is built using advanced glassmorphic design principles with dynamic blur effects, sleek squircles, and floating cards.
-*   🌓 **Vibrant Color System**: Beautiful deep blacks with soft, luminous pastel purple/blue accents tailored for OLED displays and modern sensibilities.
-*   ✨ **Fluid Animations**: Utilizing `framer-motion` and `tw-animate-css` for buttery-smooth page transitions, micro-interactions, and satisfying visual feedback.
-*   📱 **Mobile-First App Experience**: Designed to feel like a native iOS/Android application with bottom navigation sheets and swipe gestures, but scales perfectly to robust desktop environments.
-
----
-
-## 🛠️ Technology Stack
-
-ELLY is built on the bleeding edge of modern web and mobile technologies, ensuring high performance and developer ergonomics.
-
-### Frontend Core
-*   <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/react/react-original.svg" width="20" /> **React 19**: The latest concurrent rendering features.
-*   <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/typescript/typescript-original.svg" width="20" /> **TypeScript**: End-to-end type safety.
-*   <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/tailwindcss/tailwindcss-original.svg" width="20" /> **TailwindCSS v4**: Next-gen utility-first styling with custom Glassmorphism tokens.
-*   <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/vitejs/vitejs-original.svg" width="20" /> **Vite**: Ultra-fast HMR and optimized builds.
-
-### Routing & State
-*   <img src="https://seeklogo.com/images/T/tanstack-logo-8A18B99DD7-seeklogo.com.png" width="20" /> **TanStack Router**: Fully type-safe client-side routing.
-*   <img src="https://seeklogo.com/images/R/react-query-logo-1340EA4CE9-seeklogo.com.png" width="20" /> **TanStack Query**: Powerful asynchronous state management.
-*   🗃️ **React Context + LocalStorage**: Robust offline-first global state.
-
-### AI & Machine Learning
-*   🧠 **@mlc-ai/web-llm**: In-browser Large Language Model inference.
-*   👁️ **TensorFlow.js (@tensorflow/tfjs)**: Local computer vision and classification.
-
-### UI Components & Icons
-*   🎨 **Radix UI**: Unstyled, accessible component primitives.
-*   🖋️ **Lucide React**: Beautiful, consistent icon set.
-*   📈 **Recharts**: Composable charting library.
-
-### Mobile & Native (Capacitor)
-*   📱 **@capacitor/core** (iOS/Android)
-*   🔌 **Capacitor Plugins**: Speech Recognition, Text-to-Speech, Keep Awake.
-*   🔵 **Cordova Plugins**: Bluetooth Serial, Background Mode.
+| Layer | Technologies Used | Purpose |
+| :--- | :--- | :--- |
+| **Frontend Framework** | React 19, Vite, TypeScript | Concurrent rendering, type safety, and blazing fast HMR. |
+| **Routing** | `@tanstack/react-router` | Client-side, 100% type-safe file-based routing mechanism. |
+| **State Management** | `@tanstack/react-query`, React Context | Handles asynchronous network requests and global hydration via LocalStorage. |
+| **Styling Engine** | TailwindCSS v4, Radix UI | Utility-first styling with unstyled, highly accessible primitive components. |
+| **Animations** | `framer-motion`, `tw-animate-css` | Complex physics-based micro-interactions and transitions. |
+| **Machine Learning** | `@mlc-ai/web-llm`, `@tensorflow/tfjs` | Heavy lifting for local semantic parsing and computer vision. |
+| **Mobile Compilation** | Capacitor 8.x, Cordova Plugins | Native shell bridging web tech to iOS/Android hardware APIs (Bluetooth, Mic). |
 
 ---
 
-## 📁 Folder Structure
+## 🧠 Under the Hood: How We Built It
+
+This project is a masterclass in pushing the modern browser (and WebViews) to their absolute limits. Here is exactly how we engineered the core pillars of ELLY:
+
+### 1. Local In-Browser LLM Engine
+To completely sever ties with the cloud (like OpenAI or Claude APIs), we implemented `@mlc-ai/web-llm`. 
+*   **How it works:** When ELLY boots, it utilizes WebGPU (or falls back to WASM) to load a quantized Large Language Model directly into the user's local memory footprint. 
+*   **Execution:** When a user dictates a command via the microphone, the text is passed to this local LLM. We structured a strict prompt architecture that forces the LLM to output precise JSON corresponding to our device states. This gives ELLY the ability to handle conversational small talk ("How are you?") while flawlessly interpreting command intent ("Turn the lights blue") *entirely offline*.
+
+### 2. On-Device TensorFlow Vision & Face Recognition
+In the `/camera` route, we didn't just want to embed an IP stream. We wanted the home to *see*.
+*   **How it works:** We pull the MediaStream and feed the HTML `<video>` frames directly into `@tensorflow/tfjs`. We run the `coco-ssd` model concurrently to draw bounding boxes around identified objects (cars, pets, humans).
+*   **Face Embeddings:** We implemented a custom registration hook that uses MobileNet to generate multi-dimensional vector embeddings of faces. When active, it calculates cosine similarity against registered faces to trigger specific automations (e.g., unlocking a door when the owner walks up, or alerting if an unknown person is at the door).
+
+### 3. Zero-Setup Discovery Protocol (Wi-Fi & BLE)
+We eliminated the need for QR codes and complex pairing flows.
+*   **Wi-Fi Sweep (`src/lib/panasonic.ts` & `samsung.ts`):** ELLY dynamically iterates through local subnet IPs (e.g., `192.168.1.X`), pinging standardized ports. For Panasonic TVs, it targets port `55000` and instantly negotiates an XML-SOAP handshake, generating an API token.
+*   **Bluetooth Low Energy:** Using the `cordova-plugin-bluetooth-serial`, we bypass sandbox restrictions to actively scan for unpaired smart-plugs or bulbs broadcasting in pairing mode, intercepting their GATT characteristics.
+
+### 4. The Decentralized Event Bus
+Typical React apps use top-down prop drilling or massive Redux stores. We designed a localized Event Bus inside our Context.
+*   **How it works:** Every interactive component (a light switch, a TV D-Pad) dispatches an action. The reducer doesn't just update the UI state; it fires asynchronous side-effects to the hardware wrapper simultaneously. This ensures the UI is optimistically updated at 120hz, while the network request (which might take 50ms) trails behind, resulting in a system that feels utterly instantaneous.
+
+---
+
+## 🎨 Aesthetics & UI Engineering
+
+We believe a smart home dashboard shouldn't look like an Excel spreadsheet. It should look like the future.
+
+*   **Deep Glassmorphism:** We wrote custom CSS filters combining `backdrop-blur`, saturated `rgba` overlays, and subtle `box-shadow` techniques to create floating, frosted glass panels.
+*   **OLED Tailored:** The color palette relies heavily on pure `#000000` blacks interspersed with electric purple (`#8b5cf6`) and neon accents. On physical mobile OLED screens, this saves battery and creates infinite contrast.
+*   **Dynamic SVG Integration:** From custom SVGs mapped for specific devices (routers, game consoles) to fluid `framer-motion` layout transitions that guide the user's eye organically as they navigate rooms.
+
+---
+
+## 📁 Project Architecture (Tree)
 
 ```text
 ElectraWireless-IoT-and-Embedded-Systems/
-├── android/                 # Native Android project (Capacitor)
-├── ios/                     # Native iOS project (Capacitor)
-├── public/                  # Static assets (fonts, icons, models)
+├── android/                 # Native Capacitor wrapper (Java/Gradle)
+├── ios/                     # Native Capacitor wrapper (Swift/Podfile)
 ├── src/
-│   ├── assets/              # App images and vector graphics
-│   ├── components/          # Reusable React components
-│   │   ├── elly/            # ELLY AI Assistant specific components
-│   │   ├── home/            # Dashboard and dashboard widgets
-│   │   └── ui/              # Radix UI primitive wrappers
-│   ├── hooks/               # Custom React hooks
-│   ├── lib/                 # Utilities, hardware API wrappers (samsung.ts, etc.)
-│   ├── routes/              # TanStack Router page components (remotes, settings, map)
-│   ├── main.tsx             # Application entry point
-│   ├── router.tsx           # Router configuration
-│   └── styles.css           # Global Tailwind and custom CSS
-├── capacitor.config.ts      # Capacitor builder configuration
-├── package.json             # Dependencies and scripts
-├── vite.config.ts           # Vite build configuration
-└── tailwind.config.ts       # Tailwind theme configuration
+│   ├── assets/              # Static vector graphics & animations
+│   ├── components/
+│   │   ├── elly/            # The conversational AI portal & Web-LLM hooks
+│   │   ├── home/            # Dashboard tiles, Modals, Energy Charts
+│   │   └── ui/              # Radix UI implementations (shadcn inspired)
+│   ├── hooks/               # Custom React lifecycle hooks
+│   ├── lib/                 # Core Brain:
+│   │   ├── home/            # Global state store, Reducers, AI parser logic
+│   │   ├── panasonic.ts     # Panasonic Viera SOAP API wrapper
+│   │   ├── samsung.ts       # Samsung Smart API wrapper
+│   │   └── network.ts       # Local subnet utilities
+│   ├── routes/              # TanStack File-Based Routes (Pages)
+│   │   ├── camera.tsx       # TensorFlow vision engine
+│   │   ├── index.tsx        # Main dashboard
+│   │   ├── map.tsx          # Interactive floorplan
+│   │   └── tv-remote.tsx    # Dedicated remote GUI
+│   ├── main.tsx             # DOM Entrypoint
+│   └── styles.css           # Global Tailwind tokens & Glassmorphism classes
+├── capacitor.config.ts      # Native build bridging logic
+└── package.json             # NPM architecture
 ```
 
 ---
 
 ## 📱 Installation & Deployment
 
-### Prerequisites
-Make sure you have [Node.js](https://nodejs.org) (v18+) or [Bun](https://bun.sh) installed. For mobile builds, you will need **Android Studio** and/or **Xcode**.
+### Web / Local Server
+*Requirements: Node 18+ or Bun*
 
-### Run on the Web (Development)
+```bash
+git clone https://github.com/adilsukumar/ElectraWireless-IoT-and-Embedded-Systems.git
+cd ElectraWireless-IoT-and-Embedded-Systems
+npm install
+npm run dev
+```
 
-1. **Clone the repository:**
-   ```bash
-   git clone https://github.com/adilsukumar/ElectraWireless-IoT-and-Embedded-Systems.git
-   cd ElectraWireless-IoT-and-Embedded-Systems
-   ```
+### Android Native Deployment
+To access the Native Bluetooth & Background Keep-Awake features:
 
-2. **Install dependencies:**
-   ```bash
-   npm install
-   # or
-   bun install
-   ```
+```bash
+npm run build
+npx cap sync android
+npx cap open android
+```
+*(Requires Android Studio. From there, click the 'Play' button to compile the APK to an attached phone).*
 
-3. **Start the development server:**
-   ```bash
-   npm run dev
-   # or
-   bun dev
-   ```
-   *The app will be available at `http://localhost:5173`.*
+### iOS Cloud Build Pipeline
+We implemented a GitHub Actions workflow to build the `.ipa` without needing a local macOS machine.
 
-### Build for Android (Native)
-
-To unlock the true power of ELLY (including Native Bluetooth and Wi-Fi Scanning), deploy it as a native Android APK:
-
-1. **Build the web project:**
-   ```bash
-   npm run build
-   ```
-
-2. **Sync with Capacitor:**
-   ```bash
-   npx cap sync android
-   ```
-
-3. **Open in Android Studio:**
-   ```bash
-   npx cap open android
-   ```
-   *From Android Studio, you can build the APK or run it directly on an attached physical device.*
-
-### Build for iOS (Native via GitHub Actions)
-
-Don't have a Mac? No problem! This repository is configured with a **Cloud CI/CD Pipeline**.
-
-1. Navigate to the **Actions** tab on this GitHub repository.
+1. Go to the **Actions** tab on this repo.
 2. Select the **Build iOS IPA (Unsigned)** workflow.
 3. Click **Run workflow**.
-4. Once completed, download the `Elly-iOS-App` artifact (which contains the `.ipa` file).
-5. Sideload the app onto your iPhone using **AltStore** or **Sideloadly** from your Windows PC!
-
----
-
-## 📝 Architecture Notes
-
-This project was built from the ground up to be **100% local**, specifically architected without any external cloud dependencies to guarantee absolute privacy, security, and maximum performance.
-
-*   **Offline-First Reliability**: The entire React Context state is hydrated from and synced to `localStorage`. If your router loses internet connection, your local network dashboard and automations remain 100% functional.
-*   **Decentralized Event Bus**: The AI command parsing engine integrates directly into the global dispatch system. When a voice command is recognized, the payload is immediately dispatched to the corresponding device adapter without any API latency.
-*   **Modular Hardware Adapters**: Devices in the `src/lib/` folder (like `samsung.ts`) act as self-contained protocol bridges, making it trivial to add support for new smart home ecosystems (Zigbee, Matter, MQTT) in the future.
+4. Download the `Elly-iOS-App` artifact upon completion.
+5. Sideload via **AltStore** or **Sideloadly**!
 
 ---
 
 ## 🤝 Contributing
 
-We welcome contributions from the community to make ELLY even better!
+This project is actively maintained by ElectraWireless R&D. If you want to integrate a new smart home protocol (like Zigbee over serial, or MQTT bridging):
 
-1. Fork the Project
-2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the Branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
-
-Please ensure your code follows the existing formatting (we use `Prettier` and `ESLint`) and that all new device integrations provide a fallback mock for development environments.
+1. Fork the repo.
+2. Add your hardware interface inside `src/lib/`.
+3. Add a mock fallback so developers without the hardware can still test the UI!
+4. Submit a Pull Request.
 
 ---
 
-## 📄 License
+## 📄 License & Credits
 
-Distributed under the **MIT License**. See `LICENSE` for more information.
-
-<div align="center">
-  <img src="https://img.shields.io/badge/Open%20Source-%E2%9D%A4-red?style=for-the-badge" alt="Open Source Love" />
-</div>
-
----
-
-## 👏 Credits
+Distributed under the **MIT License**.
 
 <div align="center">
-  <p><b>Crafted with passion by</b></p>
-  <h3>Adil Sukumar & Snehal Dixit</h3>
+  <p><b>Conceptualized, Designed, and Engineered by</b></p>
+  <h2>Adil Sukumar & Snehal Dixit</h2>
   <p><b>ElectraWireless Research & Development</b></p>
   <br/>
   <a href="https://github.com/adilsukumar"><img src="https://img.shields.io/badge/GitHub-Adil%20Sukumar-black?style=for-the-badge&logo=github" alt="Adil Sukumar" /></a>
@@ -289,7 +220,6 @@ Distributed under the **MIT License**. See `LICENSE` for more information.
 </div>
 
 <br/>
-
 <div align="center">
   <img src="https://capsule-render.vercel.app/api?type=waving&color=timeGradient&height=100&section=footer" width="100%" alt="Footer" />
 </div>
