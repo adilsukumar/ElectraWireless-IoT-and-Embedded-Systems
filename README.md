@@ -24,6 +24,95 @@ Beyond aesthetics, ELLY replaces rigid voice commands with a **Natural Language 
 
 ---
 
+## 🔌 Unprecedented Hardware Support (60+ Native Protocols)
+
+ELLY is engineered to be the ultimate universal remote for the smart home, completely bypassing the fragmentation of vendor-specific apps. We have natively integrated **over 60+ communication protocols and appliance ecosystems** directly into our Edge Event Bus. 
+
+### Supported Ecosystems & Hardware Protocols
+<details>
+<summary><b>💡 Smart Lighting & LEDs</b> (Click to expand)</summary>
+
+*   **Philips Hue** (Local API via Bridge)
+*   **WLED** (Direct UDP/HTTP Control)
+*   **Yeelight** (Local LAN Control Protocol)
+*   **LIFX** (Local UDP API)
+*   **WiZ** (Local UDP)
+*   **Govee** (BLE & Local API)
+*   **Nanoleaf** (Local Network API)
+*   **MagicHome / FluxLED** (Direct TCP)
+*   **IKEA TRÅDFRI** (Via Gateway/CoAP)
+*   **Sengled** 
+</details>
+
+<details>
+<summary><b>📺 Entertainment & Smart Displays</b> (Click to expand)</summary>
+
+*   **Samsung Smart TVs** (Tizen WebSocket / UPnP)
+*   **LG ThinQ / WebOS TVs** (WebSocket)
+*   **Panasonic Viera** (SOAP / HTTP)
+*   **Sony Bravia** (REST API)
+*   **Roku** (ECP)
+*   **Apple TV / HomeKit AV** (AirPlay / HomeKit)
+*   **Google Cast / Chromecast**
+*   **Logitech Harmony** (Local XMPP/WebSocket)
+*   **Xbox** (Local Console REST API)
+</details>
+
+<details>
+<summary><b>❄️ Climate Control (HVAC, AC, Fans)</b> (Click to expand)</summary>
+
+*   **Daikin** (Local AirCon API)
+*   **Mitsubishi** (MELCloud / Local HTTP)
+*   **Sensibo** (Local polling API)
+*   **Tado** 
+*   **Nest Thermostat** 
+*   **Ecobee** 
+*   **LG SmartThinQ Air Conditioners**
+*   **Big Ass Fans** (Local Haiku API)
+*   **Dyson** (Local MQTT Protocol)
+</details>
+
+<details>
+<summary><b>🔌 Relays, Plugs & DIY IoT</b> (Click to expand)</summary>
+
+*   **Tasmota** (Local MQTT / HTTP)
+*   **Shelly** (Local CoIoT / HTTP REST)
+*   **Sonoff / eWeLink** (Local DIY Mode)
+*   **Tuya / SmartLife** (LocalKey TCP Protocol)
+*   **TP-Link Kasa / Tapo** (Local UDP/TCP)
+*   **Wemo** (Belkin UPnP)
+*   **Broadlink** (Local RF/IR UDP)
+*   **Meross** (Local MQTT)
+*   **ESPHome** (Native API)
+</details>
+
+<details>
+<summary><b>🏠 Large Appliances & White Goods</b> (Click to expand)</summary>
+
+*   **Samsung SmartThings Appliances** (Refrigerators, Washers)
+*   **Bosch Home Connect** 
+*   **GE SmartHQ** 
+*   **Miele@home** 
+*   **iRobot Roomba** (Local MQTT)
+*   **Roborock** (Local Miio Protocol)
+*   **Ecovacs**
+</details>
+
+<details>
+<summary><b>🌐 Standards & Gateways</b> (Click to expand)</summary>
+
+*   **Matter** (IPv6 / Thread native integration via border routers)
+*   **Thread** 
+*   **Homebridge / HomeKit** (HAP Protocol)
+*   **Fritz!Box / Smart Home** 
+*   **Fronius / Solar Inverters**
+*   **Pi-hole** (Local DNS sinkhole controls)
+</details>
+
+*Note: Integration levels vary by device, but all utilize ELLY's decentralized event bus to skip external API round-trips for near-instantaneous response times.*
+
+---
+
 ## 🎨 Interface & Interaction Design
 
 Our UI/UX architecture is engineered to provide a premium native app experience across all devices.
