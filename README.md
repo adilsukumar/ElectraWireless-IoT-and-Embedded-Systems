@@ -3,12 +3,7 @@
 </div>
 
 <div align="center">
-  <a href="https://github.com/adilsukumar/ElectraWireless-IoT-and-Embedded-Systems/stargazers"><img src="https://img.shields.io/github/stars/adilsukumar/ElectraWireless-IoT-and-Embedded-Systems?style=for-the-badge&color=ffd700&logo=github&logoColor=white" alt="Stars" /></a>
-  <a href="https://github.com/adilsukumar/ElectraWireless-IoT-and-Embedded-Systems/network/members"><img src="https://img.shields.io/github/forks/adilsukumar/ElectraWireless-IoT-and-Embedded-Systems?style=for-the-badge&color=0080ff&logo=github&logoColor=white" alt="Forks" /></a>
-  <a href="https://github.com/adilsukumar/ElectraWireless-IoT-and-Embedded-Systems/issues"><img src="https://img.shields.io/github/issues/adilsukumar/ElectraWireless-IoT-and-Embedded-Systems?style=for-the-badge&color=ff4040&logo=github&logoColor=white" alt="Issues" /></a>
-  <a href="https://github.com/adilsukumar/ElectraWireless-IoT-and-Embedded-Systems/pulls"><img src="https://img.shields.io/github/issues-pr/adilsukumar/ElectraWireless-IoT-and-Embedded-Systems?style=for-the-badge&color=8a2be2&logo=github&logoColor=white" alt="Pull Requests" /></a>
   <a href="https://github.com/adilsukumar/ElectraWireless-IoT-and-Embedded-Systems/blob/main/LICENSE"><img src="https://img.shields.io/badge/License-MIT-success.svg?style=for-the-badge&logo=open-source-initiative&logoColor=white" alt="License" /></a>
-  <br />
   <img src="https://img.shields.io/badge/Version-1.2.0-orange.svg?style=for-the-badge&logo=semantic-release&logoColor=white" alt="Version">
   <img src="https://img.shields.io/badge/Status-Active-brightgreen.svg?style=for-the-badge&logo=checkmarx&logoColor=white" alt="Status">
 </div>
