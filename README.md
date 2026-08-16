@@ -3,7 +3,12 @@
 </div>
 
 <div align="center">
+  <a href="https://github.com/adilsukumar/ElectraWireless-IoT-and-Embedded-Systems/stargazers"><img src="https://img.shields.io/github/stars/adilsukumar/ElectraWireless-IoT-and-Embedded-Systems?style=for-the-badge&color=ffd700&logo=github&logoColor=white" alt="Stars" /></a>
+  <a href="https://github.com/adilsukumar/ElectraWireless-IoT-and-Embedded-Systems/network/members"><img src="https://img.shields.io/github/forks/adilsukumar/ElectraWireless-IoT-and-Embedded-Systems?style=for-the-badge&color=0080ff&logo=github&logoColor=white" alt="Forks" /></a>
+  <a href="https://github.com/adilsukumar/ElectraWireless-IoT-and-Embedded-Systems/issues"><img src="https://img.shields.io/github/issues/adilsukumar/ElectraWireless-IoT-and-Embedded-Systems?style=for-the-badge&color=ff4040&logo=github&logoColor=white" alt="Issues" /></a>
+  <a href="https://github.com/adilsukumar/ElectraWireless-IoT-and-Embedded-Systems/pulls"><img src="https://img.shields.io/github/issues-pr/adilsukumar/ElectraWireless-IoT-and-Embedded-Systems?style=for-the-badge&color=8a2be2&logo=github&logoColor=white" alt="Pull Requests" /></a>
   <a href="https://github.com/adilsukumar/ElectraWireless-IoT-and-Embedded-Systems/blob/main/LICENSE"><img src="https://img.shields.io/badge/License-MIT-success.svg?style=for-the-badge&logo=open-source-initiative&logoColor=white" alt="License" /></a>
+  <br />
   <img src="https://img.shields.io/badge/Version-1.2.0-orange.svg?style=for-the-badge&logo=semantic-release&logoColor=white" alt="Version">
   <img src="https://img.shields.io/badge/Status-Active-brightgreen.svg?style=for-the-badge&logo=checkmarx&logoColor=white" alt="Status">
 </div>
@@ -50,11 +55,6 @@ Welcome to the future of smart home control. **ELLY** is an advanced environment
 
 Say goodbye to slow, cloud-dependent dashboards that fail when your internet goes down. ELLY uses a **100% localized state management architecture** and a **lightning-fast local AI parser** to give you *instantaneous* feedback and control over every appliance, light, and climate system in your house.
 
-<div align="center">
-  <img src="https://raw.githubusercontent.com/adilsukumar/ElectraWireless-IoT-and-Embedded-Systems/main/assets/readme-demo.gif" alt="ELLY Demo" width="800" style="border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);" />
-  <p><em>(Placeholder for Demo GIF/Video)</em></p>
-</div>
-
 ---
 
 ## ✨ Key Features
@@ -65,13 +65,13 @@ ELLY features a custom-built, dual-band discovery engine designed to seamlessly 
 <table align="center">
   <tr>
     <td align="center" width="50%">
-      <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/bluetooth/bluetooth-original.svg" width="50" alt="Bluetooth" />
+      <img src="https://cdn.simpleicons.org/bluetooth/0082FC" width="50" alt="Bluetooth" />
       <br />
       <b>Native Bluetooth Low Energy (BLE)</b>
       <p>Bypasses browser sandboxes to scan for and connect to active smart home peripherals (like smart plugs and bulbs) in pairing mode via Capacitor plugins.</p>
     </td>
     <td align="center" width="50%">
-      <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/network/network-original.svg" width="50" alt="Network" />
+      <img src="https://cdn.simpleicons.org/wifi/0080ff" width="50" alt="Network" />
       <br />
       <b>Local Wi-Fi Subnet Scanning</b>
       <p>Automatically sweeps the local Wi-Fi subnet (Port 55000) to discover Panasonic Viera, Samsung TVs, and IP-based smart appliances, instantly hooking into their native SOAP/REST interfaces.</p>
@@ -112,7 +112,7 @@ ELLY doesn't just turn things on and off; it provides deep, granular control int
 ## 🎨 Stunning UI/UX & Responsive Design
 
 <div align="center">
-  <img src="https://img.shields.io/badge/Design-Glassmorphism-rgba(255,255,255,0.1)?style=for-the-badge&logo=figma&logoColor=white" alt="Design" />
+  <img src="https://img.shields.io/badge/Design-Glassmorphism-1e1e1e?style=for-the-badge&logo=figma&logoColor=white" alt="Design" />
   <img src="https://img.shields.io/badge/Theme-OLED_Dark-black?style=for-the-badge&logo=moon&logoColor=white" alt="Theme" />
   <img src="https://img.shields.io/badge/Animations-Framer_Motion-e91e63?style=for-the-badge&logo=framer&logoColor=white" alt="Animations" />
 </div>
