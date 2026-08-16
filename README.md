@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="https://capsule-render.vercel.app/api?type=waving&color=timeGradient&height=200&section=header&text=ELLY%20Smart%20Home&fontSize=50&fontAlignY=35&desc=By%20ElectraWireless&descAlignY=55&descSize=20&animation=twinkling" width="100%" alt="Header" />
+  <img src="https://capsule-render.vercel.app/api?type=waving&color=timeGradient&height=200&section=header&text=ELLY%20Smart%20Home&fontSize=50&fontAlignY=35&desc=For%20ElectraWireless,%20by%20Adil%20Sukumar%20%26%20Snehal%20Dixit&descAlignY=55&descSize=20&animation=twinkling" width="100%" alt="Header" />
 </div>
 
 <div align="center">
