@@ -8,6 +8,10 @@ import {
   Radar,
   Zap,
   Tv,
+  Lock,
+  Droplets,
+  Speaker,
+  Router,
   type LucideIcon,
 } from "lucide-react";
 import type { DeviceType } from "@/lib/home/types";
@@ -22,7 +26,7 @@ export const deviceIcon: Record<DeviceType, LucideIcon> = {
   sensor: Radar,
   tv: Tv,
   wpt: Zap,
-  lock: Lock as any,
+  lock: Lock,
   vacuum: Fan,
   sprinkler: Droplets,
   speaker: Speaker,
@@ -39,4 +43,9 @@ export const deviceTypeLabel: Record<DeviceType, string> = {
   sensor: "Sensor",
   tv: "Television",
   wpt: "Wireless Power",
+  lock: "Smart Lock",
+  vacuum: "Vacuum Cleaner",
+  sprinkler: "Sprinkler",
+  speaker: "Speaker",
+  hub: "Hub"
 };
