@@ -385,13 +385,6 @@ export const ApplianceBridge = {
  </s:Body>
 </s:Envelope>`;
 
-        } else if (device.ecosystem === 'samsung_local') {
-           // Samsung Local API
-           toast.info(`Calling Samsung Local API...`);
-           endpoint = `http://${device.ipAddress}:8001/api/v2/commands/wificon`;
-           method = 'POST';
-           body = JSON.stringify({ command: payload.state ? 'power_on' : 'power_off' });
-
         } else if (device.ecosystem === 'fritzbox') {
            // Fritz!Box TR-064 UPnP/SOAP — https://avm.de/service/schnittstellen/
            toast.info(`Sending Fritz!Box TR-064 UPnP SOAP command...`);
@@ -484,14 +477,7 @@ export const ApplianceBridge = {
           endpoint = `http://${device.ipAddress}:8080/node/state`;
           body = JSON.stringify({ state: payload.state ? 'enabled' : 'disabled' });
           toast.info(`[Thread] OpenThread Border Router command sent`);
-        } else if (device.ecosystem === 'tasmota') {
-          // Tasmota open firmware — HTTP Command API
-          endpoint = `http://${device.ipAddress}/cm?cmnd=Power%20${payload.state ? 'On' : 'Off'}`;
-          method = 'GET';
-          body = undefined;
-          toast.info(`[Tasmota] HTTP command sent to ${device.ipAddress}`);
         }
-
         // --- Samsung SmartThings uses HTTPS to cloud, handle separately ---
         if (device.ecosystem === 'samsung_st') {
           try {

@@ -138,7 +138,7 @@ function AddDevicePage() {
       online: true,
       watts: type === "light" ? 10 : type === "ac" ? 1000 : type === "tv" ? 120 : 50,
       connectionType: type === "tv" ? "wifi" : selectedDevice.type,
-      ecosystem: selectedDevice.ecosystem || "generic",
+      ecosystem: (selectedDevice.ecosystem as any) || "generic",
       ...(selectedDevice.type === "wifi" ? { ipAddress: selectedDevice.address } : { macAddress: selectedDevice.address }),
     };
 
