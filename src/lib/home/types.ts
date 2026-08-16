@@ -37,6 +37,8 @@ export interface Device {
   macAddress?: string;
   ipAddress?: string;
   brand?: string;
+  activated?: boolean;
+  lightMode?: string;
   ecosystem?:
     // --- Existing 35 Ecosystems ---
     | "tuya" | "tplink" | "shelly" | "sonoff" | "wled" | "hue" | "govee" | "switchbot"
@@ -82,7 +84,7 @@ export interface Device {
     | "generic";
   cloudDeviceId?: string;  // For SmartThings / cloud-managed device IDs
   cloudToken?: string;     // For authorized cloud API integrations (PAT etc.)
-  connectionType?: "direct" | "third-party" | "ble" | "wifi";
+  connectionType?: "direct" | "third-party" | "samsung_local" | "tasmota" | "ble" | "wifi";
 }
 
 export interface Room {

@@ -38,7 +38,7 @@ function DevicePage() {
   const handleRefreshDevices = async () => {
     setIsScanning(true);
     try {
-      const devices = await scanBluetoothDevices();
+      const devices = await listPairedDevices();
       const paired = await listPairedDevices();
       // combine and deduplicate
       const all = [...paired, ...devices];
@@ -98,7 +98,7 @@ function DevicePage() {
           {device.type !== "sensor" && (
             <div className="ml-4">
               <Switch
-                checked={device.activated ?? false}
+                checked={(device as any).activated ?? false}
                 disabled={!canEdit}
                 onCheckedChange={() => toggleActivation(device.id)}
                 className="data-[state=checked]:bg-[#a855f7] data-[state=checked]:shadow-[0_0_15px_rgba(168,85,247,0.5)] scale-125"

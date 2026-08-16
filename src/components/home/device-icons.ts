@@ -22,6 +22,11 @@ export const deviceIcon: Record<DeviceType, LucideIcon> = {
   sensor: Radar,
   tv: Tv,
   wpt: Zap,
+  lock: Lock as any,
+  vacuum: Fan,
+  sprinkler: Droplets,
+  speaker: Speaker,
+  hub: Router
 };
 
 export const deviceTypeLabel: Record<DeviceType, string> = {

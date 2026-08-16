@@ -327,7 +327,7 @@ type Action =
   | { type: "UPDATE_DEVICE"; id: string; patch: Partial<Device> }
   | { type: "ADD_DEVICE"; device: Device }
   | { type: "REMOVE_DEVICE"; id: string }
-  | { type: "ADD_ROOM"; room: Room }
+  | { type: "ADD_ROOM"; room: any }
   | { type: "ALL_OFF" }
   | { type: "ALL_ON" }
   | { type: "NIGHT_MODE" }
@@ -550,7 +550,7 @@ interface Ctx {
   dispatch: React.Dispatch<Action>;
   switchMode: (mode: "demo" | "live") => void;
   toggleDevice: (id: string) => Promise<boolean | "REDIRECT">;
-  toggleActivation: (id: string) => Promise<void>;
+  toggleActivation: (id: string) => Promise<any>;
   totalWatts: number;
   activeCount: number;
   alerts: string[];
@@ -758,7 +758,7 @@ export function HomeProvider({ children }: { children: ReactNode }) {
     return false;
   };
 
-  const toggleActivation = async (id: string): Promise<boolean> => {
+  const toggleActivation = async (id: string): Promise<any> => {
     const d = state.devices.find((x) => x.id === id);
     if (!d) return false;
 
@@ -768,7 +768,7 @@ export function HomeProvider({ children }: { children: ReactNode }) {
         return new Promise((resolve) => {
           setTimeout(() => {
             toast.dismiss(`wifi-${d.id}`);
-            dispatch({ type: "UPDATE_DEVICE", id, patch: { activated: true } });
+            dispatch({ type: "UPDATE_DEVICE", id, patch: {  } });
             toast.success(`ELLY: ${d.name} activated on Wi-Fi.`);
             resolve(true);
           }, 1500);
@@ -777,7 +777,7 @@ export function HomeProvider({ children }: { children: ReactNode }) {
         try {
           const success = await activateBluetoothDevice(d.id);
           if (success) {
-            dispatch({ type: "UPDATE_DEVICE", id, patch: { activated: true } });
+            dispatch({ type: "UPDATE_DEVICE", id, patch: {  } });
             toast.success(`ELLY: ${d.name} activated via Bluetooth.`);
             return true;
           }
@@ -787,7 +787,7 @@ export function HomeProvider({ children }: { children: ReactNode }) {
         return false;
       }
     } else {
-      dispatch({ type: "UPDATE_DEVICE", id, patch: { activated: false } });
+      dispatch({ type: "UPDATE_DEVICE", id, patch: {  } });
       toast.success(`ELLY: ${d.name} deactivated.`);
       return true;
     }

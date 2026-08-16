@@ -1,3 +1,9 @@
+type BluetoothRemoteGATTCharacteristic = any;
+declare global {
+  interface Navigator {
+    bluetooth: any;
+  }
+}
 import { toast } from "sonner";
 import { Capacitor } from "@capacitor/core";
 

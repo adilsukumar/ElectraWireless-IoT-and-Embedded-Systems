@@ -18,7 +18,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Plus, Wifi, Bluetooth, Zap, Loader2, Camera, ScanLine, X } from "lucide-react";
+import { Plus, Wifi, Bluetooth, Zap, Loader2, Camera, ScanLine, X, RefreshCw } from "lucide-react";
 import { useHome } from "@/lib/home/store";
 import { scanBluetoothDevices, openBluetoothSettings, listPairedDevices, pairBluetoothDevice, type BluetoothDevice } from "../../lib/home/bluetooth";
 import type { DeviceType, Device } from "@/lib/home/types";
@@ -43,6 +43,16 @@ export function AddApplianceDialog({ defaultRoomId }: { defaultRoomId?: string }
   const [isScanning, setIsScanning] = useState(false);
   const [scannedDevices, setScannedDevices] = useState<BluetoothDevice[]>([]);
   const [selectedMac, setSelectedMac] = useState<string>("");
+
+  const [prediction, setPrediction] = useState<string | null>(null);
+  const [scanProb, setScanProb] = useState(0);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const streamRef = useRef<MediaStream | null>(null);
+  const model = (window as any).mobilenetModel;
+  const objectDetector = (window as any).cocoSsdModel;
+  const snehalEmbeddings = (window as any).snehalEmbeddings || [];
+
 
 
   // Reset state when opened
