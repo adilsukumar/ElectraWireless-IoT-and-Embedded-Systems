@@ -20,7 +20,7 @@
 
 ## 📝 Executive Summary
 
-**ELLY** is a monolithic, fully localized smart home automation platform built by **ElectraWireless**. Designed to completely eliminate the latency, privacy concerns, and downtime associated with cloud-dependent IoT systems, ELLY functions as a standalone brain for your environment. 
+**ELLY** is a monolithic, fully localized smart home automation platform built by **Adil Sukumar & Snehal Dixit for ElectraWireless**. Designed to completely eliminate the latency, privacy concerns, and downtime associated with cloud-dependent IoT systems, ELLY functions as a standalone brain for your environment.
 
 It combines **cutting-edge web architectures (React 19, Vite, TanStack Router)** with **in-browser Machine Learning (Web-LLM, TensorFlow.js)** to deliver a zero-latency conversational AI and computer vision security system. Packaged natively for iOS and Android via Capacitor, it discovers devices organically across Wi-Fi and Bluetooth, uniting Panasonic TVs, Samsung appliances, and BLE hardware under one gorgeous, glassmorphic UI.
 

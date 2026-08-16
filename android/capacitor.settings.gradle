@@ -10,3 +10,6 @@ project(':capacitor-community-speech-recognition').projectDir = new File('../nod
 
 include ':capacitor-community-text-to-speech'
 project(':capacitor-community-text-to-speech').projectDir = new File('../node_modules/@capacitor-community/text-to-speech/android')
+
+include ':miaz-capacitor-websocket'
+project(':miaz-capacitor-websocket').projectDir = new File('../node_modules/@miaz/capacitor-websocket/android')

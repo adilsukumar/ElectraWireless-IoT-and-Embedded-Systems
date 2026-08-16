@@ -43,10 +43,12 @@ function TvRemotePage() {
     
     if (!success) {
       if (tvBrand === 'samsung') {
-         toast.error(`Failed to send command. (Check TV screen for pairing prompt!)`);
+         toast.error(`Failed to connect! (Please click Allow on TV screen)`);
       } else {
          toast.error(`Failed to send command. Is the TV on?`);
       }
+    } else {
+      toast.success(msg);
     }
   };
 

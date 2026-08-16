@@ -1,4 +1,5 @@
-import { CapacitorHttp } from '@capacitor/core';
+import { CapacitorHttp, Capacitor } from '@capacitor/core';
+import { CapacitorWebsocket } from '@miaz/capacitor-websocket';
 
 export const SAMSUNG_KEYS = {
   POWER: 'KEY_POWER',
@@ -32,94 +33,17 @@ export const SAMSUNG_KEYS = {
   NUM_9: 'KEY_9',
 };
 
-/**
- * Connects to Samsung TV via WebSocket and sends a command.
- * Features Automatic Token Caching to bypass subsequent security prompts.
- */
-export async function sendSamsungCommand(ip: string, keyCommand: string): Promise<boolean> {
-  return new Promise((resolve) => {
-    // Base64 encode app name to identify as Elly
-    const appName = btoa("ELLY Home Intelligence");
-    let wsUrl = `wss://${ip}:8002/api/v2/channels/samsung.remote.control?name=${appName}`;
-
-    // Append cached token if we have one to bypass the prompt!
-    const cachedToken = localStorage.getItem(`samsung_token_${ip}`);
-    if (cachedToken) {
-      wsUrl += `&token=${cachedToken}`;
-    }
-
-    try {
-      const ws = new WebSocket(wsUrl);
-      
-      const timeout = setTimeout(() => {
-        ws.close();
-        resolve(false);
-      }, 5000);
-
-      ws.onopen = () => {
-        // We do not immediately send the command if we don't have a token,
-        // because we must wait for the TV to accept the connection first.
-        if (cachedToken) {
-          sendPayload(ws, keyCommand);
-          setTimeout(() => {
-            ws.close();
-            clearTimeout(timeout);
-            resolve(true);
-          }, 500);
-        }
-      };
-
-      ws.onmessage = (event) => {
-        try {
-          const msg = JSON.parse(event.data);
-          
-          if (msg.event === 'ms.channel.connect') {
-            // TV accepted the connection! Save the token for future zero-prompt access.
-            if (msg.data && msg.data.token) {
-              localStorage.setItem(`samsung_token_${ip}`, msg.data.token);
-            }
-            
-            // Now that we are fully connected and accepted, send the command
-            if (!cachedToken) {
-               sendPayload(ws, keyCommand);
-               setTimeout(() => {
-                 ws.close();
-                 clearTimeout(timeout);
-                 resolve(true);
-               }, 500);
-            }
-          } else if (msg.event === 'ms.channel.unauthorized') {
-            console.error('Samsung TV connection denied by user.');
-            ws.close();
-            clearTimeout(timeout);
-            resolve(false);
-          }
-        } catch (e) {
-          console.error("Failed to parse Samsung WS message", e);
-        }
-      };
-
-      ws.onerror = (e) => {
-        console.error("Samsung WebSocket Error:", e);
-        // Fallback to non-SSL port 8001 for older Tizen TVs
-        if (wsUrl.includes('8002')) {
-          console.log("Falling back to port 8001...");
-          const fallbackWs = new WebSocket(`ws://${ip}:8001/api/v2/channels/samsung.remote.control?name=${appName}`);
-          fallbackWs.onopen = () => {
-             sendPayload(fallbackWs, keyCommand);
-             setTimeout(() => { fallbackWs.close(); resolve(true); }, 500);
-          };
-          fallbackWs.onerror = () => resolve(false);
-        } else {
-          resolve(false);
-        }
-      };
-
-    } catch (error) {
-      console.error("Failed to initiate Samsung WebSocket:", error);
-      resolve(false);
-    }
-  });
+async function sendNativePayload(wsName: string, keyCommand: string) {
+  const payload = {
+    method: 'ms.remote.control',
+    params: {
+      Cmd: 'Click',
+      DataOfCmd: keyCommand,
+      Option: 'false',
+      TypeOfRemote: 'SendRemoteKey',
+    },
+  };
+  await CapacitorWebsocket.send({ name: wsName, data: JSON.stringify(payload) });
 }
 
 function sendPayload(ws: WebSocket, keyCommand: string) {
@@ -133,6 +57,158 @@ function sendPayload(ws: WebSocket, keyCommand: string) {
     },
   };
   ws.send(JSON.stringify(payload));
+}
+
+/**
+ * Connects to Samsung TV via WebSocket and sends a command.
+ */
+export async function sendSamsungCommand(ip: string, keyCommand: string): Promise<boolean> {
+  const appName = btoa("EllyApp");
+  // Force ignore token to force a new pairing prompt for the demo
+  const cachedToken = null; 
+
+  const connectToTV = (wsUrl: string): Promise<boolean> => {
+    return new Promise(async (resolve) => {
+      let finalUrl = wsUrl;
+      if (cachedToken && wsUrl.includes('8002')) {
+        finalUrl += `&token=${cachedToken}`;
+      }
+
+      if (Capacitor.isNativePlatform()) {
+         const wsName = 'samsung_tv_' + Date.now();
+         try {
+           await CapacitorWebsocket.build({ name: wsName, url: finalUrl });
+
+           const timeout = setTimeout(async () => {
+             try { await CapacitorWebsocket.disconnect({ name: wsName }); } catch (e) {}
+             resolve(false);
+           }, 30000);
+
+           await CapacitorWebsocket.addListener(`${wsName}:connected`, async () => {
+             if (cachedToken) {
+               await sendNativePayload(wsName, keyCommand);
+               setTimeout(async () => {
+                 try { await CapacitorWebsocket.disconnect({ name: wsName }); } catch (e) {}
+                 clearTimeout(timeout);
+                 resolve(true);
+               }, 500);
+             }
+           });
+
+           await CapacitorWebsocket.addListener(`${wsName}:textmessage`, async (event: any) => {
+             try {
+               const msg = JSON.parse(event.data);
+               if (msg.event === 'ms.channel.connect') {
+                 if (msg.data && msg.data.token && wsUrl.includes('8002')) {
+                   localStorage.setItem(`samsung_token_${ip}`, msg.data.token);
+                 }
+                 if (!cachedToken) {
+                   await sendNativePayload(wsName, keyCommand);
+                   setTimeout(async () => {
+                     try { await CapacitorWebsocket.disconnect({ name: wsName }); } catch (e) {}
+                     clearTimeout(timeout);
+                     resolve(true);
+                   }, 500);
+                 }
+               } else if (msg.event === 'ms.channel.unauthorized') {
+                 localStorage.removeItem(`samsung_token_${ip}`);
+                 try { await CapacitorWebsocket.disconnect({ name: wsName }); } catch (e) {}
+                 clearTimeout(timeout);
+                 resolve(false);
+               }
+             } catch (e) {}
+           });
+
+           await CapacitorWebsocket.addListener(`${wsName}:error`, async () => {
+             try { await CapacitorWebsocket.disconnect({ name: wsName }); } catch (e) {}
+             clearTimeout(timeout);
+             resolve(false);
+           });
+           
+           await CapacitorWebsocket.addListener(`${wsName}:connecterror`, async () => {
+             try { await CapacitorWebsocket.disconnect({ name: wsName }); } catch (e) {}
+             clearTimeout(timeout);
+             resolve(false);
+           });
+
+           await CapacitorWebsocket.addListener(`${wsName}:disconnected`, async () => {
+             try { await CapacitorWebsocket.disconnect({ name: wsName }); } catch (e) {}
+             clearTimeout(timeout);
+             resolve(false);
+           });
+
+           await CapacitorWebsocket.connect({ name: wsName });
+         } catch (e) {
+           resolve(false);
+         }
+      } else {
+         // Browser Fallback
+         try {
+           const ws = new WebSocket(finalUrl);
+           
+           const timeout = setTimeout(() => {
+             ws.close();
+             resolve(false);
+           }, 30000);
+
+           ws.onopen = () => {
+             if (cachedToken) {
+               sendPayload(ws, keyCommand);
+               setTimeout(() => {
+                 ws.close();
+                 clearTimeout(timeout);
+                 resolve(true);
+               }, 500);
+             }
+           };
+
+           ws.onmessage = (event) => {
+             try {
+               const msg = JSON.parse(event.data);
+               if (msg.event === 'ms.channel.connect') {
+                 if (msg.data && msg.data.token && wsUrl.includes('8002')) {
+                   localStorage.setItem(`samsung_token_${ip}`, msg.data.token);
+                 }
+                 if (!cachedToken) {
+                    sendPayload(ws, keyCommand);
+                    setTimeout(() => {
+                      ws.close();
+                      clearTimeout(timeout);
+                      resolve(true);
+                    }, 500);
+                 }
+               } else if (msg.event === 'ms.channel.unauthorized') {
+                 localStorage.removeItem(`samsung_token_${ip}`);
+                 ws.close();
+                 clearTimeout(timeout);
+                 resolve(false);
+               }
+             } catch (e) {}
+           };
+
+           ws.onerror = (e) => {
+             ws.close();
+             clearTimeout(timeout);
+             resolve(false);
+           };
+         } catch (error) {
+           resolve(false);
+         }
+      }
+    });
+  };
+
+  try {
+    await fetch(`https://${ip}:8002/api/v2/`);
+  } catch (e) {}
+
+  let success = await connectToTV(`wss://${ip}:8002/api/v2/channels/samsung.remote.control?name=${appName}`);
+  
+  if (!success) {
+    success = await connectToTV(`ws://${ip}:8001/api/v2/channels/samsung.remote.control?name=${appName}`);
+  }
+
+  return success;
 }
 
 import { getLocalSubnet } from "./network";
