@@ -187,7 +187,6 @@ function CameraPage() {
     
     toast.success(`User ${newFace.name} registered with Elly ID #${newFace.id}`);
     setIsRegisteringFace(false);
-    setNewUserName("");
     setScanProgress(0);
   };
 

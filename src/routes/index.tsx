@@ -328,7 +328,7 @@ function EmergencyAction({ onConfirm, disabled }: { onConfirm: () => void; disab
     <AlertDialog>
       <AlertDialogTrigger asChild>
         <div className="w-full">
-          <EllyBtn icon={OctagonAlert} label="Lockdown" sublabel="Override systems" disabled={disabled} color="red" />
+          <EllyBtn icon={OctagonAlert} label="Lockdown" sublabel="Override systems" onClick={() => {}} disabled={disabled} color="red" />
         </div>
       </AlertDialogTrigger>
       <AlertDialogContent className="glass-card border border-destructive/40 text-foreground max-w-sm">
