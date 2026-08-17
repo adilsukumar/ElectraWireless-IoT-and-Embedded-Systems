@@ -8,6 +8,7 @@ Originally developed and deployed by Snehal Dixit.
 
 ## Tech Stack
 - **Framework**: React with Vite
+- **Mobile Wrappers**: Capacitor (Android & iOS included)
 - **Routing**: TanStack Router
 - **Styling**: Tailwind CSS v4
 - **State/Data**: TanStack Query
